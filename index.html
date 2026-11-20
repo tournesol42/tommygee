@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v00-seed -->
+<!-- build: tommygee-v01-assemblage -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -10,12 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { background: #fff; color: #000; }
+  html, body { background: var(--tg-page-bg, #fff); color: var(--tg-font, #000); }
   body { font-family: Jost, "Helvetica Neue", sans-serif; min-height: 100vh; }
 
   header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 20px 52px; display: flex; align-items: center; justify-content: flex-end; }
   nav { display: flex; gap: 28px; align-items: center; }
-  nav a { font-family: Jost, "Helvetica Neue", sans-serif; font-size: 11px; letter-spacing: 0.22em; font-weight: 500; text-transform: uppercase; color: #000; text-decoration: none; }
+  nav a { font-family: Jost, "Helvetica Neue", sans-serif; font-size: 11px; letter-spacing: 0.22em; font-weight: 500; text-transform: uppercase; color: var(--tg-font, #000); text-decoration: none; }
   nav a.nav-active { border-bottom: 1.5px solid; padding-bottom: 1px; }
   @media (min-width: 720px) {
     nav a { font-size: 13px; display: inline-block; transition: transform 0.18s; }
@@ -23,9 +23,9 @@
   }
 
   .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-  .hero-title { font-family: Jost, "Helvetica Neue", sans-serif; font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88; color: #000; }
+  .hero-title { font-family: Jost, "Helvetica Neue", sans-serif; font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88; color: var(--tg-font, #000); }
 
-  .overlay { position: fixed; inset: 0; z-index: 40; background: #fff; display: none; overflow-y: auto; }
+  .overlay { position: fixed; inset: 0; z-index: 40; background: var(--tg-page-bg, #fff); display: none; overflow-y: auto; }
   .overlay.open { display: block; }
   .overlay-inner { margin: 90px 28px 15vh 28px; }
   .bio-title { font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88; margin-bottom: 18px; }
@@ -34,9 +34,54 @@
   .section-label { font-size: 11px; letter-spacing: 0.22em; font-weight: 500; text-transform: uppercase; margin-bottom: 24px; }
   .client-list { list-style: none; }
   .client-list li { font-size: 15px; letter-spacing: 0.01em; line-height: 2.05; opacity: 0.9; }
-  .contact-email { display: inline-block; font-size: 1.1rem; font-weight: 300; letter-spacing: 0.03em; color: #000; text-decoration: none; opacity: 0.85; }
+  .contact-email { display: inline-block; font-size: 1.1rem; font-weight: 300; letter-spacing: 0.03em; color: var(--tg-font, #000); text-decoration: none; opacity: 0.85; }
   .contact-email:hover { opacity: 1; }
-  .overlay-close { display: block; margin-top: 26px; font-size: 11px; letter-spacing: 0.06em; color: #000; opacity: 0.5; text-decoration: none; }
+  .overlay-close { display: block; margin-top: 26px; font-size: 11px; letter-spacing: 0.06em; color: var(--tg-font, #000); opacity: 0.5; text-decoration: none; }
+
+  /* program container */
+  #tg-program-container { position: fixed; z-index: 0; inset: 0; }
+
+  /* main console strip + panel */
+  #tg-console-strip { position: fixed; bottom: 0; left: 0; right: 0; height: 28px; z-index: 100; cursor: pointer; }
+  #tg-console-strip:hover::after { content: ''; display: block; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.18); }
+  #tg-console-panel { position: fixed; bottom: 0; left: 0; right: 0; max-height: 45vh; z-index: 101; background: rgba(10,10,10,0.9); border-top: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; font-family: Jost, "Helvetica Neue", sans-serif; font-weight: 300; color: #ccc; overflow: hidden; }
+  #tg-console-panel.open { display: flex; }
+  #tg-console-panel-inner { overflow-y: auto; padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+  #tg-console-panel-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+  #tg-console-panel-head span { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #888; }
+  #tg-console-close { background: none; border: 0; color: #888; font-size: 16px; cursor: pointer; line-height: 1; padding: 2px 4px; }
+  #tg-console-close:hover { color: #ccc; }
+  .tg-con-section { display: flex; flex-direction: column; gap: 10px; }
+  .tg-con-section-title { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: #666; }
+  .tg-con-row { display: flex; align-items: center; gap: 10px; }
+  .tg-con-row label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #999; min-width: 120px; }
+  .tg-con-swatch { width: 28px; height: 20px; border: 1px solid rgba(255,255,255,0.18); cursor: pointer; flex-shrink: 0; }
+  .tg-con-swatch:hover { border-color: rgba(255,255,255,0.5); }
+  .tg-con-hex { background: none; border: 0; border-bottom: 1px solid rgba(255,255,255,0.15); color: #bbb; font: 11px/1 monospace; width: 72px; padding: 2px 0; letter-spacing: 0.08em; }
+  .tg-con-swatches { display: flex; gap: 4px; }
+  .tg-con-preset-swatch { width: 20px; height: 14px; border: 1px solid rgba(255,255,255,0.12); cursor: pointer; flex-shrink: 0; }
+  .tg-con-preset-swatch:hover { border-color: rgba(255,255,255,0.45); }
+  .tg-con-check { accent-color: #a0d2ec; }
+  select.tg-con-select { background: rgba(255,255,255,0.06); color: #ccc; border: 1px solid rgba(255,255,255,0.12); font: 10px/1.4 Jost, sans-serif; letter-spacing: 0.1em; padding: 3px 6px; }
+  /* preset grid */
+  .tg-preset-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+  .tg-preset-slot { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 5px 4px; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #777; cursor: pointer; text-align: center; white-space: nowrap; overflow: hidden; }
+  .tg-preset-slot:hover { background: rgba(255,255,255,0.1); color: #ccc; }
+  .tg-preset-slot.filled { color: #aaa; border-color: rgba(255,255,255,0.22); }
+  .tg-preset-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tg-preset-btns button { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: #aaa; font: 9px/1 Jost, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; padding: 5px 10px; cursor: pointer; }
+  .tg-preset-btns button:hover { background: rgba(255,255,255,0.12); color: #ddd; }
+  /* TGColorPicker popup */
+  #tg-color-picker { position: fixed; z-index: 10100; background: rgba(0,0,0,0.88); border: 1px solid rgba(255,255,255,0.14); padding: 12px; display: none; flex-direction: column; gap: 8px; width: 220px; }
+  #tg-color-picker.open { display: flex; }
+  .tg-cp-swatches { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tg-cp-sw { width: 22px; height: 18px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; flex-shrink: 0; }
+  .tg-cp-sw:hover, .tg-cp-sw.active { border-color: rgba(255,255,255,0.6); }
+  .tg-cp-hex { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: #ccc; font: 11px/1 monospace; padding: 5px 8px; width: 100%; letter-spacing: 0.06em; box-sizing: border-box; }
+
+  /* page object shift-drag */
+  .tg-shift-outline { outline: 1px dashed rgba(255,255,255,0.55); }
+  .tg-shift-handle { position: absolute; width: 8px; height: 8px; background: rgba(255,255,255,0.75); border: 1px solid rgba(0,0,0,0.4); pointer-events: all; }
 
   @media (max-width: 720px) {
     header { top: auto; bottom: 0; padding: 14px 18px 20px; background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); justify-content: center; }
@@ -49,6 +94,62 @@
 </style>
 </head>
 <body>
+
+  <!-- program container (z-index 0, behind title and nav) -->
+  <div id="tg-program-container"></div>
+
+  <!-- main console: invisible 28px strip at bottom -->
+  <div id="tg-console-strip" title="Open console"></div>
+  <div id="tg-console-panel">
+    <div id="tg-console-panel-head">
+      <span>Console</span>
+      <button id="tg-console-close">×</button>
+    </div>
+    <div id="tg-console-panel-inner">
+      <!-- PAGE section -->
+      <div class="tg-con-section">
+        <div class="tg-con-section-title">Page</div>
+        <div class="tg-con-row">
+          <label>Background</label>
+          <div class="tg-con-swatch" id="tg-bg-swatch"></div>
+          <input class="tg-con-hex" id="tg-bg-hex" type="text" maxlength="7" spellcheck="false">
+        </div>
+        <div class="tg-con-row">
+          <label>Font colour</label>
+          <div class="tg-con-swatch" id="tg-font-swatch"></div>
+          <input class="tg-con-hex" id="tg-font-hex" type="text" maxlength="7" spellcheck="false">
+        </div>
+        <div class="tg-con-row">
+          <label>Program BG follows page</label>
+          <input class="tg-con-check" type="checkbox" id="tg-bg-follow" checked>
+        </div>
+      </div>
+      <!-- PROGRAM section -->
+      <div class="tg-con-section">
+        <div class="tg-con-section-title">Program</div>
+        <div class="tg-con-row">
+          <label>Active</label>
+          <select class="tg-con-select" id="tg-program-select"></select>
+        </div>
+      </div>
+      <!-- PRESETS section -->
+      <div class="tg-con-section">
+        <div class="tg-con-section-title">Presets</div>
+        <div class="tg-preset-grid" id="tg-preset-grid"></div>
+        <div class="tg-preset-btns">
+          <button id="tg-preset-export">Export JSON</button>
+          <button id="tg-preset-import">Import JSON</button>
+        </div>
+        <!-- TODO: preset morph slider -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TGColorPicker popup -->
+  <div id="tg-color-picker">
+    <div class="tg-cp-swatches" id="tg-cp-swatches"></div>
+    <input class="tg-cp-hex" id="tg-cp-hex" type="text" maxlength="7" spellcheck="false" placeholder="#rrggbb">
+  </div>
   <header>
     <nav>
       <a href="#about" data-panel="about">about</a>
@@ -119,7 +220,9 @@
     </div>
   </section>
 
+<script src="programs/assemblage.js"></script>
 <script>
+  // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
   const panels = document.querySelectorAll('.overlay');
   function show(id) {
@@ -138,6 +241,300 @@
   }));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') show(null); });
   if (location.hash) show(location.hash.slice(1));
+
+  // ---- TGColorPicker ----
+  const TGColorPicker = (() => {
+    const SWATCHES = ['#EE7C0E','#FF2B00','#D5D6D2','#898D8D','#2B2B2C','#FAC300','#F4F4F4','#FE0000'];
+    const popup = document.getElementById('tg-color-picker');
+    const swatchRow = document.getElementById('tg-cp-swatches');
+    const hexIn = document.getElementById('tg-cp-hex');
+    let _cb = null;
+    SWATCHES.forEach(hex => {
+      const s = document.createElement('div');
+      s.className = 'tg-cp-sw'; s.style.background = hex; s.dataset.hex = hex;
+      s.addEventListener('click', () => { hexIn.value = hex; swatchRow.querySelectorAll('.tg-cp-sw').forEach(x=>x.classList.toggle('active',x===s)); _cb && _cb(hex); });
+      swatchRow.appendChild(s);
+    });
+    hexIn.addEventListener('input', () => {
+      const v = hexIn.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) { swatchRow.querySelectorAll('.tg-cp-sw').forEach(x=>x.classList.remove('active')); _cb && _cb(v); }
+    });
+    hexIn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === 'Escape') close(); });
+    document.addEventListener('pointerdown', e => { if (!popup.contains(e.target) && !e.target.closest('.tg-con-swatch')) close(); });
+    function open(anchor, current, cb) {
+      _cb = cb;
+      hexIn.value = current || '';
+      swatchRow.querySelectorAll('.tg-cp-sw').forEach(s => s.classList.toggle('active', s.dataset.hex === current));
+      const r = anchor.getBoundingClientRect();
+      popup.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 236)) + 'px';
+      popup.style.top = Math.max(8, r.top - 100) + 'px';
+      popup.classList.add('open');
+    }
+    function close() { popup.classList.remove('open'); _cb = null; }
+    return { open, close };
+  })();
+
+  // ---- page state ----
+  const LAYOUT_KEY = 'tommygee.layout.v1';
+  const PRESETS_KEY = 'tommygee.presets.v1';
+  let pageBG = '#a7a7a7';
+  let pageFontColor = '#000000';
+  let programBGFollows = true;
+  let activeProgram = null;
+  let activeProgramId = null;
+
+  function applyPageBG(hex) {
+    pageBG = hex;
+    document.body.style.background = hex;
+    if (programBGFollows && activeProgram && activeProgram.setParams) {
+      activeProgram.setParams({ cfg: { bg: hex } });
+    }
+  }
+  function applyFontColor(hex) {
+    pageFontColor = hex;
+    document.documentElement.style.setProperty('--tg-font', hex);
+  }
+
+  // ---- program container ----
+  const progContainer = document.getElementById('tg-program-container');
+
+  function switchProgram(id) {
+    if (activeProgram) { activeProgram.destroy(); activeProgram = null; activeProgramId = null; }
+    const def = window.TG_PROGRAMS && window.TG_PROGRAMS[id];
+    if (!def) return;
+    activeProgram = def.create(progContainer);
+    activeProgramId = id;
+    if (programBGFollows) activeProgram.setParams({ cfg: { bg: pageBG } });
+  }
+
+  // ---- console ----
+  const consoleStrip = document.getElementById('tg-console-strip');
+  const consolePanel = document.getElementById('tg-console-panel');
+  const consoleClose = document.getElementById('tg-console-close');
+  function toggleConsole() { consolePanel.classList.toggle('open'); }
+  consoleStrip.addEventListener('click', toggleConsole);
+  consoleClose.addEventListener('click', toggleConsole);
+
+  // bg/font pickers
+  const bgSwatch = document.getElementById('tg-bg-swatch');
+  const bgHex = document.getElementById('tg-bg-hex');
+  const fontSwatch = document.getElementById('tg-font-swatch');
+  const fontHex = document.getElementById('tg-font-hex');
+  const bgFollow = document.getElementById('tg-bg-follow');
+
+  function syncBGUI(hex) { bgSwatch.style.background = hex; bgHex.value = hex; }
+  function syncFontUI(hex) { fontSwatch.style.background = hex; fontHex.value = hex; }
+
+  bgSwatch.addEventListener('click', () => TGColorPicker.open(bgSwatch, pageBG, hex => { applyPageBG(hex); syncBGUI(hex); }));
+  bgHex.addEventListener('change', () => { const v = bgHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/i.test(v)) { applyPageBG(v); syncBGUI(v); } });
+  fontSwatch.addEventListener('click', () => TGColorPicker.open(fontSwatch, pageFontColor, hex => { applyFontColor(hex); syncFontUI(hex); }));
+  fontHex.addEventListener('change', () => { const v = fontHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/i.test(v)) { applyFontColor(v); syncFontUI(v); } });
+  bgFollow.addEventListener('change', () => { programBGFollows = bgFollow.checked; if (programBGFollows && activeProgram) activeProgram.setParams({ cfg: { bg: pageBG } }); });
+
+  // program dropdown
+  const progSelect = document.getElementById('tg-program-select');
+  function populateProgramSelect() {
+    progSelect.innerHTML = '';
+    Object.keys(window.TG_PROGRAMS || {}).forEach(id => {
+      const opt = document.createElement('option'); opt.value = id; opt.textContent = window.TG_PROGRAMS[id].name || id;
+      progSelect.appendChild(opt);
+    });
+    if (activeProgramId) progSelect.value = activeProgramId;
+  }
+  progSelect.addEventListener('change', () => switchProgram(progSelect.value));
+
+  // ---- presets ----
+  let presets = [];
+  try { presets = JSON.parse(localStorage.getItem(PRESETS_KEY)) || []; } catch(e) {}
+  if (!Array.isArray(presets) || presets.length !== 16) presets = Array(16).fill(null);
+
+  const presetGrid = document.getElementById('tg-preset-grid');
+  function buildPresetGrid() {
+    presetGrid.innerHTML = '';
+    presets.forEach((p, i) => {
+      const slot = document.createElement('div');
+      slot.className = 'tg-preset-slot' + (p ? ' filled' : '');
+      slot.textContent = p ? (p.label || String(i + 1)) : String(i + 1);
+      slot.title = p ? 'Click = recall  Shift+Click = overwrite  CLR = clear' : 'Shift+Click = store';
+      slot.addEventListener('click', e => {
+        if (e.shiftKey) {
+          presets[i] = capturePreset(String(i + 1));
+          savePresets(); buildPresetGrid();
+        } else if (p) {
+          recallPreset(p);
+        }
+      });
+      const clr = document.createElement('span');
+      clr.textContent = ' ×'; clr.style.cssText = 'color:#555;font-size:8px;cursor:pointer;';
+      clr.title = 'Clear slot';
+      clr.addEventListener('click', e => { e.stopPropagation(); presets[i] = null; savePresets(); buildPresetGrid(); });
+      if (p) slot.appendChild(clr);
+      presetGrid.appendChild(slot);
+    });
+  }
+  function savePresets() { try { localStorage.setItem(PRESETS_KEY, JSON.stringify(presets)); } catch(e) {} }
+  function capturePreset(label) {
+    return {
+      label,
+      pageBG, pageFontColor, programBGFollows,
+      activeProgramId,
+      programParams: activeProgramId && activeProgram ? { [activeProgramId]: activeProgram.getParams() } : {},
+      layout: (() => { try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)); } catch(e) { return null; } })(),
+    };
+  }
+  function recallPreset(p) {
+    if (p.pageBG) { applyPageBG(p.pageBG); syncBGUI(p.pageBG); }
+    if (p.pageFontColor) { applyFontColor(p.pageFontColor); syncFontUI(p.pageFontColor); }
+    if (typeof p.programBGFollows === 'boolean') { programBGFollows = p.programBGFollows; bgFollow.checked = p.programBGFollows; }
+    if (p.layout) try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(p.layout)); applyLayout(p.layout); } catch(e) {}
+    if (p.activeProgramId && p.activeProgramId !== activeProgramId) {
+      switchProgram(p.activeProgramId); populateProgramSelect();
+    }
+    if (p.programParams && p.activeProgramId && activeProgram) {
+      const params = p.programParams[p.activeProgramId];
+      if (params) activeProgram.setParams(params);
+    }
+  }
+  document.getElementById('tg-preset-export').addEventListener('click', () => {
+    const json = JSON.stringify(presets, null, 2);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json],{type:'application/json'})); a.download = 'tommygee_presets.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    navigator.clipboard && navigator.clipboard.writeText(json).catch(()=>{});
+  });
+  document.getElementById('tg-preset-import').addEventListener('click', () => {
+    const text = prompt('Paste preset JSON:');
+    if (!text) return;
+    try { const arr = JSON.parse(text); if (Array.isArray(arr) && arr.length === 16) { presets = arr; savePresets(); buildPresetGrid(); } else alert('Invalid preset JSON: expected array of 16 slots'); } catch(e) { alert('Could not parse JSON'); }
+  });
+
+  // ---- page objects: shift-drag movable elements ----
+  const MOVABLES = [
+    { id: 'tg-program-container', isProgContainer: true },
+    { selector: '.hero', isProgContainer: false },
+    { selector: 'header', isProgContainer: false },
+  ];
+  let layoutData = {};
+  try { layoutData = JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; } catch(e) {}
+
+  function getMovableEl(m) {
+    return m.id ? document.getElementById(m.id) : document.querySelector(m.selector);
+  }
+  function saveLayout() {
+    MOVABLES.forEach(m => {
+      const el = getMovableEl(m); if (!el) return;
+      const key = m.id || m.selector;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const r = el.getBoundingClientRect();
+      layoutData[key] = { left: r.left/vw, top: r.top/vh, width: r.width/vw, height: r.height/vh };
+    });
+    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layoutData)); } catch(e) {}
+  }
+  function applyLayout(data) {
+    if (!data) return;
+    MOVABLES.forEach(m => {
+      const el = getMovableEl(m); if (!el) return;
+      const key = m.id || m.selector;
+      const r = data[key]; if (!r) return;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      el.style.position = 'fixed';
+      el.style.left = (r.left * vw) + 'px'; el.style.top = (r.top * vh) + 'px';
+      el.style.width = (r.width * vw) + 'px'; el.style.height = (r.height * vh) + 'px';
+      el.style.inset = '';
+    });
+  }
+
+  let shiftActive = false;
+  let moveDrag = null;
+  const handles = [];
+  function setShiftMode(on) {
+    shiftActive = on;
+    MOVABLES.forEach(m => { const el = getMovableEl(m); if (el) el.classList.toggle('tg-shift-outline', on); });
+    handles.forEach(h => h.remove()); handles.length = 0;
+    if (on) {
+      MOVABLES.forEach(m => {
+        const el = getMovableEl(m); if (!el) return;
+        ['tl','tr','bl','br'].forEach(corner => {
+          const h = document.createElement('div'); h.className = 'tg-shift-handle'; h.dataset.corner = corner; h.dataset.target = m.id || m.selector;
+          const positions = { tl: { top:'-4px', left:'-4px' }, tr: { top:'-4px', right:'-4px' }, bl: { bottom:'-4px', left:'-4px' }, br: { bottom:'-4px', right:'-4px' } };
+          Object.assign(h.style, positions[corner]);
+          el.style.position = el.style.position || 'fixed';
+          el.appendChild(h); handles.push(h);
+        });
+      });
+    }
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Shift' && !e.repeat) setShiftMode(true);
+    if (e.key === 'Escape' && shiftActive) setShiftMode(false);
+  });
+  document.addEventListener('keyup', e => { if (e.key === 'Shift' && !moveDrag) setShiftMode(false); });
+  document.addEventListener('pointerdown', e => {
+    if (!shiftActive) return;
+    // corner resize
+    if (e.target.classList.contains('tg-shift-handle')) {
+      const corner = e.target.dataset.corner, targetKey = e.target.dataset.target;
+      const el = document.getElementById(targetKey) || document.querySelector(targetKey);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      moveDrag = { type:'resize', el, corner, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top, ow:r.width, oh:r.height };
+      e.stopPropagation(); e.preventDefault(); return;
+    }
+    // find which movable the pointer is over
+    for (const m of MOVABLES) {
+      const el = getMovableEl(m); if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+        // program container: outer 12px band moves, inside goes to program
+        if (m.isProgContainer) {
+          const inner = e.clientX > r.left+12 && e.clientX < r.right-12 && e.clientY > r.top+12 && e.clientY < r.bottom-12;
+          if (inner) return; // let program handle shift interactions
+        }
+        moveDrag = { type:'move', el, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
+        e.stopPropagation(); e.preventDefault(); return;
+      }
+    }
+  }, true);
+  document.addEventListener('pointermove', e => {
+    if (!moveDrag) return;
+    const dx = e.clientX - moveDrag.sx, dy = e.clientY - moveDrag.sy;
+    if (moveDrag.type === 'move') {
+      moveDrag.el.style.left = (moveDrag.ox + dx) + 'px'; moveDrag.el.style.top = (moveDrag.oy + dy) + 'px';
+      moveDrag.el.style.position = 'fixed'; moveDrag.el.style.inset = '';
+    } else {
+      const c = moveDrag.corner;
+      let l = moveDrag.ox, t = moveDrag.oy, w = moveDrag.ow, h = moveDrag.oh;
+      if (c.includes('l')) { l += dx; w -= dx; } else { w += dx; }
+      if (c.includes('t')) { t += dy; h -= dy; } else { h += dy; }
+      w = Math.max(40, w); h = Math.max(40, h);
+      moveDrag.el.style.left = l + 'px'; moveDrag.el.style.top = t + 'px';
+      moveDrag.el.style.width = w + 'px'; moveDrag.el.style.height = h + 'px';
+      moveDrag.el.style.position = 'fixed'; moveDrag.el.style.inset = '';
+    }
+  });
+  document.addEventListener('pointerup', () => { if (moveDrag) { saveLayout(); moveDrag = null; if (!event.shiftKey) setShiftMode(false); } });
+
+  // ---- key routing ----
+  document.addEventListener('keydown', e => {
+    // don't route when focus in input/textarea/select or inside the main console
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) return;
+    if (consolePanel.contains(active) && consolePanel.classList.contains('open')) return;
+    if (e.key === 'Escape') { if (consolePanel.classList.contains('open')) { consolePanel.classList.remove('open'); return; } }
+    if (activeProgram) activeProgram.onKey(e);
+  });
+
+  window.addEventListener('resize', () => { if (activeProgram) activeProgram.resize(); });
+  window.addEventListener('keydown', e => { if (e.key === 'Escape' && consolePanel.classList.contains('open')) consolePanel.classList.remove('open'); });
+
+  // ---- init ----
+  document.addEventListener('DOMContentLoaded', () => {
+    applyPageBG(pageBG); syncBGUI(pageBG);
+    applyFontColor(pageFontColor); syncFontUI(pageFontColor);
+    populateProgramSelect();
+    const firstProgram = Object.keys(window.TG_PROGRAMS || {})[0];
+    if (firstProgram) switchProgram(firstProgram);
+    applyLayout(layoutData);
+    buildPresetGrid();
+  });
 </script>
 </body>
 </html>
