@@ -287,9 +287,9 @@
     </div>
   </section>
 
-<script src="deck.js"></script>
-<script src="programs/assemblage.js"></script>
-<script src="programs/main.js"></script>
+<script src="deck.js?v=6"></script>
+<script src="programs/assemblage.js?v=6"></script>
+<script src="programs/main.js?v=6"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -792,7 +792,7 @@
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open('GET', 'fonts.json', true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=6", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = x.response; applyFonts(); } };
     x.send();
   })();
