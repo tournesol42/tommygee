@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v02-shift-drag-fix -->
+<!-- build: tommygee-v03-title-move -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -13,6 +13,7 @@
   html, body { background: var(--tg-page-bg, #fff); color: var(--tg-font, #000); }
   body { font-family: Jost, "Helvetica Neue", sans-serif; min-height: 100vh; }
 
+  header, .hero-title { user-select: none; -webkit-user-select: none; }
   header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 20px 52px; display: flex; align-items: center; justify-content: flex-end; }
   nav { display: flex; gap: 28px; align-items: center; }
   nav a { font-family: Jost, "Helvetica Neue", sans-serif; font-size: 11px; letter-spacing: 0.22em; font-weight: 500; text-transform: uppercase; color: var(--tg-font, #000); text-decoration: none; }
@@ -152,14 +153,14 @@
   </div>
   <header>
     <nav>
-      <a href="#about" data-panel="about">about</a>
-      <a href="#clients" data-panel="clients">past clients</a>
-      <a href="#contact" data-panel="contact">contact</a>
+      <a href="#about" data-panel="about" draggable="false">about</a>
+      <a href="#clients" data-panel="clients" draggable="false">past clients</a>
+      <a href="#contact" data-panel="contact" draggable="false">contact</a>
     </nav>
   </header>
 
   <main class="hero">
-    <h1 class="hero-title">Tommy Gee</h1>
+    <h1 class="hero-title" draggable="false">Tommy Gee</h1>
   </main>
 
   <section class="overlay" id="about">
@@ -439,8 +440,8 @@
       el.style.position = 'fixed';
       el.style.left = (r.left * vw) + 'px'; el.style.top = (r.top * vh) + 'px';
       el.style.width = (r.width * vw) + 'px'; el.style.height = (r.height * vh) + 'px';
-      el.style.inset = '';
-      if (m.isTitle) { el.style.transform = ''; el.style.fontSize = (r.height * vh * 0.9) + 'px'; }
+      el.style.inset = ''; el.style.right = 'auto'; el.style.bottom = 'auto';
+      if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / 0.88) + 'px'; }
     });
   }
 
@@ -468,6 +469,23 @@
       });
     }
   }
+  // pin an element to its current rendered px box (drops CSS centring / right:0)
+  function freezeBox(el, isTitle) {
+    const r = el.getBoundingClientRect();
+    el.style.position = 'fixed'; el.style.inset = '';
+    el.style.left = r.left + 'px'; el.style.top = r.top + 'px';
+    el.style.right = 'auto'; el.style.bottom = 'auto';
+    if (isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; }
+    else { el.style.width = r.width + 'px'; el.style.height = r.height + 'px'; }
+    return r;
+  }
+  function startDrag(e) {
+    try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
+    try { window.getSelection().removeAllRanges(); } catch (_) {}
+    e.stopPropagation(); e.preventDefault();
+  }
+  document.addEventListener('dragstart', e => { if (shiftActive) e.preventDefault(); }, true);
+  document.addEventListener('selectstart', e => { if (shiftActive) e.preventDefault(); }, true);
   document.addEventListener('keydown', e => {
     if (e.key === 'Shift' && !e.repeat) setShiftMode(true);
     if (e.key === 'Escape' && shiftActive) setShiftMode(false);
@@ -480,23 +498,24 @@
       const corner = e.target.dataset.corner, targetKey = e.target.dataset.target;
       const el = document.getElementById(targetKey) || document.querySelector(targetKey);
       if (!el) return;
-      const r = el.getBoundingClientRect();
-      moveDrag = { type:'resize', el, corner, isTitle: targetKey === '.hero-title', sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top, ow:r.width, oh:r.height };
-      e.stopPropagation(); e.preventDefault(); return;
+      const isT = targetKey === '.hero-title';
+      const r = freezeBox(el, isT);
+      moveDrag = { type:'resize', el, corner, isTitle: isT, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top, ow:r.width, oh:r.height };
+      startDrag(e); return;
     }
     // hit order: header and title by closest(), program container by outer-band check
     const headerEl = document.querySelector('header');
     const titleEl = document.querySelector('.hero-title');
     const progEl = document.getElementById('tg-program-container');
     if (e.target.closest('header') && headerEl) {
-      const r = headerEl.getBoundingClientRect();
+      const r = freezeBox(headerEl, false);
       moveDrag = { type:'move', el:headerEl, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
-      e.stopPropagation(); e.preventDefault(); return;
+      startDrag(e); return;
     }
     if (e.target.closest('.hero-title') && titleEl) {
-      const r = titleEl.getBoundingClientRect();
+      const r = freezeBox(titleEl, true);
       moveDrag = { type:'move', el:titleEl, isTitle:true, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
-      e.stopPropagation(); e.preventDefault(); return;
+      startDrag(e); return;
     }
     if (progEl) {
       const r = progEl.getBoundingClientRect();
@@ -514,7 +533,7 @@
     if (moveDrag.type === 'move') {
       moveDrag.el.style.left = (moveDrag.ox + dx) + 'px'; moveDrag.el.style.top = (moveDrag.oy + dy) + 'px';
       moveDrag.el.style.position = 'fixed'; moveDrag.el.style.inset = '';
-      if (moveDrag.isTitle) moveDrag.el.style.transform = '';
+      if (moveDrag.isTitle) moveDrag.el.style.transform = 'none';
     } else {
       const c = moveDrag.corner;
       let l = moveDrag.ox, t = moveDrag.oy, w = moveDrag.ow, h = moveDrag.oh;
@@ -524,7 +543,7 @@
       moveDrag.el.style.left = l + 'px'; moveDrag.el.style.top = t + 'px';
       moveDrag.el.style.width = w + 'px'; moveDrag.el.style.height = h + 'px';
       moveDrag.el.style.position = 'fixed'; moveDrag.el.style.inset = '';
-      if (moveDrag.isTitle) { moveDrag.el.style.transform = ''; moveDrag.el.style.fontSize = (h * 0.9) + 'px'; }
+      if (moveDrag.isTitle) { moveDrag.el.style.transform = 'none'; moveDrag.el.style.height = ''; moveDrag.el.style.width = ''; moveDrag.el.style.fontSize = (h / 0.88) + 'px'; }
     }
   });
   document.addEventListener('pointerup', (e) => { if (moveDrag) { saveLayout(); moveDrag = null; if (!e.shiftKey) setShiftMode(false); } });
