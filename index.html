@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v10-helvetica -->
+<!-- build: tommygee-v11-title-fit -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -348,10 +348,10 @@ window.TG_SITE_DEFAULTS = { rev: 2, saved: '2026-11-20', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=10"></script>
-<script src="deck.js?v=10"></script>
-<script src="programs/assemblage.js?v=10"></script>
-<script src="programs/main.js?v=10"></script>
+<script src="colorpicker.js?v=11"></script>
+<script src="deck.js?v=11"></script>
+<script src="programs/assemblage.js?v=11"></script>
+<script src="programs/main.js?v=11"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -543,6 +543,15 @@ window.TG_SITE_DEFAULTS = { rev: 2, saved: '2026-11-20', store: {
     });
     try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layoutData)); } catch(e) {}
   }
+  // keep the title inside its saved box width (a wider font would otherwise run off the page)
+  function fitTitle(maxW) {
+    const el = document.querySelector('.hero-title'); if (!el) return;
+    const lay = layoutData['.hero-title'];
+    if (!maxW) maxW = lay ? lay.width * window.innerWidth : window.innerWidth * 0.92;
+    maxW = Math.min(maxW, window.innerWidth - (el.getBoundingClientRect().left > 0 ? el.getBoundingClientRect().left : 0));
+    const w = el.scrollWidth;
+    if (w > maxW + 1) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * maxW / w) + 'px';
+  }
   function applyLayout(data) {
     if (!data) return;
     MOVABLES.forEach(m => {
@@ -554,7 +563,7 @@ window.TG_SITE_DEFAULTS = { rev: 2, saved: '2026-11-20', store: {
       el.style.left = (r.left * vw) + 'px'; el.style.top = (r.top * vh) + 'px';
       el.style.width = (r.width * vw) + 'px'; el.style.height = (r.height * vh) + 'px';
       el.style.right = 'auto'; el.style.bottom = 'auto';
-      if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / 0.88) + 'px'; }
+      if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / 0.88) + 'px'; fitTitle(r.width * vw); }
     });
   }
 
@@ -779,6 +788,7 @@ window.TG_SITE_DEFAULTS = { rev: 2, saved: '2026-11-20', store: {
       loadFamily(st.family, st.weight);
       if (t.key === 'menu') document.documentElement.style.setProperty('--tg-menu-font', '"' + st.family + '"');
       t.sel().forEach(el => { if (!el) return; el.style.fontFamily = '"' + st.family + '", ' + (st.family.startsWith('Helvetica') ? 'Helvetica, Arial, ' : 'Jost, "Helvetica Neue", ') + 'sans-serif'; el.style.fontWeight = st.weight; });
+      if (t.key === 'title' && typeof applyLayout === 'function') { applyLayout(layoutData); if (document.fonts) document.fonts.ready.then(() => applyLayout(layoutData)); }
       const row = fontRows.querySelector('[data-t="' + t.key + '"]');
       if (row) {
         const btn = row.querySelector('.tg-font-btn'); btn.textContent = st.family; btn.style.fontFamily = '"' + st.family + '", Jost, sans-serif'; btn.style.fontWeight = st.weight;
@@ -853,7 +863,7 @@ window.TG_SITE_DEFAULTS = { rev: 2, saved: '2026-11-20', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=10", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=11", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
