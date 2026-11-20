@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v05-main-player -->
+<!-- build: tommygee-v06-fonts -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -97,6 +97,21 @@
   .tg-slot-row input { background: none; border: 0; border-bottom: 1px solid rgba(255,255,255,0.15); color: #bbb; font: 10px/1.4 monospace; padding: 2px 0; min-width: 0; }
   .tg-slot-row input::placeholder { color: #555; }
 
+  /* font chooser */
+  .tg-font-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: #ddd; font-size: 15px; padding: 4px 10px; cursor: pointer; min-width: 180px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+  .tg-font-btn:hover { border-color: rgba(255,255,255,0.4); }
+  #tg-font-picker { position: fixed; z-index: 10100; width: 380px; height: 460px; background: rgba(12,12,12,0.96); border: 1px solid rgba(255,255,255,0.16); display: none; flex-direction: column; font-family: Jost, sans-serif; color: #ccc; }
+  #tg-font-picker.open { display: flex; }
+  #tg-font-picker .fp-head { display: flex; gap: 6px; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  #tg-font-picker input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: #ddd; font: 12px Jost, sans-serif; padding: 5px 8px; }
+  #tg-font-picker select { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: #ccc; font: 10px Jost, sans-serif; letter-spacing: 0.08em; }
+  #tg-font-picker .fp-count { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: #666; padding: 4px 10px; }
+  #tg-font-picker .fp-list { flex: 1; overflow-y: auto; }
+  #tg-font-picker .fp-item { padding: 6px 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  #tg-font-picker .fp-item:hover, #tg-font-picker .fp-item.cur { background: rgba(160,210,236,0.12); }
+  #tg-font-picker .fp-name { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #777; }
+  #tg-font-picker .fp-prev { font-size: 24px; line-height: 1.25; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   /* page object shift-drag */
   .tg-shift-outline { outline: 1px dashed rgba(255,255,255,0.55); }
   .tg-shift-handle { position: absolute; width: 8px; height: 8px; background: rgba(255,255,255,0.75); border: 1px solid rgba(0,0,0,0.4); pointer-events: all; }
@@ -156,6 +171,11 @@
           <select class="tg-con-select" id="tg-program-select"></select>
         </div>
       </div>
+      <!-- FONTS section -->
+      <div class="tg-con-section">
+        <div class="tg-con-section-title">Fonts — Google Fonts library (2042 families)</div>
+        <div id="tg-font-rows" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
       <!-- TRANSPORT section -->
       <div class="tg-con-section">
         <div class="tg-con-section-title">Transport colours</div>
@@ -177,6 +197,19 @@
         <!-- TODO: preset morph slider -->
       </div>
     </div>
+  </div>
+
+  <!-- font picker popup -->
+  <div id="tg-font-picker">
+    <div class="fp-head">
+      <input id="tg-fp-search" type="text" placeholder="Search fonts…" spellcheck="false">
+      <select id="tg-fp-cat">
+        <option value="">ALL</option><option value="sa">SANS</option><option value="se">SERIF</option>
+        <option value="di">DISPLAY</option><option value="ha">HANDWRITING</option><option value="mo">MONO</option>
+      </select>
+    </div>
+    <div class="fp-count" id="tg-fp-count"></div>
+    <div class="fp-list" id="tg-fp-list"></div>
   </div>
 
   <!-- TGColorPicker popup -->
@@ -415,6 +448,7 @@
       pageBG, pageFontColor, programBGFollows,
       activeProgramId,
       transportColours: { ...transportColours },
+      fonts: JSON.parse(JSON.stringify(fontState)),
       programParams: activeProgramId && activeProgram ? { [activeProgramId]: activeProgram.getParams() } : {},
       layout: (() => { try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)); } catch(e) { return null; } })(),
     };
@@ -423,6 +457,7 @@
     if (p.pageBG) { applyPageBG(p.pageBG); syncBGUI(p.pageBG); }
     if (p.pageFontColor) { applyFontColor(p.pageFontColor); syncFontUI(p.pageFontColor); }
     if (typeof p.programBGFollows === 'boolean') { programBGFollows = p.programBGFollows; bgFollow.checked = p.programBGFollows; }
+    if (p.fonts) { fontState = JSON.parse(JSON.stringify(p.fonts)); saveFonts(); applyFonts(); }
     if (p.transportColours) { transportColours = { ...p.transportColours }; applyTransportColours(); try { localStorage.setItem(TRANSPORT_KEY, JSON.stringify(transportColours)); } catch (e) {} }
     if (p.layout) try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(p.layout)); applyLayout(p.layout); } catch(e) {}
     if (p.activeProgramId && p.activeProgramId !== activeProgramId) {
@@ -526,7 +561,8 @@
   document.addEventListener('dragstart', e => { if (shiftActive) e.preventDefault(); }, true);
   document.addEventListener('selectstart', e => { if (shiftActive) e.preventDefault(); }, true);
   document.addEventListener('keydown', e => {
-    if (e.key === 'Shift' && !e.repeat) setShiftMode(true);
+    const ae = document.activeElement;
+    if (e.key === 'Shift' && !e.repeat && !(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) setShiftMode(true);
     if (e.key === 'Escape' && shiftActive) setShiftMode(false);
   });
   document.addEventListener('keyup', e => { if (e.key === 'Shift' && !moveDrag) setShiftMode(false); });
@@ -650,6 +686,116 @@
   }
   if (window.TGDeck) TGDeck.onChange(markSlots);
   buildSlotRows();
+
+  // ---- fonts ----
+  const FONTS_KEY = 'tommygee.fonts.v1';
+  const FONT_TARGETS = [
+    { key: 'title', label: 'Title', sel: () => [document.querySelector('.hero-title')], def: { family: 'Jost', weight: 700 } },
+    { key: 'menu',  label: 'Menu',  sel: () => [...document.querySelectorAll('nav a')],  def: { family: 'Jost', weight: 500 } },
+  ];
+  let FONT_LIST = [];                       // [name, cat, weights|range, isVariable]
+  const fontInfo = name => FONT_LIST.find(f => f[0] === name);
+  let fontState = {};
+  try { fontState = JSON.parse(localStorage.getItem(FONTS_KEY)) || {}; } catch (e) {}
+  FONT_TARGETS.forEach(t => { fontState[t.key] = Object.assign({}, t.def, fontState[t.key] || {}); });
+  const saveFonts = () => { try { localStorage.setItem(FONTS_KEY, JSON.stringify(fontState)); } catch (e) {} };
+  const gfName = n => encodeURIComponent(n).replace(/%20/g, '+');
+  const loadedCss = new Set();
+  function loadCss(href) { if (loadedCss.has(href)) return; loadedCss.add(href); const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; document.head.appendChild(l); }
+  function weightsOf(name) {
+    const f = fontInfo(name); if (!f) return [100,200,300,400,500,600,700,800,900];
+    if (f[3]) { const out = []; for (let w = Math.ceil(f[2][0] / 100) * 100; w <= f[2][1]; w += 100) out.push(w); return out.length ? out : [f[2][0]]; }
+    return f[2].length ? f[2] : [400];
+  }
+  const nearest = (arr, w) => arr.reduce((a, b) => Math.abs(b - w) < Math.abs(a - w) ? b : a, arr[0]);
+  function loadFamily(name, weight) {
+    if (name === 'Jost' && [300,400,500,700].includes(weight)) return;    // already in the page
+    loadCss('https://fonts.googleapis.com/css2?family=' + gfName(name) + ':wght@' + weight + '&display=swap');
+  }
+  function applyFonts() {
+    FONT_TARGETS.forEach(t => {
+      const st = fontState[t.key];
+      if (FONT_LIST.length) st.weight = nearest(weightsOf(st.family), st.weight);
+      loadFamily(st.family, st.weight);
+      t.sel().forEach(el => { if (!el) return; el.style.fontFamily = '"' + st.family + '", Jost, "Helvetica Neue", sans-serif'; el.style.fontWeight = st.weight; });
+      const row = fontRows.querySelector('[data-t="' + t.key + '"]');
+      if (row) {
+        const btn = row.querySelector('.tg-font-btn'); btn.textContent = st.family; btn.style.fontFamily = '"' + st.family + '", Jost, sans-serif'; btn.style.fontWeight = st.weight;
+        const ws = row.querySelector('select'); ws.innerHTML = '';
+        weightsOf(st.family).forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; ws.appendChild(o); });
+        ws.value = st.weight;
+      }
+    });
+  }
+  const fontRows = document.getElementById('tg-font-rows');
+  FONT_TARGETS.forEach(t => {
+    const row = document.createElement('div'); row.className = 'tg-con-row'; row.dataset.t = t.key;
+    const lab = document.createElement('label'); lab.textContent = t.label;
+    const btn = document.createElement('button'); btn.className = 'tg-font-btn'; btn.title = 'Choose font';
+    btn.addEventListener('click', () => openFontPicker(btn, t.key));
+    const ws = document.createElement('select'); ws.className = 'tg-con-select'; ws.title = 'Weight';
+    ws.addEventListener('change', () => { fontState[t.key].weight = +ws.value; saveFonts(); applyFonts(); });
+    row.append(lab, btn, ws); fontRows.appendChild(row);
+  });
+
+  // picker popup
+  const fp = document.getElementById('tg-font-picker'), fpSearch = document.getElementById('tg-fp-search'),
+        fpCat = document.getElementById('tg-fp-cat'), fpList = document.getElementById('tg-fp-list'), fpCount = document.getElementById('tg-fp-count');
+  let fpTarget = null, fpObserver = null;
+  const PREVIEW_TEXT = 'Tommy Gee';
+  function renderFontList() {
+    const q = fpSearch.value.trim().toLowerCase(), c = fpCat.value;
+    const items = FONT_LIST.filter(f => (!c || f[1] === c) && (!q || f[0].toLowerCase().includes(q)));
+    fpCount.textContent = items.length + ' fonts';
+    fpList.innerHTML = '';
+    if (fpObserver) fpObserver.disconnect();
+    fpObserver = new IntersectionObserver(ents => ents.forEach(en => {
+      if (!en.isIntersecting) return;
+      const el = en.target, name = el.dataset.f;
+      const w = nearest(weightsOf(name), 400);
+      // subset preview: only the glyphs of the preview text are downloaded
+      loadCss('https://fonts.googleapis.com/css2?family=' + gfName(name) + ':wght@' + w + '&text=' + encodeURIComponent(PREVIEW_TEXT) + '&display=swap');
+      el.querySelector('.fp-prev').style.fontFamily = '"' + name + '", sans-serif';
+      fpObserver.unobserve(el);
+    }), { root: fpList, rootMargin: '200px' });
+    const cur = fpTarget && fontState[fpTarget].family;
+    const frag = document.createDocumentFragment();
+    items.forEach(f => {
+      const it = document.createElement('div'); it.className = 'fp-item' + (f[0] === cur ? ' cur' : ''); it.dataset.f = f[0];
+      it.innerHTML = '<div class="fp-name"></div><div class="fp-prev"></div>';
+      it.querySelector('.fp-name').textContent = f[0];
+      it.querySelector('.fp-prev').textContent = PREVIEW_TEXT;
+      it.addEventListener('click', () => {
+        const st = fontState[fpTarget]; st.family = f[0]; st.weight = nearest(weightsOf(f[0]), st.weight);
+        saveFonts(); applyFonts();
+        fpList.querySelectorAll('.fp-item.cur').forEach(x => x.classList.remove('cur')); it.classList.add('cur');
+      });
+      frag.appendChild(it); fpObserver.observe(it);
+    });
+    fpList.appendChild(frag);
+  }
+  function openFontPicker(anchor, key) {
+    fpTarget = key;
+    const r = anchor.getBoundingClientRect();
+    fp.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 396)) + 'px';
+    fp.style.top = Math.max(8, r.top - 470) + 'px';
+    fp.classList.add('open');
+    renderFontList();
+    const cur = fpList.querySelector('.fp-item.cur'); if (cur) cur.scrollIntoView({ block: 'center' });
+    fpSearch.focus();
+  }
+  let fpTimer = 0;
+  fpSearch.addEventListener('input', () => { clearTimeout(fpTimer); fpTimer = setTimeout(renderFontList, 120); });
+  fpCat.addEventListener('change', renderFontList);
+  fpSearch.addEventListener('keydown', e => { if (e.key === 'Escape') fp.classList.remove('open'); });
+  document.addEventListener('pointerdown', e => { if (fp.classList.contains('open') && !fp.contains(e.target) && !e.target.closest('.tg-font-btn')) fp.classList.remove('open'); });
+
+  applyFonts();
+  (() => {   // family list (XHR, same origin)
+    const x = new XMLHttpRequest(); x.open('GET', 'fonts.json', true); x.responseType = 'json';
+    x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = x.response; applyFonts(); } };
+    x.send();
+  })();
 
   // ---- key routing ----
   document.addEventListener('keydown', e => {

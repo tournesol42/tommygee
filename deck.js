@@ -1,4 +1,4 @@
-// build: tommygee-v05-main-player
+// build: tommygee-v06-fonts
 // TGDeck — page-level player: 10 slots, each = image/video + audio file.
 // Shared by all programs (Main draws deck.visual; others can use it later).
 // Audio: XHR + decodeAudioData + BufferSource (iOS-safe; no fetch, no createMediaElementSource).
@@ -12,6 +12,9 @@
   try { slots = JSON.parse(localStorage.getItem(SLOTS_KEY)) || []; } catch (e) {}
   if (!Array.isArray(slots)) slots = [];
   for (let i = 0; i < N; i++) slots[i] = Object.assign({ media: '', audio: '' }, slots[i] || {});
+  // nothing loaded yet → show the Assemblage image in slot 1 so Main is never blank
+  const DEFAULT_MEDIA = 'https://daysof93-cdn.b-cdn.net/assemblage.png';
+  if (!slots.some(x => x.media || x.audio)) slots[0].media = DEFAULT_MEDIA;
 
   let index = 0, playing = false;
   let visual = null;              // HTMLImageElement | HTMLVideoElement | null
