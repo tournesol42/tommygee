@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v01-assemblage -->
+<!-- build: tommygee-v02-shift-drag-fix -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -22,8 +22,8 @@
     nav a:hover { transform: scale(1.18); }
   }
 
-  .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-  .hero-title { font-family: Jost, "Helvetica Neue", sans-serif; font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88; color: var(--tg-font, #000); }
+  .hero { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+  .hero-title { font-family: Jost, "Helvetica Neue", sans-serif; font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88; color: var(--tg-font, #000); position: fixed; z-index: 10; pointer-events: auto; left: 50%; top: 50%; transform: translate(-50%,-50%); white-space: nowrap; }
 
   .overlay { position: fixed; inset: 0; z-index: 40; background: var(--tg-page-bg, #fff); display: none; overflow-y: auto; }
   .overlay.open { display: block; }
@@ -408,12 +408,13 @@
 
   // ---- page objects: shift-drag movable elements ----
   const MOVABLES = [
-    { id: 'tg-program-container', isProgContainer: true },
-    { selector: '.hero', isProgContainer: false },
     { selector: 'header', isProgContainer: false },
+    { selector: '.hero-title', isProgContainer: false, isTitle: true },
+    { id: 'tg-program-container', isProgContainer: true },
   ];
   let layoutData = {};
   try { layoutData = JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; } catch(e) {}
+  if (layoutData['.hero']) { delete layoutData['.hero']; try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layoutData)); } catch(e) {} }
 
   function getMovableEl(m) {
     return m.id ? document.getElementById(m.id) : document.querySelector(m.selector);
@@ -439,6 +440,7 @@
       el.style.left = (r.left * vw) + 'px'; el.style.top = (r.top * vh) + 'px';
       el.style.width = (r.width * vw) + 'px'; el.style.height = (r.height * vh) + 'px';
       el.style.inset = '';
+      if (m.isTitle) { el.style.transform = ''; el.style.fontSize = (r.height * vh * 0.9) + 'px'; }
     });
   }
 
@@ -447,7 +449,11 @@
   const handles = [];
   function setShiftMode(on) {
     shiftActive = on;
-    MOVABLES.forEach(m => { const el = getMovableEl(m); if (el) el.classList.toggle('tg-shift-outline', on); });
+    MOVABLES.forEach(m => {
+      const el = getMovableEl(m); if (!el) return;
+      el.classList.toggle('tg-shift-outline', on);
+      if (!m.isProgContainer) el.style.cursor = on ? 'move' : '';
+    });
     handles.forEach(h => h.remove()); handles.length = 0;
     if (on) {
       MOVABLES.forEach(m => {
@@ -475,21 +481,30 @@
       const el = document.getElementById(targetKey) || document.querySelector(targetKey);
       if (!el) return;
       const r = el.getBoundingClientRect();
-      moveDrag = { type:'resize', el, corner, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top, ow:r.width, oh:r.height };
+      moveDrag = { type:'resize', el, corner, isTitle: targetKey === '.hero-title', sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top, ow:r.width, oh:r.height };
       e.stopPropagation(); e.preventDefault(); return;
     }
-    // find which movable the pointer is over
-    for (const m of MOVABLES) {
-      const el = getMovableEl(m); if (!el) continue;
-      const r = el.getBoundingClientRect();
+    // hit order: header and title by closest(), program container by outer-band check
+    const headerEl = document.querySelector('header');
+    const titleEl = document.querySelector('.hero-title');
+    const progEl = document.getElementById('tg-program-container');
+    if (e.target.closest('header') && headerEl) {
+      const r = headerEl.getBoundingClientRect();
+      moveDrag = { type:'move', el:headerEl, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
+      e.stopPropagation(); e.preventDefault(); return;
+    }
+    if (e.target.closest('.hero-title') && titleEl) {
+      const r = titleEl.getBoundingClientRect();
+      moveDrag = { type:'move', el:titleEl, isTitle:true, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
+      e.stopPropagation(); e.preventDefault(); return;
+    }
+    if (progEl) {
+      const r = progEl.getBoundingClientRect();
       if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
-        // program container: outer 12px band moves, inside goes to program
-        if (m.isProgContainer) {
-          const inner = e.clientX > r.left+12 && e.clientX < r.right-12 && e.clientY > r.top+12 && e.clientY < r.bottom-12;
-          if (inner) return; // let program handle shift interactions
-        }
-        moveDrag = { type:'move', el, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
-        e.stopPropagation(); e.preventDefault(); return;
+        const inner = e.clientX > r.left+12 && e.clientX < r.right-12 && e.clientY > r.top+12 && e.clientY < r.bottom-12;
+        if (inner) return;
+        moveDrag = { type:'move', el:progEl, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
+        e.stopPropagation(); e.preventDefault();
       }
     }
   }, true);
@@ -499,6 +514,7 @@
     if (moveDrag.type === 'move') {
       moveDrag.el.style.left = (moveDrag.ox + dx) + 'px'; moveDrag.el.style.top = (moveDrag.oy + dy) + 'px';
       moveDrag.el.style.position = 'fixed'; moveDrag.el.style.inset = '';
+      if (moveDrag.isTitle) moveDrag.el.style.transform = '';
     } else {
       const c = moveDrag.corner;
       let l = moveDrag.ox, t = moveDrag.oy, w = moveDrag.ow, h = moveDrag.oh;
@@ -508,9 +524,10 @@
       moveDrag.el.style.left = l + 'px'; moveDrag.el.style.top = t + 'px';
       moveDrag.el.style.width = w + 'px'; moveDrag.el.style.height = h + 'px';
       moveDrag.el.style.position = 'fixed'; moveDrag.el.style.inset = '';
+      if (moveDrag.isTitle) { moveDrag.el.style.transform = ''; moveDrag.el.style.fontSize = (h * 0.9) + 'px'; }
     }
   });
-  document.addEventListener('pointerup', () => { if (moveDrag) { saveLayout(); moveDrag = null; if (!event.shiftKey) setShiftMode(false); } });
+  document.addEventListener('pointerup', (e) => { if (moveDrag) { saveLayout(); moveDrag = null; if (!e.shiftKey) setShiftMode(false); } });
 
   // ---- key routing ----
   document.addEventListener('keydown', e => {
