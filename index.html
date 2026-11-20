@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v07-transport-unit -->
+<!-- build: tommygee-v08-colour-picker -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -211,11 +211,6 @@
     <div class="fp-list" id="tg-fp-list"></div>
   </div>
 
-  <!-- TGColorPicker popup -->
-  <div id="tg-color-picker">
-    <div class="tg-cp-swatches" id="tg-cp-swatches"></div>
-    <input class="tg-cp-hex" id="tg-cp-hex" type="text" maxlength="7" spellcheck="false" placeholder="#rrggbb">
-  </div>
   <header>
     <nav>
       <a href="#about" data-panel="about" draggable="false">about</a>
@@ -286,9 +281,10 @@
     </div>
   </section>
 
-<script src="deck.js?v=7"></script>
-<script src="programs/assemblage.js?v=7"></script>
-<script src="programs/main.js?v=7"></script>
+<script src="colorpicker.js?v=8"></script>
+<script src="deck.js?v=8"></script>
+<script src="programs/assemblage.js?v=8"></script>
+<script src="programs/main.js?v=8"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -310,37 +306,11 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape') show(null); });
   if (location.hash) show(location.hash.slice(1));
 
-  // ---- TGColorPicker ----
-  const TGColorPicker = (() => {
-    const SWATCHES = ['#EE7C0E','#FF2B00','#D5D6D2','#898D8D','#2B2B2C','#FAC300','#F4F4F4','#FE0000'];
-    const popup = document.getElementById('tg-color-picker');
-    const swatchRow = document.getElementById('tg-cp-swatches');
-    const hexIn = document.getElementById('tg-cp-hex');
-    let _cb = null;
-    SWATCHES.forEach(hex => {
-      const s = document.createElement('div');
-      s.className = 'tg-cp-sw'; s.style.background = hex; s.dataset.hex = hex;
-      s.addEventListener('click', () => { hexIn.value = hex; swatchRow.querySelectorAll('.tg-cp-sw').forEach(x=>x.classList.toggle('active',x===s)); _cb && _cb(hex); });
-      swatchRow.appendChild(s);
-    });
-    hexIn.addEventListener('input', () => {
-      const v = hexIn.value.trim();
-      if (/^#[0-9a-fA-F]{6}$/.test(v)) { swatchRow.querySelectorAll('.tg-cp-sw').forEach(x=>x.classList.remove('active')); _cb && _cb(v); }
-    });
-    hexIn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === 'Escape') close(); });
-    document.addEventListener('pointerdown', e => { if (!popup.contains(e.target) && !e.target.closest('.tg-con-swatch')) close(); });
-    function open(anchor, current, cb) {
-      _cb = cb;
-      hexIn.value = current || '';
-      swatchRow.querySelectorAll('.tg-cp-sw').forEach(s => s.classList.toggle('active', s.dataset.hex === current));
-      const r = anchor.getBoundingClientRect();
-      popup.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 236)) + 'px';
-      popup.style.top = Math.max(8, r.top - 100) + 'px';
-      popup.classList.add('open');
-    }
-    function close() { popup.classList.remove('open'); _cb = null; }
-    return { open, close };
-  })();
+  // ---- TGColorPicker → extended RAL / Neon / Mixer chooser (colorpicker.js) ----
+  const TGColorPicker = {
+    open(anchor, current, cb) { if (window.d93OpenCC) window.d93OpenCC(anchor, current || '#808080', cb); },
+    close() { const cc = document.getElementById('d93cc'); if (cc) cc.classList.remove('open'); },
+  };
 
   // ---- page state ----
   const LAYOUT_KEY = 'tommygee.layout.v1';
@@ -791,7 +761,7 @@
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=7", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=8", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = x.response; applyFonts(); } };
     x.send();
   })();
