@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v08-colour-picker -->
+<!-- build: tommygee-v09-progress-bar -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -81,14 +81,17 @@
   .tg-cp-hex { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: #ccc; font: 11px/1 monospace; padding: 5px 8px; width: 100%; letter-spacing: 0.06em; box-sizing: border-box; }
 
   /* transport buttons (page objects: movable, resizable, own colour) */
-  #tg-transport { position: fixed; bottom: 44px; left: calc(50% - 232px); width: 464px; height: 110px; z-index: 55; display: flex; gap: 1.8%; }
-  .tg-tbtn { position: relative; flex: 1 1 0; height: 100%; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: filter 0.12s; }
+  #tg-transport { position: fixed; bottom: 44px; left: calc(50% - 400px); width: 800px; height: 110px; z-index: 55; display: flex; gap: 8px; }
+  .tg-tbtn { position: relative; flex: none; height: 100%; aspect-ratio: 1 / 1; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: filter 0.12s; }
   .tg-tbtn:hover { filter: brightness(1.08); }
   .tg-tbtn:active { filter: brightness(0.92); }
   .tg-tbtn svg { width: 38%; height: 38%; fill: #fff; pointer-events: none; }
   .tg-tbtn.on { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65); }
+  .tg-tbar { position: relative; flex: 1 1 auto; min-width: 0; height: 100%; border-radius: 10px; overflow: hidden; user-select: none; -webkit-user-select: none; display: flex; align-items: center; }
+  .tg-tbar .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; pointer-events: none; }
+  .tg-tbar .t { position: relative; padding: 0 0.9em; color: #fff; text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--tg-menu-font, Jost), Jost, sans-serif; pointer-events: none; }
   /* slot rows */
-  .tg-slot-row { display: grid; grid-template-columns: 22px 1fr 1fr; gap: 8px; align-items: center; }
+  .tg-slot-row { display: grid; grid-template-columns: 22px 0.8fr 1fr 1fr; gap: 8px; align-items: center; }
   .tg-slot-row .n { font-size: 10px; color: #666; text-align: right; cursor: pointer; }
   .tg-slot-row.cur .n { color: #a0d2ec; }
   .tg-slot-row input { background: none; border: 0; border-bottom: 1px solid rgba(255,255,255,0.15); color: #bbb; font: 10px/1.4 monospace; padding: 2px 0; min-width: 0; }
@@ -134,6 +137,7 @@
   <div class="tg-tbtn" id="tg-btn-play" title="Play"><svg viewBox="0 0 100 100"><polygon points="18,8 92,50 18,92"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-prev" title="Previous"><svg viewBox="0 0 100 100"><polygon points="70,6 82,18 50,50 82,82 70,94 26,50"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-next" title="Next"><svg viewBox="0 0 100 100"><polygon points="30,6 18,18 50,50 18,82 30,94 74,50"/></svg></div>
+  <div class="tg-tbar" id="tg-bar" title="Now playing"><div class="fill"></div><span class="t"></span></div>
   </div>
 
   <!-- main console: invisible 28px strip at bottom -->
@@ -182,7 +186,7 @@
       </div>
       <!-- SLOTS section -->
       <div class="tg-con-section">
-        <div class="tg-con-section-title">Slots — image/video URL + audio URL (Bunny CDN links)</div>
+        <div class="tg-con-section-title">Slots — title + image/video URL + audio URL (Bunny CDN links)</div>
         <div id="tg-slot-rows" style="display:flex;flex-direction:column;gap:6px"></div>
       </div>
       <!-- PRESETS section -->
@@ -281,10 +285,76 @@
     </div>
   </section>
 
-<script src="colorpicker.js?v=8"></script>
-<script src="deck.js?v=8"></script>
-<script src="programs/assemblage.js?v=8"></script>
-<script src="programs/main.js?v=8"></script>
+<script>
+/* Site defaults — Tommy's saved settings. Every visitor starts from these.
+   Bump rev when publishing new defaults: it replaces older stored settings once. */
+window.TG_SITE_DEFAULTS = { rev: 1, saved: '2026-11-20', store: {
+    "tommygee.page.v1": {
+      "pageBG": "#FF007F",
+      "pageFontColor": "#000000",
+      "programBGFollows": true,
+      "activeProgramId": "main"
+    },
+    "tommygee.layout.v1": {
+      "header": {
+        "left": -0.012608488569009315,
+        "top": 0.944131728778468,
+        "width": 1,
+        "height": 0.04071773636991028
+      },
+      ".hero-title": {
+        "left": 0.042284081287044875,
+        "top": 0.7870406314699793,
+        "width": 0.9022147544453852,
+        "height": 0.1237275707384403
+      },
+      "tg-program-container": {
+        "left": 0,
+        "top": 0,
+        "width": 1,
+        "height": 1
+      },
+      "tg-transport": {
+        "left": 0.010544559695173582,
+        "top": 0.23010481366459629,
+        "width": 0.37,
+        "height": 0.027605244996549344
+      }
+    },
+    "tommygee.fonts.v1": {
+      "title": {
+        "family": "Georama",
+        "weight": 500
+      },
+      "menu": {
+        "family": "Georama",
+        "weight": 200
+      }
+    },
+    "tommygee.transport.v1": {
+      "tg-btn-stop": "#B5B8B1",
+      "tg-btn-play": "#0A0A0A",
+      "tg-btn-prev": "#b5b8b1",
+      "tg-btn-next": "#b5b8b1"
+    },
+    "tommygee.main.cfg.v1": {
+      "bg": "#FF007F",
+      "brightness": 0.5
+    }
+  } };
+(function () {
+  try {
+    const D = window.TG_SITE_DEFAULTS;
+    if (localStorage.getItem('tommygee.defaults.rev') === String(D.rev)) return;
+    Object.entries(D.store).forEach(([k, v]) => localStorage.setItem(k, JSON.stringify(v)));
+    localStorage.setItem('tommygee.defaults.rev', String(D.rev));
+  } catch (e) {}
+})();
+</script>
+<script src="colorpicker.js?v=9"></script>
+<script src="deck.js?v=9"></script>
+<script src="programs/assemblage.js?v=9"></script>
+<script src="programs/main.js?v=9"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -315,21 +385,25 @@
   // ---- page state ----
   const LAYOUT_KEY = 'tommygee.layout.v1';
   const PRESETS_KEY = 'tommygee.presets.v1';
-  let pageBG = '#a7a7a7';
-  let pageFontColor = '#000000';
-  let programBGFollows = true;
+  const PAGE_KEY = 'tommygee.page.v1';
+  let pageState = {};
+  try { pageState = JSON.parse(localStorage.getItem(PAGE_KEY)) || {}; } catch (e) {}
+  let pageBG = pageState.pageBG || '#a7a7a7';
+  let pageFontColor = pageState.pageFontColor || '#000000';
+  let programBGFollows = pageState.programBGFollows !== false;
+  function savePage() { try { localStorage.setItem(PAGE_KEY, JSON.stringify({ pageBG, pageFontColor, programBGFollows, activeProgramId })); } catch (e) {} }
   let activeProgram = null;
   let activeProgramId = null;
 
   function applyPageBG(hex) {
     pageBG = hex;
-    document.body.style.background = hex;
+    document.body.style.background = hex; savePage();
     if (programBGFollows && activeProgram && activeProgram.setParams) {
       activeProgram.setParams({ cfg: { bg: hex } });
     }
   }
   function applyFontColor(hex) {
-    pageFontColor = hex;
+    pageFontColor = hex; savePage();
     document.documentElement.style.setProperty('--tg-font', hex);
   }
 
@@ -341,7 +415,7 @@
     const def = window.TG_PROGRAMS && window.TG_PROGRAMS[id];
     if (!def) return;
     activeProgram = def.create(progContainer);
-    activeProgramId = id;
+    activeProgramId = id; savePage();
     if (programBGFollows) activeProgram.setParams({ cfg: { bg: pageBG } });
   }
 
@@ -367,7 +441,7 @@
   bgHex.addEventListener('change', () => { const v = bgHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/i.test(v)) { applyPageBG(v); syncBGUI(v); } });
   fontSwatch.addEventListener('click', () => TGColorPicker.open(fontSwatch, pageFontColor, hex => { applyFontColor(hex); syncFontUI(hex); }));
   fontHex.addEventListener('change', () => { const v = fontHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/i.test(v)) { applyFontColor(v); syncFontUI(v); } });
-  bgFollow.addEventListener('change', () => { programBGFollows = bgFollow.checked; if (programBGFollows && activeProgram) activeProgram.setParams({ cfg: { bg: pageBG } }); });
+  bgFollow.addEventListener('change', () => { programBGFollows = bgFollow.checked; savePage(); if (programBGFollows && activeProgram) activeProgram.setParams({ cfg: { bg: pageBG } }); });
 
   // program dropdown
   const progSelect = document.getElementById('tg-program-select');
@@ -603,7 +677,11 @@
   let transportColours = {};
   try { transportColours = JSON.parse(localStorage.getItem(TRANSPORT_KEY)) || {}; } catch (e) {}
   const tcRow = document.getElementById('tg-transport-colours');
+  function darker(hex, f) { const n = parseInt(hex.replace('#','').padEnd(6,'0').slice(0,6), 16); const c = v => Math.round(v * f).toString(16).padStart(2, '0'); return '#' + c((n >> 16) & 255) + c((n >> 8) & 255) + c(n & 255); }
   function applyTransportColours() {
+    const nextC = transportColours['tg-btn-next'] || '#9A8EC4';
+    const bar = document.getElementById('tg-bar');
+    bar.style.background = nextC; bar.querySelector('.fill').style.background = darker(nextC, 0.8);
     TBTNS.forEach(b => {
       const c = transportColours[b.id] || b.def;
       document.getElementById(b.id).style.background = c;
@@ -643,7 +721,7 @@
         inp.addEventListener('change', () => TGDeck.setSlot(i, { [key]: inp.value.trim() }));
         return inp;
       };
-      row.append(n, mk('media', 'image / video url'), mk('audio', 'audio url (mp3/wav)'));
+      row.append(n, mk('title', 'song title'), mk('media', 'image / video url'), mk('audio', 'audio url (mp3/wav)'));
       slotRows.appendChild(row);
     });
     markSlots();
@@ -655,6 +733,19 @@
   }
   if (window.TGDeck) TGDeck.onChange(markSlots);
   buildSlotRows();
+
+  // ---- now-playing bar: title + progress ----
+  const barEl = document.getElementById('tg-bar'), barFill = barEl.querySelector('.fill'), barText = barEl.querySelector('.t');
+  new ResizeObserver(() => { barText.style.fontSize = Math.max(8, barEl.clientHeight * 0.3) + 'px'; }).observe(barEl);
+  let lastTitle = null;
+  (function barLoop() {
+    if (window.TGDeck) {
+      const t = TGDeck.title || '—';
+      if (t !== lastTitle) { barText.textContent = t; lastTitle = t; }
+      barFill.style.width = (TGDeck.progress * 100).toFixed(2) + '%';
+    }
+    requestAnimationFrame(barLoop);
+  })();
 
   // ---- fonts ----
   const FONTS_KEY = 'tommygee.fonts.v1';
@@ -686,6 +777,7 @@
       const st = fontState[t.key];
       if (FONT_LIST.length) st.weight = nearest(weightsOf(st.family), st.weight);
       loadFamily(st.family, st.weight);
+      if (t.key === 'menu') document.documentElement.style.setProperty('--tg-menu-font', '"' + st.family + '"');
       t.sel().forEach(el => { if (!el) return; el.style.fontFamily = '"' + st.family + '", Jost, "Helvetica Neue", sans-serif'; el.style.fontWeight = st.weight; });
       const row = fontRows.querySelector('[data-t="' + t.key + '"]');
       if (row) {
@@ -761,7 +853,7 @@
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=8", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=9", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = x.response; applyFonts(); } };
     x.send();
   })();
@@ -784,8 +876,9 @@
     applyPageBG(pageBG); syncBGUI(pageBG);
     applyFontColor(pageFontColor); syncFontUI(pageFontColor);
     populateProgramSelect();
-    const firstProgram = Object.keys(window.TG_PROGRAMS || {})[0];
-    if (firstProgram) switchProgram(firstProgram);
+    bgFollow.checked = programBGFollows;
+    const startProgram = (pageState.activeProgramId && window.TG_PROGRAMS && TG_PROGRAMS[pageState.activeProgramId]) ? pageState.activeProgramId : Object.keys(window.TG_PROGRAMS || {})[0];
+    if (startProgram) { switchProgram(startProgram); progSelect.value = startProgram; }
     applyLayout(layoutData);
     buildPresetGrid();
   });

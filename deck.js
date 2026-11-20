@@ -1,4 +1,4 @@
-// build: tommygee-v06-fonts
+// build: tommygee-v09-progress-bar
 // TGDeck — page-level player: 10 slots, each = image/video + audio file.
 // Shared by all programs (Main draws deck.visual; others can use it later).
 // Audio: XHR + decodeAudioData + BufferSource (iOS-safe; no fetch, no createMediaElementSource).
@@ -11,14 +11,14 @@
   let slots = [];
   try { slots = JSON.parse(localStorage.getItem(SLOTS_KEY)) || []; } catch (e) {}
   if (!Array.isArray(slots)) slots = [];
-  for (let i = 0; i < N; i++) slots[i] = Object.assign({ media: '', audio: '' }, slots[i] || {});
+  for (let i = 0; i < N; i++) slots[i] = Object.assign({ media: '', audio: '', title: '' }, slots[i] || {});
   // nothing loaded yet → show the Assemblage image in slot 1 so Main is never blank
   const DEFAULT_MEDIA = 'https://daysof93-cdn.b-cdn.net/assemblage.png';
   if (!slots.some(x => x.media || x.audio)) slots[0].media = DEFAULT_MEDIA;
 
   let index = 0, playing = false;
   let visual = null;              // HTMLImageElement | HTMLVideoElement | null
-  let ctx = null, gain = null, source = null;
+  let ctx = null, gain = null, source = null, startAt = 0;
   let buffer = null, bufferUrl = '', loadingUrl = '';
   const bufferCache = new Map();  // url -> AudioBuffer
   const listeners = new Set();
@@ -93,6 +93,7 @@
     source.buffer = buffer;
     source.connect(gain);
     source.onended = () => { if (playing) next(); };
+    startAt = ctx.currentTime;
     source.start();
   }
 
@@ -136,7 +137,7 @@
   const next = () => step(1), prev = () => step(-1);
 
   function setSlot(i, data) {
-    slots[i] = Object.assign({ media: '', audio: '' }, slots[i], data);
+    slots[i] = Object.assign({ media: '', audio: '', title: '' }, slots[i], data);
     save();
     if (i === index) select(index);
     else emit();
@@ -149,9 +150,17 @@
     get playing() { return playing; },
     get visual() { return visual; },
     get audioContext() { return ctx; },
+    get duration() { return buffer ? buffer.duration : 0; },
+    get progress() { return (playing && source && buffer && ctx) ? Math.min(1, Math.max(0, (ctx.currentTime - startAt) / buffer.duration)) : 0; },
+    get title() {
+      const sl = slots[index]; if (!sl) return '';
+      if (sl.title) return sl.title;
+      const u = sl.audio || sl.media; if (!u) return '';
+      try { return decodeURIComponent(u.split('?')[0].split('/').pop()).replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' '); } catch (e) { return u; }
+    },
     get output() { return gain; },          // hook for audio-reactive programs later
     play, stop, next, prev, select, setSlot,
-    setSlots(arr) { if (!Array.isArray(arr)) return; for (let i = 0; i < N; i++) slots[i] = Object.assign({ media: '', audio: '' }, arr[i] || {}); save(); select(index); },
+    setSlots(arr) { if (!Array.isArray(arr)) return; for (let i = 0; i < N; i++) slots[i] = Object.assign({ media: '', audio: '', title: '' }, arr[i] || {}); save(); select(index); },
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
   };
   window.TGDeck = api;
