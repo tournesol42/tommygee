@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v03-title-move -->
+<!-- build: tommygee-v04-inset-fix -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -437,10 +437,10 @@
       const key = m.id || m.selector;
       const r = data[key]; if (!r) return;
       const vw = window.innerWidth, vh = window.innerHeight;
-      el.style.position = 'fixed';
+      el.style.position = 'fixed'; el.style.inset = '';
       el.style.left = (r.left * vw) + 'px'; el.style.top = (r.top * vh) + 'px';
       el.style.width = (r.width * vw) + 'px'; el.style.height = (r.height * vh) + 'px';
-      el.style.inset = ''; el.style.right = 'auto'; el.style.bottom = 'auto';
+      el.style.right = 'auto'; el.style.bottom = 'auto';
       if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / 0.88) + 'px'; }
     });
   }
@@ -532,7 +532,7 @@
     const dx = e.clientX - moveDrag.sx, dy = e.clientY - moveDrag.sy;
     if (moveDrag.type === 'move') {
       moveDrag.el.style.left = (moveDrag.ox + dx) + 'px'; moveDrag.el.style.top = (moveDrag.oy + dy) + 'px';
-      moveDrag.el.style.position = 'fixed'; moveDrag.el.style.inset = '';
+      moveDrag.el.style.position = 'fixed';
       if (moveDrag.isTitle) moveDrag.el.style.transform = 'none';
     } else {
       const c = moveDrag.corner;
@@ -542,7 +542,7 @@
       w = Math.max(40, w); h = Math.max(40, h);
       moveDrag.el.style.left = l + 'px'; moveDrag.el.style.top = t + 'px';
       moveDrag.el.style.width = w + 'px'; moveDrag.el.style.height = h + 'px';
-      moveDrag.el.style.position = 'fixed'; moveDrag.el.style.inset = '';
+      moveDrag.el.style.position = 'fixed';
       if (moveDrag.isTitle) { moveDrag.el.style.transform = 'none'; moveDrag.el.style.height = ''; moveDrag.el.style.width = ''; moveDrag.el.style.fontSize = (h / 0.88) + 'px'; }
     }
   });
