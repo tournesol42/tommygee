@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- build: tommygee-v00-seed -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tommy Gee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #fff; color: #000; }
+  body { font-family: Jost, "Helvetica Neue", sans-serif; min-height: 100vh; }
+
+  header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 20px 52px; display: flex; align-items: center; justify-content: flex-end; }
+  nav { display: flex; gap: 28px; align-items: center; }
+  nav a { font-family: Jost, "Helvetica Neue", sans-serif; font-size: 11px; letter-spacing: 0.22em; font-weight: 500; text-transform: uppercase; color: #000; text-decoration: none; }
+  nav a.nav-active { border-bottom: 1.5px solid; padding-bottom: 1px; }
+  @media (min-width: 720px) {
+    nav a { font-size: 13px; display: inline-block; transition: transform 0.18s; }
+    nav a:hover { transform: scale(1.18); }
+  }
+
+  .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+  .hero-title { font-family: Jost, "Helvetica Neue", sans-serif; font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88; color: #000; }
+
+  .overlay { position: fixed; inset: 0; z-index: 40; background: #fff; display: none; overflow-y: auto; }
+  .overlay.open { display: block; }
+  .overlay-inner { margin: 90px 28px 15vh 28px; }
+  .bio-title { font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88; margin-bottom: 18px; }
+  .bio-text { font-size: 4rem; font-weight: 500; letter-spacing: 0.02em; line-height: 1.2; max-width: 520px; margin-bottom: 32px; }
+  .bio-para { font-size: 17px; font-weight: 300; line-height: 1.6; letter-spacing: 0.01em; max-width: 640px; margin-bottom: 18px; }
+  .section-label { font-size: 11px; letter-spacing: 0.22em; font-weight: 500; text-transform: uppercase; margin-bottom: 24px; }
+  .client-list { list-style: none; }
+  .client-list li { font-size: 15px; letter-spacing: 0.01em; line-height: 2.05; opacity: 0.9; }
+  .contact-email { display: inline-block; font-size: 1.1rem; font-weight: 300; letter-spacing: 0.03em; color: #000; text-decoration: none; opacity: 0.85; }
+  .contact-email:hover { opacity: 1; }
+  .overlay-close { display: block; margin-top: 26px; font-size: 11px; letter-spacing: 0.06em; color: #000; opacity: 0.5; text-decoration: none; }
+
+  @media (max-width: 720px) {
+    header { top: auto; bottom: 0; padding: 14px 18px 20px; background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); justify-content: center; }
+    nav { gap: 14px; }
+    nav a { font-size: 9px; letter-spacing: 0.16em; }
+    .overlay-inner { margin: 28px 20px 20vh 20px; }
+    .bio-title { font-weight: 800; }
+    .bio-text { font-weight: 300; font-size: clamp(1.6rem, 5vw, 2.2rem); line-height: 1.35; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="#about" data-panel="about">about</a>
+      <a href="#clients" data-panel="clients">past clients</a>
+      <a href="#contact" data-panel="contact">contact</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <h1 class="hero-title">Tommy Gee</h1>
+  </main>
+
+  <section class="overlay" id="about">
+    <div class="overlay-inner">
+      <div class="bio-title">Tommy Gee</div>
+      <div class="section-label">Composer / Music Producer / Sound Designer</div>
+      <p class="bio-para">Tommy Gee is an award-winning Scandinavian composer and music producer with a genre-spanning career that moves fluidly between experimental composing and global commercial success. With over 40 diamond, platinum and gold certifications and more than 10 million records sold, his music has reached number one in 32 countries, including the USA and UK.</p>
+      <p class="bio-para">Largely self-taught and instinct-driven, Tommy built an international electronica career with over 30 releases on labels such as R&amp;S Records (Belgium), Sony Techno Japan and influential UK indie imprints. That period laid the foundation for a singular voice that blends the precision of machine logic with human emotion.</p>
+      <p class="bio-para">In the 2010s, he shifted focus to international songwriting and production, collaborating with artists such as Nile Rodgers, One Direction, Fifth Harmony and Wolfgang Gartner. At the same time, he scored theatrical productions for The Royal Danish Theatre, Republique and Edison, including the Reumert-winning Om et øjeblik, as well as the Robert-winning animated film 2 Venner.</p>
+      <p class="bio-para">Recently, Tommy has returned to composing for screen, bringing with him decades of sonic exploration. His score for the Danish National TV documentary series Efterretningstjenesten marked a new chapter, blending modular synthesis, organic sample manipulation and handcrafted sound design, often developed in dialogue with his custom-built musical systems. While deeply rooted in electronic sound, his work frequently incorporates live acoustic recordings and orchestral collaborations with a trusted team of international players. Collaboration with the director is central to how he shapes each score.</p>
+      <p class="bio-para">Tommy rejects the uniformity of library and template music, whatever its source. Instead, he crafts sound worlds that are personal, textural and deeply attuned to story and image. Every cue is unmistakably the work of one composer. His recent work includes composing for Grammy-nominated artist Ingrid Andress and scoring international productions such as Citizen Rose, the E! Network (USA) documentary series about Rose McGowan, and Breaking Away (Get Lifted Films / John Legend) featuring Brazilian superstar Anitta, as well as projects for Mercedes-Benz, SYCO, Warner Music, Universal Music and more.</p>
+      <p class="bio-para">Tommy Gee continues to explore the intersection of emotion, technology and narrative, offering filmmakers and brands a singular sonic voice shaped by decades of creative experience working with people and machines.</p>
+      <a href="#" class="overlay-close">close</a>
+    </div>
+  </section>
+
+  <section class="overlay" id="clients">
+    <div class="overlay-inner">
+      <div class="section-label">past clients</div>
+      <ul class="client-list">
+        <li>Sony Music (UK)</li>
+        <li>Warner Music (US)</li>
+        <li>Bunim / Murray Productions (US)</li>
+        <li>Get Lifted Film Co. (US)</li>
+        <li>R&amp;S Records (Belgium)</li>
+        <li>King Street Sounds (US)</li>
+        <li>Syco (UK)</li>
+        <li>!K7 Records (Germany)</li>
+        <li>Sony (Japan)</li>
+        <li>Johnny's Entertainment (Japan)</li>
+        <li>E! Entertainment Television (US)</li>
+        <li>Royal Danish Theatre (Denmark)</li>
+        <li>EMI (Denmark)</li>
+        <li>Universal Music (Denmark)</li>
+        <li>Denmarks Radio / TV (Denmark)</li>
+        <li>TV2 (Denmark)</li>
+        <li>Republique Theater (Denmark)</li>
+        <li>Mercedes-Benz (Denmark)</li>
+        <li>Profile Pictures (Denmark)</li>
+        <li>Nordisk Film (Denmark)</li>
+        <li>Det Danske Filminstitut (Denmark)</li>
+        <li>Borgen (Denmark)</li>
+        <li>Betty Nansen Theater (Denmark)</li>
+        <li>Åben Dans (Denmark)</li>
+        <li>E-Types (Denmark)</li>
+        <li>Herdel Film (Denmark)</li>
+        <li>Rosa — Dansk Rock Samråd (Denmark)</li>
+      </ul>
+      <a href="#" class="overlay-close">close</a>
+    </div>
+  </section>
+
+  <section class="overlay" id="contact">
+    <div class="overlay-inner">
+      <div class="section-label">contact</div>
+      <a class="contact-email" href="mailto:inquiries@tommygee.org">inquiries@tommygee.org</a>
+      <a href="#" class="overlay-close">close</a>
+    </div>
+  </section>
+
+<script>
+  const links = document.querySelectorAll('nav a');
+  const panels = document.querySelectorAll('.overlay');
+  function show(id) {
+    panels.forEach(p => p.classList.toggle('open', p.id === id));
+    links.forEach(a => a.classList.toggle('nav-active', a.dataset.panel === id));
+  }
+  links.forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.dataset.panel;
+    const isOpen = document.getElementById(id).classList.contains('open');
+    show(isOpen ? null : id);
+    history.replaceState(null, '', isOpen ? location.pathname : '#' + id);
+  }));
+  document.querySelectorAll('.overlay-close').forEach(c => c.addEventListener('click', e => {
+    e.preventDefault(); show(null); history.replaceState(null, '', location.pathname);
+  }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') show(null); });
+  if (location.hash) show(location.hash.slice(1));
+</script>
+</body>
+</html>
