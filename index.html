@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v06-fonts -->
+<!-- build: tommygee-v07-transport-unit -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -81,15 +81,12 @@
   .tg-cp-hex { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: #ccc; font: 11px/1 monospace; padding: 5px 8px; width: 100%; letter-spacing: 0.06em; box-sizing: border-box; }
 
   /* transport buttons (page objects: movable, resizable, own colour) */
-  .tg-tbtn { position: fixed; bottom: 44px; width: 110px; height: 110px; border-radius: 10px; z-index: 55; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: filter 0.12s; }
+  #tg-transport { position: fixed; bottom: 44px; left: calc(50% - 232px); width: 464px; height: 110px; z-index: 55; display: flex; gap: 1.8%; }
+  .tg-tbtn { position: relative; flex: 1 1 0; height: 100%; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: filter 0.12s; }
   .tg-tbtn:hover { filter: brightness(1.08); }
   .tg-tbtn:active { filter: brightness(0.92); }
   .tg-tbtn svg { width: 38%; height: 38%; fill: #fff; pointer-events: none; }
   .tg-tbtn.on { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65); }
-  #tg-btn-stop { left: calc(50% - 232px); }
-  #tg-btn-play { left: calc(50% - 114px); }
-  #tg-btn-prev { left: calc(50% + 4px); }
-  #tg-btn-next { left: calc(50% + 122px); }
   /* slot rows */
   .tg-slot-row { display: grid; grid-template-columns: 22px 1fr 1fr; gap: 8px; align-items: center; }
   .tg-slot-row .n { font-size: 10px; color: #666; text-align: right; cursor: pointer; }
@@ -132,10 +129,12 @@
   <div id="tg-program-container"></div>
 
   <!-- transport buttons -->
+  <div id="tg-transport">
   <div class="tg-tbtn" id="tg-btn-stop" title="Stop"><svg viewBox="0 0 100 100"><rect x="14" y="14" width="72" height="72"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-play" title="Play"><svg viewBox="0 0 100 100"><polygon points="18,8 92,50 18,92"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-prev" title="Previous"><svg viewBox="0 0 100 100"><polygon points="70,6 82,18 50,50 82,82 70,94 26,50"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-next" title="Next"><svg viewBox="0 0 100 100"><polygon points="30,6 18,18 50,50 18,82 30,94 74,50"/></svg></div>
+  </div>
 
   <!-- main console: invisible 28px strip at bottom -->
   <div id="tg-console-strip" title="Open console"></div>
@@ -287,9 +286,9 @@
     </div>
   </section>
 
-<script src="deck.js?v=6"></script>
-<script src="programs/assemblage.js?v=6"></script>
-<script src="programs/main.js?v=6"></script>
+<script src="deck.js?v=7"></script>
+<script src="programs/assemblage.js?v=7"></script>
+<script src="programs/main.js?v=7"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -483,7 +482,7 @@
   const MOVABLES = [
     { selector: 'header', isProgContainer: false },
     { selector: '.hero-title', isProgContainer: false, isTitle: true },
-    { id: 'tg-btn-stop' }, { id: 'tg-btn-play' }, { id: 'tg-btn-prev' }, { id: 'tg-btn-next' },
+    { id: 'tg-transport' },
     { id: 'tg-program-container', isProgContainer: true },
   ];
   let layoutData = {};
@@ -792,7 +791,7 @@
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=6", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=7", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = x.response; applyFonts(); } };
     x.send();
   })();
