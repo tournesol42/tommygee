@@ -1,0 +1,156 @@
+// build: tommygee-v05-main-player
+// TGDeck — page-level player: 10 slots, each = image/video + audio file.
+// Shared by all programs (Main draws deck.visual; others can use it later).
+// Audio: XHR + decodeAudioData + BufferSource (iOS-safe; no fetch, no createMediaElementSource).
+(function () {
+  'use strict';
+  const SLOTS_KEY = 'tommygee.slots.v1';
+  const N = 10;
+  const VIDEO_RE = /\.(mp4|webm|mov|m4v)(\?|#|$)/i;
+
+  let slots = [];
+  try { slots = JSON.parse(localStorage.getItem(SLOTS_KEY)) || []; } catch (e) {}
+  if (!Array.isArray(slots)) slots = [];
+  for (let i = 0; i < N; i++) slots[i] = Object.assign({ media: '', audio: '' }, slots[i] || {});
+
+  let index = 0, playing = false;
+  let visual = null;              // HTMLImageElement | HTMLVideoElement | null
+  let ctx = null, gain = null, source = null;
+  let buffer = null, bufferUrl = '', loadingUrl = '';
+  const bufferCache = new Map();  // url -> AudioBuffer
+  const listeners = new Set();
+  const emit = () => listeners.forEach(fn => { try { fn(api); } catch (e) {} });
+
+  function save() { try { localStorage.setItem(SLOTS_KEY, JSON.stringify(slots)); } catch (e) {} }
+  const filled = i => !!(slots[i] && (slots[i].media || slots[i].audio));
+
+  // ---- visual ----
+  function loadVisual(url) {
+    if (visual instanceof HTMLVideoElement) { visual.pause(); visual.removeAttribute('src'); visual.load(); }
+    visual = null;
+    if (!url) { emit(); return; }
+    if (VIDEO_RE.test(url)) {
+      const v = document.createElement('video');
+      v.crossOrigin = 'anonymous';          // before src
+      v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+      v.setAttribute('playsinline', '');
+      v.src = url;
+      v.addEventListener('loadeddata', emit, { once: true });
+      visual = v;
+      if (playing) v.play().catch(() => {});
+    } else {
+      const im = new Image();
+      im.crossOrigin = 'anonymous';
+      im.onload = emit;
+      im.onerror = () => { im.onerror = null; const im2 = new Image(); im2.onload = emit; im2.src = url; visual = im2; };
+      im.src = url;
+      visual = im;
+    }
+    emit();
+  }
+
+  // ---- audio ----
+  function ensureCtx() {
+    // must be called synchronously inside the user gesture
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+      gain = ctx.createGain(); gain.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+  function loadAudio(url, then) {
+    if (!url) { buffer = null; bufferUrl = ''; then && then(); return; }
+    if (bufferCache.has(url)) { buffer = bufferCache.get(url); bufferUrl = url; then && then(); return; }
+    if (!ctx) { bufferUrl = ''; buffer = null; then && then(); return; }   // decoded on first play
+    loadingUrl = url;
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = () => {
+      if (xhr.status >= 400) { console.warn('[deck] audio HTTP', xhr.status, url); return; }
+      ctx.decodeAudioData(xhr.response, b => {
+        bufferCache.set(url, b);
+        if (loadingUrl !== url) return;     // slot changed meanwhile
+        buffer = b; bufferUrl = url; then && then();
+      }, err => console.warn('[deck] decode failed', url, err));
+    };
+    xhr.onerror = () => console.warn('[deck] audio load failed (CORS?)', url);
+    xhr.send();
+  }
+  function stopSource() {
+    if (source) { source.onended = null; try { source.stop(); } catch (e) {} source.disconnect(); source = null; }
+  }
+  function startSource() {
+    stopSource();
+    if (!ctx || !buffer || !playing) return;
+    source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(gain);
+    source.onended = () => { if (playing) next(); };
+    source.start();
+  }
+
+  // ---- slot ----
+  function select(i) {
+    index = ((i % N) + N) % N;
+    const s = slots[index];
+    loadVisual(s.media);
+    stopSource(); buffer = null; bufferUrl = '';
+    loadAudio(s.audio, () => { if (playing) startSource(); });
+    emit();
+  }
+
+  // ---- transport ----
+  function play() {
+    ensureCtx();
+    if (playing) return;
+    if (!filled(index)) { const f = firstFilledFrom(index, 1); if (f < 0) return; select(f); }
+    playing = true;
+    if (visual instanceof HTMLVideoElement) visual.play().catch(() => {});
+    const url = slots[index].audio;
+    if (url && bufferUrl === url && buffer) startSource();
+    else loadAudio(url, () => startSource());
+    emit();
+  }
+  function stop() {
+    playing = false;
+    stopSource();
+    if (visual instanceof HTMLVideoElement) { visual.pause(); try { visual.currentTime = 0; } catch (e) {} }
+    emit();
+  }
+  function firstFilledFrom(start, dir) {
+    for (let k = 0; k < N; k++) { const i = ((start + dir * k) % N + N) % N; if (filled(i)) return i; }
+    return -1;
+  }
+  function step(dir) {
+    if (playing) ensureCtx();
+    const f = firstFilledFrom(index + dir, dir);
+    select(f < 0 ? index + dir : f);
+  }
+  const next = () => step(1), prev = () => step(-1);
+
+  function setSlot(i, data) {
+    slots[i] = Object.assign({ media: '', audio: '' }, slots[i], data);
+    save();
+    if (i === index) select(index);
+    else emit();
+  }
+
+  const api = {
+    N,
+    get slots() { return slots.map(s => ({ ...s })); },
+    get index() { return index; },
+    get playing() { return playing; },
+    get visual() { return visual; },
+    get audioContext() { return ctx; },
+    get output() { return gain; },          // hook for audio-reactive programs later
+    play, stop, next, prev, select, setSlot,
+    setSlots(arr) { if (!Array.isArray(arr)) return; for (let i = 0; i < N; i++) slots[i] = Object.assign({ media: '', audio: '' }, arr[i] || {}); save(); select(index); },
+    onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+  };
+  window.TGDeck = api;
+  select(0);
+})();

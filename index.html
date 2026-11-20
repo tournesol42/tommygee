@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v04-inset-fix -->
+<!-- build: tommygee-v05-main-player -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -80,6 +80,23 @@
   .tg-cp-sw:hover, .tg-cp-sw.active { border-color: rgba(255,255,255,0.6); }
   .tg-cp-hex { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: #ccc; font: 11px/1 monospace; padding: 5px 8px; width: 100%; letter-spacing: 0.06em; box-sizing: border-box; }
 
+  /* transport buttons (page objects: movable, resizable, own colour) */
+  .tg-tbtn { position: fixed; bottom: 44px; width: 110px; height: 110px; border-radius: 10px; z-index: 55; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: filter 0.12s; }
+  .tg-tbtn:hover { filter: brightness(1.08); }
+  .tg-tbtn:active { filter: brightness(0.92); }
+  .tg-tbtn svg { width: 38%; height: 38%; fill: #fff; pointer-events: none; }
+  .tg-tbtn.on { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65); }
+  #tg-btn-stop { left: calc(50% - 232px); }
+  #tg-btn-play { left: calc(50% - 114px); }
+  #tg-btn-prev { left: calc(50% + 4px); }
+  #tg-btn-next { left: calc(50% + 122px); }
+  /* slot rows */
+  .tg-slot-row { display: grid; grid-template-columns: 22px 1fr 1fr; gap: 8px; align-items: center; }
+  .tg-slot-row .n { font-size: 10px; color: #666; text-align: right; cursor: pointer; }
+  .tg-slot-row.cur .n { color: #a0d2ec; }
+  .tg-slot-row input { background: none; border: 0; border-bottom: 1px solid rgba(255,255,255,0.15); color: #bbb; font: 10px/1.4 monospace; padding: 2px 0; min-width: 0; }
+  .tg-slot-row input::placeholder { color: #555; }
+
   /* page object shift-drag */
   .tg-shift-outline { outline: 1px dashed rgba(255,255,255,0.55); }
   .tg-shift-handle { position: absolute; width: 8px; height: 8px; background: rgba(255,255,255,0.75); border: 1px solid rgba(0,0,0,0.4); pointer-events: all; }
@@ -98,6 +115,12 @@
 
   <!-- program container (z-index 0, behind title and nav) -->
   <div id="tg-program-container"></div>
+
+  <!-- transport buttons -->
+  <div class="tg-tbtn" id="tg-btn-stop" title="Stop"><svg viewBox="0 0 100 100"><rect x="14" y="14" width="72" height="72"/></svg></div>
+  <div class="tg-tbtn" id="tg-btn-play" title="Play"><svg viewBox="0 0 100 100"><polygon points="18,8 92,50 18,92"/></svg></div>
+  <div class="tg-tbtn" id="tg-btn-prev" title="Previous"><svg viewBox="0 0 100 100"><polygon points="70,6 82,18 50,50 82,82 70,94 26,50"/></svg></div>
+  <div class="tg-tbtn" id="tg-btn-next" title="Next"><svg viewBox="0 0 100 100"><polygon points="30,6 18,18 50,50 18,82 30,94 74,50"/></svg></div>
 
   <!-- main console: invisible 28px strip at bottom -->
   <div id="tg-console-strip" title="Open console"></div>
@@ -132,6 +155,16 @@
           <label>Active</label>
           <select class="tg-con-select" id="tg-program-select"></select>
         </div>
+      </div>
+      <!-- TRANSPORT section -->
+      <div class="tg-con-section">
+        <div class="tg-con-section-title">Transport colours</div>
+        <div class="tg-con-row" id="tg-transport-colours"></div>
+      </div>
+      <!-- SLOTS section -->
+      <div class="tg-con-section">
+        <div class="tg-con-section-title">Slots — image/video URL + audio URL (Bunny CDN links)</div>
+        <div id="tg-slot-rows" style="display:flex;flex-direction:column;gap:6px"></div>
       </div>
       <!-- PRESETS section -->
       <div class="tg-con-section">
@@ -221,7 +254,9 @@
     </div>
   </section>
 
+<script src="deck.js"></script>
 <script src="programs/assemblage.js"></script>
+<script src="programs/main.js"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -379,6 +414,7 @@
       label,
       pageBG, pageFontColor, programBGFollows,
       activeProgramId,
+      transportColours: { ...transportColours },
       programParams: activeProgramId && activeProgram ? { [activeProgramId]: activeProgram.getParams() } : {},
       layout: (() => { try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)); } catch(e) { return null; } })(),
     };
@@ -387,6 +423,7 @@
     if (p.pageBG) { applyPageBG(p.pageBG); syncBGUI(p.pageBG); }
     if (p.pageFontColor) { applyFontColor(p.pageFontColor); syncFontUI(p.pageFontColor); }
     if (typeof p.programBGFollows === 'boolean') { programBGFollows = p.programBGFollows; bgFollow.checked = p.programBGFollows; }
+    if (p.transportColours) { transportColours = { ...p.transportColours }; applyTransportColours(); try { localStorage.setItem(TRANSPORT_KEY, JSON.stringify(transportColours)); } catch (e) {} }
     if (p.layout) try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(p.layout)); applyLayout(p.layout); } catch(e) {}
     if (p.activeProgramId && p.activeProgramId !== activeProgramId) {
       switchProgram(p.activeProgramId); populateProgramSelect();
@@ -411,6 +448,7 @@
   const MOVABLES = [
     { selector: 'header', isProgContainer: false },
     { selector: '.hero-title', isProgContainer: false, isTitle: true },
+    { id: 'tg-btn-stop' }, { id: 'tg-btn-play' }, { id: 'tg-btn-prev' }, { id: 'tg-btn-next' },
     { id: 'tg-program-container', isProgContainer: true },
   ];
   let layoutData = {};
@@ -446,6 +484,7 @@
   }
 
   let shiftActive = false;
+  let lastShiftDrag = 0;
   let moveDrag = null;
   const handles = [];
   function setShiftMode(on) {
@@ -500,6 +539,7 @@
       if (!el) return;
       const isT = targetKey === '.hero-title';
       const r = freezeBox(el, isT);
+      lastShiftDrag = performance.now();
       moveDrag = { type:'resize', el, corner, isTitle: isT, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top, ow:r.width, oh:r.height };
       startDrag(e); return;
     }
@@ -507,14 +547,13 @@
     const headerEl = document.querySelector('header');
     const titleEl = document.querySelector('.hero-title');
     const progEl = document.getElementById('tg-program-container');
-    if (e.target.closest('header') && headerEl) {
-      const r = freezeBox(headerEl, false);
-      moveDrag = { type:'move', el:headerEl, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
-      startDrag(e); return;
-    }
-    if (e.target.closest('.hero-title') && titleEl) {
-      const r = freezeBox(titleEl, true);
-      moveDrag = { type:'move', el:titleEl, isTitle:true, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
+    for (const m of MOVABLES) {
+      if (m.isProgContainer) continue;
+      const el = getMovableEl(m);
+      if (!el || !el.contains(e.target)) continue;
+      const r = freezeBox(el, !!m.isTitle);
+      moveDrag = { type:'move', el, isTitle: !!m.isTitle, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
+      lastShiftDrag = performance.now();
       startDrag(e); return;
     }
     if (progEl) {
@@ -547,6 +586,70 @@
     }
   });
   document.addEventListener('pointerup', (e) => { if (moveDrag) { saveLayout(); moveDrag = null; if (!e.shiftKey) setShiftMode(false); } });
+
+  // ---- transport buttons ----
+  const TRANSPORT_KEY = 'tommygee.transport.v1';
+  const TBTNS = [
+    { id: 'tg-btn-stop', label: 'Stop', def: '#F8440F', act: () => window.TGDeck && TGDeck.stop() },
+    { id: 'tg-btn-play', label: 'Play', def: '#F8B800', act: () => window.TGDeck && TGDeck.play() },
+    { id: 'tg-btn-prev', label: '<',    def: '#1E6FBF', act: () => window.TGDeck && TGDeck.prev() },
+    { id: 'tg-btn-next', label: '>',    def: '#9A8EC4', act: () => window.TGDeck && TGDeck.next() },
+  ];
+  let transportColours = {};
+  try { transportColours = JSON.parse(localStorage.getItem(TRANSPORT_KEY)) || {}; } catch (e) {}
+  const tcRow = document.getElementById('tg-transport-colours');
+  function applyTransportColours() {
+    TBTNS.forEach(b => {
+      const c = transportColours[b.id] || b.def;
+      document.getElementById(b.id).style.background = c;
+      const sw = tcRow.querySelector('[data-btn="' + b.id + '"]'); if (sw) sw.style.background = c;
+    });
+  }
+  TBTNS.forEach(b => {
+    const el = document.getElementById(b.id);
+    el.addEventListener('click', e => {
+      if (e.shiftKey || shiftActive || performance.now() - lastShiftDrag < 400) return;
+      b.act();
+    });
+    const lab = document.createElement('span');
+    lab.textContent = b.label; lab.style.cssText = 'font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#999;margin-left:6px';
+    const sw = document.createElement('div');
+    sw.className = 'tg-con-swatch'; sw.dataset.btn = b.id; sw.title = b.label + ' colour';
+    sw.addEventListener('click', () => TGColorPicker.open(sw, transportColours[b.id] || b.def, hex => {
+      transportColours[b.id] = hex; applyTransportColours();
+      try { localStorage.setItem(TRANSPORT_KEY, JSON.stringify(transportColours)); } catch (e) {}
+    }));
+    tcRow.append(lab, sw);
+  });
+  applyTransportColours();
+
+  // ---- slots UI ----
+  const slotRows = document.getElementById('tg-slot-rows');
+  function buildSlotRows() {
+    if (!window.TGDeck) return;
+    slotRows.innerHTML = '';
+    TGDeck.slots.forEach((sl, i) => {
+      const row = document.createElement('div'); row.className = 'tg-slot-row'; row.dataset.i = i;
+      const n = document.createElement('span'); n.className = 'n'; n.textContent = i + 1; n.title = 'Select slot';
+      n.addEventListener('click', () => TGDeck.select(i));
+      const mk = (key, ph) => {
+        const inp = document.createElement('input'); inp.type = 'text'; inp.spellcheck = false;
+        inp.placeholder = ph; inp.value = sl[key] || '';
+        inp.addEventListener('change', () => TGDeck.setSlot(i, { [key]: inp.value.trim() }));
+        return inp;
+      };
+      row.append(n, mk('media', 'image / video url'), mk('audio', 'audio url (mp3/wav)'));
+      slotRows.appendChild(row);
+    });
+    markSlots();
+  }
+  function markSlots() {
+    if (!window.TGDeck) return;
+    slotRows.querySelectorAll('.tg-slot-row').forEach(r => r.classList.toggle('cur', +r.dataset.i === TGDeck.index));
+    document.getElementById('tg-btn-play').classList.toggle('on', TGDeck.playing);
+  }
+  if (window.TGDeck) TGDeck.onChange(markSlots);
+  buildSlotRows();
 
   // ---- key routing ----
   document.addEventListener('keydown', e => {
