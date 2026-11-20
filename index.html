@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v09-progress-bar -->
+<!-- build: tommygee-v10-helvetica -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -24,7 +24,7 @@
   }
 
   .hero { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
-  .hero-title { font-family: Jost, "Helvetica Neue", sans-serif; font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88; color: var(--tg-font, #000); position: fixed; z-index: 10; pointer-events: auto; left: 50%; top: 50%; transform: translate(-50%,-50%); white-space: nowrap; }
+  .hero-title { font-family: Jost, "Helvetica Neue", sans-serif; font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.045em; line-height: 0.88; color: var(--tg-font, #000); position: fixed; z-index: 10; pointer-events: auto; left: 50%; top: 50%; transform: translate(-50%,-50%); white-space: nowrap; }
 
   .overlay { position: fixed; inset: 0; z-index: 40; background: var(--tg-page-bg, #fff); display: none; overflow-y: auto; }
   .overlay.open { display: block; }
@@ -208,7 +208,7 @@
       <input id="tg-fp-search" type="text" placeholder="Search fonts…" spellcheck="false">
       <select id="tg-fp-cat">
         <option value="">ALL</option><option value="sa">SANS</option><option value="se">SERIF</option>
-        <option value="di">DISPLAY</option><option value="ha">HANDWRITING</option><option value="mo">MONO</option>
+        <option value="di">DISPLAY</option><option value="ha">HANDWRITING</option><option value="mo">MONO</option><option value="sy">SYSTEM</option>
       </select>
     </div>
     <div class="fp-count" id="tg-fp-count"></div>
@@ -288,7 +288,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 1, saved: '2026-11-20', store: {
+window.TG_SITE_DEFAULTS = { rev: 2, saved: '2026-11-20', store: {
     "tommygee.page.v1": {
       "pageBG": "#FF007F",
       "pageFontColor": "#000000",
@@ -322,10 +322,7 @@ window.TG_SITE_DEFAULTS = { rev: 1, saved: '2026-11-20', store: {
       }
     },
     "tommygee.fonts.v1": {
-      "title": {
-        "family": "Georama",
-        "weight": 500
-      },
+      "title": { "family": "Helvetica Neue", "weight": 700 },
       "menu": {
         "family": "Georama",
         "weight": 200
@@ -351,10 +348,10 @@ window.TG_SITE_DEFAULTS = { rev: 1, saved: '2026-11-20', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=9"></script>
-<script src="deck.js?v=9"></script>
-<script src="programs/assemblage.js?v=9"></script>
-<script src="programs/main.js?v=9"></script>
+<script src="colorpicker.js?v=10"></script>
+<script src="deck.js?v=10"></script>
+<script src="programs/assemblage.js?v=10"></script>
+<script src="programs/main.js?v=10"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -753,7 +750,9 @@ window.TG_SITE_DEFAULTS = { rev: 1, saved: '2026-11-20', store: {
     { key: 'title', label: 'Title', sel: () => [document.querySelector('.hero-title')], def: { family: 'Jost', weight: 700 } },
     { key: 'menu',  label: 'Menu',  sel: () => [...document.querySelectorAll('nav a')],  def: { family: 'Jost', weight: 500 } },
   ];
-  let FONT_LIST = [];                       // [name, cat, weights|range, isVariable]
+  // system fonts (installed on the visitor's machine, nothing downloaded; Helvetica Neue is on every Mac/iPhone, others fall back to Arial)
+  const SYSTEM_FONTS = [['Helvetica Neue','sy',[300,400,500,700],0],['Helvetica','sy',[400,700],0],['Arial','sy',[400,700],0]];
+  let FONT_LIST = SYSTEM_FONTS.slice();     // [name, cat, weights|range, isVariable]
   const fontInfo = name => FONT_LIST.find(f => f[0] === name);
   let fontState = {};
   try { fontState = JSON.parse(localStorage.getItem(FONTS_KEY)) || {}; } catch (e) {}
@@ -769,6 +768,7 @@ window.TG_SITE_DEFAULTS = { rev: 1, saved: '2026-11-20', store: {
   }
   const nearest = (arr, w) => arr.reduce((a, b) => Math.abs(b - w) < Math.abs(a - w) ? b : a, arr[0]);
   function loadFamily(name, weight) {
+    if (SYSTEM_FONTS.some(f => f[0] === name)) return;
     if (name === 'Jost' && [300,400,500,700].includes(weight)) return;    // already in the page
     loadCss('https://fonts.googleapis.com/css2?family=' + gfName(name) + ':wght@' + weight + '&display=swap');
   }
@@ -778,7 +778,7 @@ window.TG_SITE_DEFAULTS = { rev: 1, saved: '2026-11-20', store: {
       if (FONT_LIST.length) st.weight = nearest(weightsOf(st.family), st.weight);
       loadFamily(st.family, st.weight);
       if (t.key === 'menu') document.documentElement.style.setProperty('--tg-menu-font', '"' + st.family + '"');
-      t.sel().forEach(el => { if (!el) return; el.style.fontFamily = '"' + st.family + '", Jost, "Helvetica Neue", sans-serif'; el.style.fontWeight = st.weight; });
+      t.sel().forEach(el => { if (!el) return; el.style.fontFamily = '"' + st.family + '", ' + (st.family.startsWith('Helvetica') ? 'Helvetica, Arial, ' : 'Jost, "Helvetica Neue", ') + 'sans-serif'; el.style.fontWeight = st.weight; });
       const row = fontRows.querySelector('[data-t="' + t.key + '"]');
       if (row) {
         const btn = row.querySelector('.tg-font-btn'); btn.textContent = st.family; btn.style.fontFamily = '"' + st.family + '", Jost, sans-serif'; btn.style.fontWeight = st.weight;
@@ -853,8 +853,8 @@ window.TG_SITE_DEFAULTS = { rev: 1, saved: '2026-11-20', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=9", true); x.responseType = 'json';
-    x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = x.response; applyFonts(); } };
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=10", true); x.responseType = 'json';
+    x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
 
