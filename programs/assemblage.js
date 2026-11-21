@@ -1,4 +1,4 @@
-// build: tommygee-v01-assemblage
+// build: tommygee-v12-assemblage-deck
 window.TG_PROGRAMS = window.TG_PROGRAMS || {};
 window.TG_PROGRAMS.assemblage = {
   name: 'Assemblage',
@@ -216,7 +216,26 @@ window.TG_PROGRAMS.assemblage = {
       im.onerror=()=>{ if(cors) loadImage(src,false); };
       im.src=src;
     }
-    loadImage(TEST_IMAGE, true);
+    // Source = the page player's current slot (image or video). Falls back to TEST_IMAGE when empty.
+    const deck = window.TGDeck;
+    let deckVisual;
+    function useVisual(v) {
+      if (deckVisual !== v) return;            // slot changed meanwhile
+      img = v; needsRegen = true; dirty = true;
+    }
+    function syncDeck() {
+      const v = deck ? deck.visual : null;
+      if (v === deckVisual) return;
+      deckVisual = v;
+      if (!v) { loadImage(TEST_IMAGE, true); return; }
+      if (v instanceof HTMLVideoElement) {
+        if (v.readyState >= 2) useVisual(v);
+        else v.addEventListener('loadeddata', () => useVisual(v), { once: true });
+      } else if (v.complete && v.naturalWidth) useVisual(v);
+      else v.addEventListener('load', () => useVisual(v), { once: true });
+    }
+    const offDeck = deck ? deck.onChange(syncDeck) : () => {};
+    syncDeck();
 
     // ---- layout geometry ----
     function collageFrame() {
@@ -1102,6 +1121,7 @@ window.TG_PROGRAMS.assemblage = {
     }
     function destroy() {
       if (raf) cancelAnimationFrame(raf);
+      offDeck();
       ro.disconnect();
       canvas.removeEventListener('pointerdown',onPD);
       canvas.removeEventListener('pointermove',onPM);
