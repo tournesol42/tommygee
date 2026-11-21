@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v20-seq-audio-driver -->
+<!-- build: tommygee-v21-player-parts -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -108,6 +108,8 @@
   .tg-tbtn svg { width: 38%; height: 38%; fill: #fff; pointer-events: none; }
   .tg-tbtn.on { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65); }
   .tg-tbar { position: relative; flex: 1 1 auto; min-width: 0; height: 100%; border-radius: 10px; overflow: hidden; user-select: none; -webkit-user-select: none; display: flex; align-items: center; }
+  #tg-transport.parts-mode > .tg-tbtn, #tg-transport.parts-mode > .tg-tbar { outline: 1px dashed rgba(0,0,0,0.55); outline-offset: 1px; cursor: move; }
+  #tg-transport.parts-mode > .tg-tbtn::after, #tg-transport.parts-mode > .tg-tbar::after { content: ''; position: absolute; right: -4px; bottom: -4px; width: 8px; height: 8px; background: rgba(255,255,255,0.85); border: 1px solid rgba(0,0,0,0.5); }
   .tg-tbar .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; pointer-events: none; }
   .tg-tbar .t { position: relative; padding: 0 0.9em; color: #fff; text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--tg-menu-font, Jost), Jost, sans-serif; pointer-events: none; }
   /* slot rows */
@@ -476,10 +478,10 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=20"></script>
-<script src="deck.js?v=20"></script>
-<script src="programs/assemblage.js?v=20"></script>
-<script src="programs/main.js?v=20"></script>
+<script src="colorpicker.js?v=21"></script>
+<script src="deck.js?v=21"></script>
+<script src="programs/assemblage.js?v=21"></script>
+<script src="programs/main.js?v=21"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -938,7 +940,65 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
       el.style.right = 'auto'; el.style.bottom = 'auto';
       if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / 0.88) + 'px'; fitTitle(r.width * vw); }
     });
+    if (data !== layoutData) { if (data['tg-parts']) layoutData['tg-parts'] = data['tg-parts']; else delete layoutData['tg-parts']; }
+    applyParts(data['tg-parts']);
   }
+
+  // ---- player parts: Shift+Alt moves / resizes each part (stop, play, prev, next, title bar) ----
+  const PART_IDS = ['tg-btn-stop', 'tg-btn-play', 'tg-btn-prev', 'tg-btn-next', 'tg-bar'];
+  // parts are stored as fractions of the player box, so resizing the whole player (Shift) scales them
+  function applyParts(parts) {
+    PART_IDS.forEach(id => {
+      const el = document.getElementById(id); if (!el) return;
+      const r = parts && parts[id];
+      if (!r) { ['position','left','top','width','height','aspectRatio','flex'].forEach(k => el.style[k] = ''); return; }
+      Object.assign(el.style, { position: 'absolute', left: (r.l * 100) + '%', top: (r.t * 100) + '%', width: (r.w * 100) + '%', height: (r.h * 100) + '%', aspectRatio: 'auto', flex: 'none' });
+    });
+  }
+  function freezeParts() {
+    if (layoutData['tg-parts']) return;
+    const box = document.getElementById('tg-transport').getBoundingClientRect(), parts = {};
+    PART_IDS.forEach(id => { const r = document.getElementById(id).getBoundingClientRect(); parts[id] = { l: (r.left - box.left) / box.width, t: (r.top - box.top) / box.height, w: r.width / box.width, h: r.height / box.height }; });
+    layoutData['tg-parts'] = parts; applyParts(parts);
+  }
+  function saveParts() {
+    const box = document.getElementById('tg-transport').getBoundingClientRect(), parts = {};
+    PART_IDS.forEach(id => { const r = document.getElementById(id).getBoundingClientRect(); parts[id] = { l: (r.left - box.left) / box.width, t: (r.top - box.top) / box.height, w: r.width / box.width, h: r.height / box.height }; });
+    layoutData['tg-parts'] = parts;
+    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layoutData)); } catch (e) {}
+  }
+  let partDrag = null, lastPartDrag = 0;
+  const setPartsMode = on => document.getElementById('tg-transport').classList.toggle('parts-mode', on);
+  document.addEventListener('keydown', e => { if (e.shiftKey && e.altKey) setPartsMode(true); });
+  document.addEventListener('keyup', e => { if (!(e.shiftKey && e.altKey) && !partDrag) setPartsMode(false); });
+  window.addEventListener('blur', () => { if (!partDrag) setPartsMode(false); });
+  document.addEventListener('pointerdown', e => {
+    if (!(e.shiftKey && e.altKey)) return;
+    const el = e.target.closest && e.target.closest('#tg-transport > .tg-tbtn, #tg-transport > .tg-tbar'); if (!el) return;
+    e.stopPropagation(); e.preventDefault();
+    freezeParts();
+    const r = el.getBoundingClientRect(), box = document.getElementById('tg-transport').getBoundingClientRect();
+    const resize = e.clientX > r.right - 14 && e.clientY > r.bottom - 14;
+    partDrag = { el, resize, sx: e.clientX, sy: e.clientY, l: r.left - box.left, t: r.top - box.top, w: r.width, h: r.height, bw: box.width, bh: box.height };
+    try { el.setPointerCapture(e.pointerId); } catch (_) {}
+  }, true);
+  document.addEventListener('pointermove', e => {
+    if (!partDrag) return;
+    const d = partDrag, dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+    if (d.resize) { d.el.style.width = (Math.max(16, d.w + dx) / d.bw * 100) + '%'; d.el.style.height = (Math.max(16, d.h + dy) / d.bh * 100) + '%'; }
+    else { d.el.style.left = ((d.l + dx) / d.bw * 100) + '%'; d.el.style.top = ((d.t + dy) / d.bh * 100) + '%'; }
+  }, true);
+  document.addEventListener('pointerup', e => {
+    if (!partDrag) return;
+    partDrag = null; lastPartDrag = performance.now(); saveParts();
+    if (!(e.shiftKey && e.altKey)) setPartsMode(false);
+  }, true);
+  // Shift+Alt+double-click a part = put all parts back in one row
+  document.addEventListener('dblclick', e => {
+    if (!(e.shiftKey && e.altKey) || !(e.target.closest && e.target.closest('#tg-transport'))) return;
+    delete layoutData['tg-parts']; applyParts(null);
+    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layoutData)); } catch (_) {}
+  }, true);
 
   let shiftActive = false;
   let lastShiftDrag = 0;
@@ -989,7 +1049,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   });
   document.addEventListener('keyup', e => { if (e.key === 'Shift' && !moveDrag) setShiftMode(false); });
   document.addEventListener('pointerdown', e => {
-    if (!shiftActive) return;
+    if (!shiftActive || e.altKey) return;
     // corner resize
     if (e.target.classList.contains('tg-shift-handle')) {
       const corner = e.target.dataset.corner, targetKey = e.target.dataset.target;
@@ -1070,7 +1130,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   TBTNS.forEach(b => {
     const el = document.getElementById(b.id);
     el.addEventListener('click', e => {
-      if (e.shiftKey || shiftActive || performance.now() - lastShiftDrag < 400) return;
+      if (e.shiftKey || e.altKey || shiftActive || performance.now() - lastShiftDrag < 400 || performance.now() - lastPartDrag < 400) return;
       b.act();
     });
     const lab = document.createElement('span');
@@ -1236,7 +1296,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=20", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=21", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
