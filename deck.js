@@ -1,4 +1,4 @@
-// build: tommygee-v16-low-band
+// build: tommygee-v23-poster-frame
 // TGDeck — page-level player: 10 slots, each = image/video + audio file.
 // Shared by all programs (Main draws deck.visual; others can use it later).
 // Audio: XHR + decodeAudioData + BufferSource (iOS-safe; no fetch, no createMediaElementSource).
@@ -29,6 +29,25 @@
   const filled = i => !!(slots[i] && (slots[i].media || slots[i].audio));
 
   // ---- visual ----
+  // When stopped, show the first frame that isn't (near) black — many clips fade in from black.
+  const probe = document.createElement('canvas'); probe.width = 32; probe.height = 18;
+  const pctx = probe.getContext('2d', { willReadFrequently: true });
+  function frameLuma(v) {
+    try { pctx.drawImage(v, 0, 0, 32, 18); const d = pctx.getImageData(0, 0, 32, 18).data; let s = 0; for (let i = 0; i < d.length; i += 4) s += d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11; return s / (d.length / 4); }
+    catch (e) { return 255; }
+  }
+  function showPosterFrame(v) {
+    if (playing || !(v instanceof HTMLVideoElement)) return;
+    const token = v._posterToken = (v._posterToken || 0) + 1;
+    const limit = Math.min(6, (v.duration || 6) - 0.1);
+    const check = () => {
+      if (playing || v !== visual || token !== v._posterToken) return;
+      if (frameLuma(v) > 14 || v.currentTime >= limit) { v._posterAt = v.currentTime; emit(); return; }
+      v.addEventListener('seeked', check, { once: true });
+      v.currentTime = Math.min(limit, v.currentTime + 0.25);
+    };
+    if (v.readyState >= 2 && !v.seeking) check(); else v.addEventListener('seeked', check, { once: true });
+  }
   function loadVisual(url) {
     if (visual instanceof HTMLVideoElement) { visual.pause(); visual.removeAttribute('src'); visual.load(); }
     visual = null;
@@ -39,7 +58,7 @@
       v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
       v.setAttribute('playsinline', '');
       v.src = url;
-      v.addEventListener('loadeddata', emit, { once: true });
+      v.addEventListener('loadeddata', () => { emit(); showPosterFrame(v); }, { once: true });
       v.addEventListener('seeked', emit);           // redraw the first frame after Stop rewinds
       visual = v;
       if (playing) v.play().catch(() => {});
@@ -120,7 +139,7 @@
     if (playing) return;
     if (!filled(index)) { const f = firstFilledFrom(index, 1); if (f < 0) return; select(f); }
     playing = true;
-    if (visual instanceof HTMLVideoElement) visual.play().catch(() => {});
+    if (visual instanceof HTMLVideoElement) { visual._posterToken = (visual._posterToken || 0) + 1; if (visual._posterAt) { visual.currentTime = 0; visual._posterAt = 0; } visual.play().catch(() => {}); }
     const url = slots[index].audio;
     if (url && bufferUrl === url && buffer) startSource();
     else loadAudio(url, () => startSource());
@@ -129,7 +148,7 @@
   function stop() {
     playing = false;
     stopSource();
-    if (visual instanceof HTMLVideoElement) { visual.pause(); try { visual.currentTime = 0; } catch (e) {} }
+    if (visual instanceof HTMLVideoElement) { visual.pause(); try { visual.currentTime = 0; } catch (e) {} showPosterFrame(visual); }
     emit();
   }
   function firstFilledFrom(start, dir) {

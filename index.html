@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v22-atmosphere -->
+<!-- build: tommygee-v23-paper-pixels -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -10,7 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { background: var(--tg-page-bg, #fff); }
+  html { background: var(--tg-page-bg, #fff); scrollbar-width: none; }
+  html::-webkit-scrollbar { display: none; }
   body { background: transparent; color: var(--tg-font, #000); }
   body { font-family: Jost, "Helvetica Neue", sans-serif; min-height: 100vh; }
 
@@ -479,11 +480,11 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=22"></script>
-<script src="deck.js?v=22"></script>
-<script src="programs/assemblage.js?v=22"></script>
-<script src="programs/main.js?v=22"></script>
-<script src="atmosphere.js?v=22"></script>
+<script src="colorpicker.js?v=23"></script>
+<script src="deck.js?v=23"></script>
+<script src="programs/assemblage.js?v=23"></script>
+<script src="programs/main.js?v=23"></script>
+<script src="atmosphere.js?v=23"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -939,6 +940,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
       el.style.position = 'fixed'; el.style.inset = '';
       el.style.left = (r.left * vw) + 'px'; el.style.top = (r.top * vh) + 'px';
       el.style.width = (r.width * vw) + 'px'; el.style.height = (r.height * vh) + 'px';
+      if (m.isProgContainer) el.style.left = ((vw - r.width * vw) / 2) + 'px';   // program area always centred left-right
       el.style.right = 'auto'; el.style.bottom = 'auto';
       if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / 0.88) + 'px'; fitTitle(r.width * vw); }
     });
@@ -1298,7 +1300,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=22", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=23", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();

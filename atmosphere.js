@@ -1,4 +1,4 @@
-// build: tommygee-v22-atmosphere
+// build: tommygee-v23-paper-pixels
 // TGAtmosphere — calm background behind the fixed player. The page scrolls; layers move at different speeds.
 //   far  layer: film-frame CAD lines (1.85 / 2.39 frame lines, safe areas, registration marks), soft blur, slow parallax
 //   mid  layer: tick rulers + crosses + tiny timecodes, lighter blur, faster parallax
@@ -94,12 +94,40 @@
     mid = c;
   }
 
-  // ---- grain tile ----
+  // ---- paper: fine grain + soft mottling + fibres + specks (one 512 px tile) ----
   function buildGrain() {
-    const c = document.createElement('canvas'); c.width = c.height = 160;
-    const x = c.getContext('2d'), im = x.createImageData(160, 160);
-    for (let i = 0; i < im.data.length; i += 4) { const v = rnd() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 7; }
-    x.putImageData(im, 0, 0); grain = g.createPattern(c, 'repeat');
+    const S = 512, c = document.createElement('canvas'); c.width = c.height = S;
+    const x = c.getContext('2d');
+    // soft mottling (cloudy paper density)
+    for (let i = 0; i < 60; i++) {
+      const px = rnd() * S, py = rnd() * S, r = R(30, 110), dark = rnd() < 0.5;
+      const gr = x.createRadialGradient(px, py, 0, px, py, r);
+      gr.addColorStop(0, dark ? 'rgba(60,55,50,0.035)' : 'rgba(255,255,255,0.06)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) { x.save(); x.translate(ox, oy); x.fillStyle = gr; x.fillRect(px - r, py - r, r * 2, r * 2); x.restore(); }
+    }
+    // fine grain
+    const im = x.getImageData(0, 0, S, S), d = im.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const v = rnd(); const dark = v < 0.5;
+      const a = Math.abs(v - 0.5) * 2 * 20;            // up to ~20/255
+      const tone = dark ? 40 : 255;
+      const k = a / 255, ia = d[i + 3] / 255;
+      d[i] = (tone * k + d[i] * ia * (1 - k)) / Math.max(1e-6, k + ia * (1 - k));
+      d[i + 1] = d[i]; d[i + 2] = d[i];
+      d[i + 3] = Math.min(255, (k + ia * (1 - k)) * 255);
+    }
+    x.putImageData(im, 0, 0);
+    // fibres
+    x.lineCap = 'round';
+    for (let i = 0; i < 70; i++) {
+      const px = rnd() * S, py = rnd() * S, len = R(6, 26), a = rnd() * Math.PI * 2, bend = R(-0.6, 0.6);
+      x.strokeStyle = `rgba(70,65,60,${R(0.05, 0.12)})`; x.lineWidth = R(0.4, 0.9);
+      x.beginPath(); x.moveTo(px, py);
+      x.quadraticCurveTo(px + Math.cos(a + bend) * len / 2, py + Math.sin(a + bend) * len / 2, px + Math.cos(a) * len, py + Math.sin(a) * len); x.stroke();
+    }
+    // specks
+    for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(50,45,40,${R(0.12, 0.3)})`; x.beginPath(); x.arc(rnd() * S, rnd() * S, R(0.4, 1.1), 0, Math.PI * 2); x.fill(); }
+    grain = g.createPattern(c, 'repeat');
   }
 
   // ---- dot field: surfaces now and then, different each time ----
@@ -117,12 +145,18 @@
                L(L(h(xi, yi, zi + 1), h(xi + 1, yi, zi + 1), xf), L(h(xi, yi + 1, zi + 1), h(xi + 1, yi + 1, zi + 1), xf), yf), zf);
     };
   }
-  const dots = { phase: 'idle', t0: performance.now(), wait: R(12, 30) * 1000, rise: 0, hold: 0, fall: 0, noise: null, cx: 0, cy: 0, dir: 0, cell: 10, square: false };
+  const hash = (a, b, c) => { let h = Math.imul(a ^ 0x9E3779B1, 0x85EBCA6B) ^ Math.imul(b + 0x632BE5AB, 0xC2B2AE35) ^ Math.imul(c | 0, 0x27D4EB2F); h ^= h >>> 15; h = Math.imul(h, 0x2C1B3C6D); h ^= h >>> 12; return (h >>> 0) / 4294967296; };
+  const dots = { phase: 'idle', t0: performance.now(), wait: R(4, 10) * 1000 };
+  // a patch of square pixels on a grid: dense/solid at one edge, dissolving to scattered single pixels
   function newEmergence(now) {
+    const cell = Math.round(R(7, 11)), cols = Math.round(R(W * 0.28, W * 0.6) / cell), rows = Math.round(R(H * 0.22, H * 0.5) / cell);
+    const dir = Math.floor(rnd() * 4);                     // which edge is solid
+    const seed = (Math.random() * 1e9) | 0, nz = vnoise(seed);
+    const solid = R(0.12, 0.35), curve = R(1.2, 2.4);       // how much is solid, how fast it dissolves
     Object.assign(dots, {
-      phase: 'rise', t0: now, rise: R(6, 11) * 1000, hold: R(3, 8) * 1000, fall: R(9, 16) * 1000,
-      noise: vnoise((Math.random() * 1e9) | 0), cx: R(0.1, 0.9), cy: R(0.15, 0.85), dir: R(0, Math.PI * 2),
-      rad: R(0.25, 0.5), cell: Math.round(R(8, 13)), square: rnd() < 0.5, scale: R(5, 11),
+      phase: 'rise', t0: now, rise: R(4, 8) * 1000, hold: R(4, 9) * 1000, fall: R(6, 12) * 1000,
+      cell, cols, rows, dir, seed, nz, solid, curve,
+      x0: R(0, Math.max(1, W - cols * cell)), y0: R(0, Math.max(1, H - rows * cell)) + (window.scrollY || 0) * MID,
     });
   }
   function dotsAmount(now) {
@@ -130,27 +164,24 @@
     if (d.phase === 'idle') { if (t > d.wait) newEmergence(now); return 0; }
     if (d.phase === 'rise') { if (t > d.rise) { d.phase = 'hold'; d.t0 = now; } return Math.min(1, t / d.rise); }
     if (d.phase === 'hold') { if (t > d.hold) { d.phase = 'fall'; d.t0 = now; } return 1; }
-    if (t > d.fall) { d.phase = 'idle'; d.t0 = now; d.wait = R(35, 90) * 1000; return 0; }
+    if (t > d.fall) { d.phase = 'idle'; d.t0 = now; d.wait = R(14, 35) * 1000; return 0; }
     return 1 - t / d.fall;
   }
   function drawDots(now, amount, scrollY) {
-    const d = dots, c = d.cell, z = now / 1000 * 0.04;          // slow evolution
-    const off = (scrollY * MID) % c;
-    const ox = d.cx * W, oy = d.cy * H, rad = d.rad * Math.max(W, H);
-    const dx = Math.cos(d.dir), dy = Math.sin(d.dir);
-    g.fillStyle = `rgba(${INK},0.13)`;
-    for (let y = -off; y < H + c; y += c) for (let x = c / 2; x < W; x += c) {
-      const ux = (x - ox) / rad, uy = (y - oy) / rad;
-      const dist = Math.hypot(ux, uy);
-      if (dist > 1.6) continue;
-      const n = d.noise(x / c / d.scale, (y + scrollY * MID) / c / d.scale, z);
-      const grad = 0.5 + 0.5 * (ux * dx + uy * dy);            // uneven: denser on one side
-      const v = n * (1.25 - dist * 0.7) * (0.55 + 0.6 * grad) - (1 - amount) * 1.1 - 0.25;
-      if (v <= 0) continue;
-      const r = Math.min(c * 0.46, v * c * 0.9);
-      if (r < 0.5) continue;
-      if (d.square) g.fillRect(x - r, y - r, r * 2, r * 2);
-      else { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
+    const d = dots, c = d.cell, sq = Math.max(2, c - 2), z = now / 1000 * 0.05;
+    const yOff = d.y0 - scrollY * MID;
+    g.fillStyle = `rgba(${INK},0.16)`;
+    for (let j = 0; j < d.rows; j++) {
+      const y = yOff + j * c; if (y < -c || y > H) continue;
+      for (let i = 0; i < d.cols; i++) {
+        const x = d.x0 + i * c;
+        // position across the patch from the solid edge (0) to the far edge (1)
+        let u = d.dir === 0 ? i / d.cols : d.dir === 1 ? 1 - i / d.cols : d.dir === 2 ? j / d.rows : 1 - j / d.rows;
+        u += (d.nz(i / 9, j / 9, z) - 0.5) * 0.35;           // ragged, slowly evolving front
+        const dens = u < d.solid ? 0.92 : Math.pow(Math.max(0, 1 - (u - d.solid) / (1 - d.solid)), d.curve) * 0.85;
+        const r = hash(i, j, d.seed);                          // each pixel's own moment to appear / vanish
+        if (r < dens * amount) g.fillRect(x, y, sq, sq);
+      }
     }
   }
 
