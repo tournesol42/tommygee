@@ -355,62 +355,10 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
-    "tommygee.page.v1": {
-      "pageBG": "#F5F5FF",
-      "pageFontColor": "#0A0A0A",
-      "programBGFollows": true,
-      "activeProgramId": "main"
-    },
-    "tommygee.layout.v1": {
-      "header": {
-        "left": -0.012608488569009315,
-        "top": 0.944131728778468,
-        "width": 1,
-        "height": 0.04071773636991028
-      },
-      ".hero-title": {
-        "left": 0.04823772226926334,
-        "top": 0.8221079192546584,
-        "width": 0.9023470575783235,
-        "height": 0.11162870945479642
-      },
-      "tg-program-container": {
-        "left": 0,
-        "top": 0,
-        "width": 1,
-        "height": 1
-      },
-      "tg-transport": {
-        "left": 0.010544559695173582,
-        "top": 0.23010481366459629,
-        "width": 0.3699989415749365,
-        "height": 0.027605244996549344
-      }
-    },
-    "tommygee.fonts.v1": {
-      "title": {
-        "family": "Helvetica Neue",
-        "weight": 700
-      },
-      "menu": {
-        "family": "Georama",
-        "weight": 200
-      }
-    },
-    "tommygee.transport.v1": {
-      "tg-btn-stop": "#B5B8B1",
-      "tg-btn-play": "#0A0A0A",
-      "tg-btn-prev": "#b5b8b1",
-      "tg-btn-next": "#b5b8b1"
-    },
-    "tommygee.main.cfg.v1": {
-      "bg": "#F5F5FF",
-      "brightness": 0.5
-    },
+window.TG_SITE_DEFAULTS = { rev: 5, saved: '2026-11-22', store: {
     "tommygee.assemblage.cfg.v1": {
       "_rev": 4,
-      "bg": "#F6F6F6",
+      "bg": "#F5F5FF",
       "textColor": "#1b1b1b",
       "textAlpha": 0.9,
       "notesColor": "#1b1b1b",
@@ -451,12 +399,12 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
       "showNotes": true,
       "notesSize": 8,
       "notesCount": 1,
-      "pieceW": 2.07,
-      "pieceH": 2.12,
+      "pieceW": 3,
+      "pieceH": 2.21,
       "stackChance": 0.34,
       "multiplyChance": 0.08,
       "seed": 419,
-      "border": "off",
+      "border": "white",
       "borderWidth": 0.25,
       "seedSize": 136,
       "washShow": true,
@@ -469,6 +417,1731 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
       "washSkew": 0.93,
       "followMotion": true,
       "motionLen": 1.35
+    },
+    "tommygee.fonts.v1": {
+      "title": {
+        "family": "Helvetica Neue",
+        "weight": 700
+      },
+      "menu": {
+        "family": "Georama",
+        "weight": 200
+      }
+    },
+    "tommygee.layout.v1": {
+      "header": {
+        "left": -0.6249266431924883,
+        "top": -0.006901311249137336,
+        "width": 0.9241001564945227,
+        "height": 0.03914337474120083
+      },
+      ".hero-title": {
+        "left": 0.02823014475743349,
+        "top": 0.020304951690821256,
+        "width": 0.5634658646322379,
+        "height": 0.07542917529330573
+      },
+      "tg-program-container": {
+        "left": 0,
+        "top": 0,
+        "width": 0.9241001564945227,
+        "height": 0.961352657004831
+      },
+      "tg-transport": {
+        "left": 0.7011932707355243,
+        "top": 0.7265571083505866,
+        "width": 0.34191607981220656,
+        "height": 0.026537698412698412
+      },
+      "tg-parts": {
+        "tg-btn-stop": {
+          "l": 0.37756561539011657,
+          "t": 1.562779357984559,
+          "w": 0.06962025316455696,
+          "h": 0.6550182852498985
+        },
+        "tg-btn-play": {
+          "l": 0.1430308231423872,
+          "t": -0.04063388866314506,
+          "w": 0.21250804548380176,
+          "h": 2.2612759041040227
+        },
+        "tg-btn-prev": {
+          "l": 0.4688550382607452,
+          "t": 1.5794392523364487,
+          "w": 0.06858327969677465,
+          "h": 0.613165379926859
+        },
+        "tg-btn-next": {
+          "l": 0.5611099191875849,
+          "t": 1.6017878911011785,
+          "w": 0.06518629764714295,
+          "h": 0.6147907354733848
+        },
+        "tg-bar": {
+          "l": 0.13523564328112708,
+          "t": 2.6070702966273873,
+          "w": 0.517557033540728,
+          "h": 0.5591223080048761
+        }
+      }
+    },
+    "tommygee.main.cfg.v1": {
+      "bg": "#F5F5FF",
+      "brightness": 0.283,
+      "modAmount": -0.01,
+      "modRelease": 0.11
+    },
+    "tommygee.page.v1": {
+      "pageBG": "#F5F5FF",
+      "pageFontColor": "#0A0A0A",
+      "programBGFollows": true,
+      "activeProgramId": "main"
+    },
+    "tommygee.presets.v1": [
+      {
+        "label": "1",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0,
+              "modAmount": 0.37,
+              "modRelease": 0.61
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6762542337002541,
+            "top": -0.00718167701863354,
+            "width": 1,
+            "height": 0.04071773636991028
+          },
+          ".hero-title": {
+            "left": 0.030310647756138866,
+            "top": 0.05649370255348516,
+            "width": 0.9023470575783235,
+            "height": 0.11162870945479642
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "tg-transport": {
+            "left": 0.6091236240474175,
+            "top": 0.7514341787439613,
+            "width": 0.3699989415749365,
+            "height": 0.027605244996549344
+          }
+        }
+      },
+      {
+        "label": "2",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0.283,
+              "modAmount": -0.01,
+              "modRelease": 0.11
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6762542337002541,
+            "top": -0.00718167701863354,
+            "width": 1,
+            "height": 0.04071773636991028
+          },
+          ".hero-title": {
+            "left": 0.030310647756138866,
+            "top": 0.05649370255348516,
+            "width": 0.9023470575783235,
+            "height": 0.11162870945479642
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "tg-transport": {
+            "left": 0.6091236240474175,
+            "top": 0.7514341787439613,
+            "width": 0.3699989415749365,
+            "height": 0.027605244996549344
+          }
+        }
+      },
+      {
+        "label": "3",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0,
+              "modAmount": 0.2,
+              "modRelease": 0.11
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6762542337002541,
+            "top": -0.00718167701863354,
+            "width": 1,
+            "height": 0.04071773636991028
+          },
+          ".hero-title": {
+            "left": 0.030310647756138866,
+            "top": 0.05649370255348516,
+            "width": 0.9023470575783235,
+            "height": 0.11162870945479642
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "tg-transport": {
+            "left": 0.6091236240474175,
+            "top": 0.7514341787439613,
+            "width": 0.3699989415749365,
+            "height": 0.027605244996549344
+          }
+        }
+      },
+      {
+        "label": "4",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0,
+              "modAmount": 1,
+              "modRelease": 1.07
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6762542337002541,
+            "top": -0.00718167701863354,
+            "width": 1,
+            "height": 0.04071773636991028
+          },
+          ".hero-title": {
+            "left": 0.030310647756138866,
+            "top": 0.05649370255348516,
+            "width": 0.9023470575783235,
+            "height": 0.11162870945479642
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "tg-transport": {
+            "left": 0.6091236240474175,
+            "top": 0.7514341787439613,
+            "width": 0.3699989415749365,
+            "height": 0.027605244996549344
+          }
+        }
+      },
+      {
+        "label": "5",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "assemblage",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "assemblage": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "textColor": "#1b1b1b",
+              "textAlpha": 0.9,
+              "notesColor": "#1b1b1b",
+              "notesAlpha": 0.8,
+              "uiTextColor": "#1b1b1b",
+              "lineColor": "#ececea",
+              "lineAlpha": 0.85,
+              "dotColor": "#3e3e3e",
+              "haloColor": "#a0d2ec",
+              "haloAlpha": 0.78,
+              "inkColor": "#1b1b1b",
+              "frameShow": false,
+              "frameColor": "#2271B3",
+              "frameAlpha": 1,
+              "frameWidth": 0.9,
+              "framePad": 59,
+              "trackLenV": 230,
+              "trackLenH": 300,
+              "trackWidth": 1.6,
+              "markerR": 14.5,
+              "numeralSize": 13.5,
+              "labelSize": 14,
+              "handleDot": 4.3,
+              "haloMult": 1.2,
+              "minHalo": 12.4,
+              "minDot": 2.6,
+              "showLeaders": true,
+              "leaderDash": 5.5,
+              "rayWidth": 0.75,
+              "rayAlpha": 0.31,
+              "rayDot": 0.85,
+              "rayDensity": 0.85,
+              "rayLength": 1,
+              "curveCount": 1.45,
+              "curveWidth": 1,
+              "curveAlpha": 0.17,
+              "guideAlpha": 1,
+              "showNotes": true,
+              "notesSize": 8,
+              "notesCount": 1,
+              "pieceW": 1.42,
+              "pieceH": 2.21,
+              "stackChance": 0.34,
+              "multiplyChance": 0.08,
+              "seed": 419,
+              "border": "white",
+              "borderWidth": 0.25,
+              "seedSize": 136,
+              "washShow": true,
+              "washColor": "#b8e2f5",
+              "washAlpha": 0.29,
+              "washVar": 0.55,
+              "washAmount": 0.2,
+              "washSpread": 0.67,
+              "washBands": 4,
+              "washSkew": 0.93,
+              "followMotion": true,
+              "motionLen": 1.35
+            },
+            "faders": [
+              {
+                "key": "pieces",
+                "v": 0.7459320514303082,
+                "pos": {
+                  "16:9": {
+                    "x": 199.6,
+                    "y": 835.4
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 520.7
+                  },
+                  "1:1": {
+                    "x": 170,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "spread",
+                "v": 0.55,
+                "pos": {
+                  "16:9": {
+                    "x": 360.7,
+                    "y": 858.8
+                  },
+                  "9:16": {
+                    "x": 813.8,
+                    "y": 651.9
+                  },
+                  "1:1": {
+                    "x": 307.1428571428571,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "displace",
+                "v": 0.03221786068724836,
+                "pos": {
+                  "16:9": {
+                    "x": 561.4,
+                    "y": 919.7
+                  },
+                  "9:16": {
+                    "x": 762.6,
+                    "y": 851
+                  },
+                  "1:1": {
+                    "x": 444.2857142857143,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "zoom",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 776.5,
+                    "y": 852.4
+                  },
+                  "9:16": {
+                    "x": 839.9,
+                    "y": 995.9
+                  },
+                  "1:1": {
+                    "x": 581.4285714285713,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "opacity",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 927.5,
+                    "y": 793.3
+                  },
+                  "9:16": {
+                    "x": 858.6,
+                    "y": 1179.8
+                  },
+                  "1:1": {
+                    "x": 718.5714285714286,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "mono",
+                "v": 0.15,
+                "pos": {
+                  "16:9": {
+                    "x": 1102.1,
+                    "y": 808.3
+                  },
+                  "9:16": {
+                    "x": 977,
+                    "y": 1317.8
+                  },
+                  "1:1": {
+                    "x": 855.7142857142858,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "lines",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 1273.3,
+                    "y": 790.7
+                  },
+                  "9:16": {
+                    "x": 1042.1,
+                    "y": 1456
+                  },
+                  "1:1": {
+                    "x": 992.8571428571428,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "reveal",
+                "v": 0.6067513878631957,
+                "pos": {
+                  "16:9": {
+                    "x": 1482.1,
+                    "y": 815.9
+                  },
+                  "9:16": {
+                    "x": 983,
+                    "y": 1610.1
+                  },
+                  "1:1": {
+                    "x": 1130,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "bright",
+                "v": 0.5,
+                "pos": {
+                  "16:9": {
+                    "x": 1610,
+                    "y": 800
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 390
+                  },
+                  "1:1": {
+                    "x": 1267.142857142857,
+                    "y": 960
+                  }
+                }
+              }
+            ],
+            "motion": {
+              "knobs": [
+                {
+                  "key": "speed",
+                  "v": 0.204
+                },
+                {
+                  "key": "travel",
+                  "v": 0.2853063170606018
+                },
+                {
+                  "key": "snap",
+                  "v": 0.24215028843147937
+                },
+                {
+                  "key": "breathe",
+                  "v": 0.274
+                },
+                {
+                  "key": "chaos",
+                  "v": 0.272
+                }
+              ],
+              "pos": {
+                "16:9": {
+                  "x": 1731.1,
+                  "y": 860.2
+                },
+                "9:16": {
+                  "x": 823.4,
+                  "y": 1793
+                },
+                "1:1": {
+                  "x": 1380,
+                  "y": 930
+                }
+              }
+            },
+            "seed": {
+              "rings": [
+                {
+                  "v": 0.3,
+                  "a0": -90
+                },
+                {
+                  "v": 0.55,
+                  "a0": -35
+                },
+                {
+                  "v": 0.7,
+                  "a0": 160
+                }
+              ],
+              "on": true,
+              "pos": {
+                "16:9": {
+                  "x": 1740,
+                  "y": 220
+                },
+                "9:16": {
+                  "x": 220,
+                  "y": 1700
+                },
+                "1:1": {
+                  "x": 220,
+                  "y": 1220
+                }
+              }
+            },
+            "format": "16:9",
+            "showControls": true,
+            "group": {
+              "16:9": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "9:16": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "1:1": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              }
+            },
+            "faderScale": {
+              "16:9": 0.9835570065555749,
+              "9:16": 1,
+              "1:1": 1
+            },
+            "frame": {
+              "16:9": null,
+              "9:16": null,
+              "1:1": null
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6762542337002541,
+            "top": -0.00718167701863354,
+            "width": 1,
+            "height": 0.04071773636991028
+          },
+          ".hero-title": {
+            "left": 0.030310647756138866,
+            "top": 0.05649370255348516,
+            "width": 0.9023470575783235,
+            "height": 0.11162870945479642
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "tg-transport": {
+            "left": 0.6091236240474175,
+            "top": 0.7514341787439613,
+            "width": 0.3699989415749365,
+            "height": 0.027605244996549344
+          }
+        }
+      },
+      {
+        "label": "6",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "assemblage",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "assemblage": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "textColor": "#1b1b1b",
+              "textAlpha": 0.9,
+              "notesColor": "#1b1b1b",
+              "notesAlpha": 0.8,
+              "uiTextColor": "#1b1b1b",
+              "lineColor": "#ececea",
+              "lineAlpha": 0.85,
+              "dotColor": "#3e3e3e",
+              "haloColor": "#a0d2ec",
+              "haloAlpha": 0.78,
+              "inkColor": "#1b1b1b",
+              "frameShow": false,
+              "frameColor": "#2271B3",
+              "frameAlpha": 1,
+              "frameWidth": 0.9,
+              "framePad": 59,
+              "trackLenV": 230,
+              "trackLenH": 300,
+              "trackWidth": 1.6,
+              "markerR": 14.5,
+              "numeralSize": 13.5,
+              "labelSize": 14,
+              "handleDot": 4.3,
+              "haloMult": 1.2,
+              "minHalo": 12.4,
+              "minDot": 2.6,
+              "showLeaders": true,
+              "leaderDash": 5.5,
+              "rayWidth": 0.75,
+              "rayAlpha": 0.31,
+              "rayDot": 0.85,
+              "rayDensity": 0.85,
+              "rayLength": 1,
+              "curveCount": 1.45,
+              "curveWidth": 1,
+              "curveAlpha": 0.17,
+              "guideAlpha": 1,
+              "showNotes": true,
+              "notesSize": 8,
+              "notesCount": 1,
+              "pieceW": 3,
+              "pieceH": 2.21,
+              "stackChance": 0.34,
+              "multiplyChance": 0.08,
+              "seed": 419,
+              "border": "white",
+              "borderWidth": 0.25,
+              "seedSize": 136,
+              "washShow": true,
+              "washColor": "#b8e2f5",
+              "washAlpha": 0.29,
+              "washVar": 0.55,
+              "washAmount": 0.2,
+              "washSpread": 0.67,
+              "washBands": 4,
+              "washSkew": 0.93,
+              "followMotion": true,
+              "motionLen": 1.35
+            },
+            "faders": [
+              {
+                "key": "pieces",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 199.6,
+                    "y": 835.4
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 520.7
+                  },
+                  "1:1": {
+                    "x": 170,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "spread",
+                "v": 0.528217946237478,
+                "pos": {
+                  "16:9": {
+                    "x": 360.7,
+                    "y": 858.8
+                  },
+                  "9:16": {
+                    "x": 813.8,
+                    "y": 651.9
+                  },
+                  "1:1": {
+                    "x": 307.1428571428571,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "displace",
+                "v": 0.03221786068724836,
+                "pos": {
+                  "16:9": {
+                    "x": 561.4,
+                    "y": 919.7
+                  },
+                  "9:16": {
+                    "x": 762.6,
+                    "y": 851
+                  },
+                  "1:1": {
+                    "x": 444.2857142857143,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "zoom",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 776.5,
+                    "y": 852.4
+                  },
+                  "9:16": {
+                    "x": 839.9,
+                    "y": 995.9
+                  },
+                  "1:1": {
+                    "x": 581.4285714285713,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "opacity",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 927.5,
+                    "y": 793.3
+                  },
+                  "9:16": {
+                    "x": 858.6,
+                    "y": 1179.8
+                  },
+                  "1:1": {
+                    "x": 718.5714285714286,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "mono",
+                "v": 0.15,
+                "pos": {
+                  "16:9": {
+                    "x": 1102.1,
+                    "y": 808.3
+                  },
+                  "9:16": {
+                    "x": 977,
+                    "y": 1317.8
+                  },
+                  "1:1": {
+                    "x": 855.7142857142858,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "lines",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 1273.3,
+                    "y": 790.7
+                  },
+                  "9:16": {
+                    "x": 1042.1,
+                    "y": 1456
+                  },
+                  "1:1": {
+                    "x": 992.8571428571428,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "reveal",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 1482.1,
+                    "y": 815.9
+                  },
+                  "9:16": {
+                    "x": 983,
+                    "y": 1610.1
+                  },
+                  "1:1": {
+                    "x": 1130,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "bright",
+                "v": 0.45978403755714176,
+                "pos": {
+                  "16:9": {
+                    "x": 1610,
+                    "y": 800
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 390
+                  },
+                  "1:1": {
+                    "x": 1267.142857142857,
+                    "y": 960
+                  }
+                }
+              }
+            ],
+            "motion": {
+              "knobs": [
+                {
+                  "key": "speed",
+                  "v": 0.204
+                },
+                {
+                  "key": "travel",
+                  "v": 0.6472447229114745
+                },
+                {
+                  "key": "snap",
+                  "v": 1
+                },
+                {
+                  "key": "breathe",
+                  "v": 0.7965892921001504
+                },
+                {
+                  "key": "chaos",
+                  "v": 0.80755712258048
+                }
+              ],
+              "pos": {
+                "16:9": {
+                  "x": 1731.1,
+                  "y": 860.2
+                },
+                "9:16": {
+                  "x": 823.4,
+                  "y": 1793
+                },
+                "1:1": {
+                  "x": 1380,
+                  "y": 930
+                }
+              }
+            },
+            "seed": {
+              "rings": [
+                {
+                  "v": 0.3,
+                  "a0": -90
+                },
+                {
+                  "v": 0.55,
+                  "a0": -35
+                },
+                {
+                  "v": 0.7,
+                  "a0": 160
+                }
+              ],
+              "on": true,
+              "pos": {
+                "16:9": {
+                  "x": 1740,
+                  "y": 220
+                },
+                "9:16": {
+                  "x": 220,
+                  "y": 1700
+                },
+                "1:1": {
+                  "x": 220,
+                  "y": 1220
+                }
+              }
+            },
+            "format": "16:9",
+            "showControls": true,
+            "group": {
+              "16:9": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "9:16": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "1:1": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              }
+            },
+            "faderScale": {
+              "16:9": 0.9835570065555749,
+              "9:16": 1,
+              "1:1": 1
+            },
+            "frame": {
+              "16:9": null,
+              "9:16": null,
+              "1:1": null
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6762542337002541,
+            "top": -0.00718167701863354,
+            "width": 1,
+            "height": 0.04071773636991028
+          },
+          ".hero-title": {
+            "left": 0.030310647756138866,
+            "top": 0.05649370255348516,
+            "width": 0.9023470575783235,
+            "height": 0.11162870945479642
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "tg-transport": {
+            "left": 0.6091236240474175,
+            "top": 0.7514341787439613,
+            "width": 0.3699989415749365,
+            "height": 0.027605244996549344
+          }
+        }
+      },
+      {
+        "label": "7",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0,
+              "modAmount": 1,
+              "modRelease": 1.07
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6762542337002541,
+            "top": -0.00718167701863354,
+            "width": 1,
+            "height": 0.04071773636991028
+          },
+          ".hero-title": {
+            "left": 0.030310647756138866,
+            "top": 0.05649370255348516,
+            "width": 0.9023470575783235,
+            "height": 0.11162870945479642
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "tg-transport": {
+            "left": 0.6091236240474175,
+            "top": 0.7514341787439613,
+            "width": 0.3699989415749365,
+            "height": 0.027605244996549344
+          }
+        }
+      },
+      {
+        "label": "8",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0,
+              "modAmount": 1,
+              "modRelease": 1.62
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6762542337002541,
+            "top": -0.00718167701863354,
+            "width": 1,
+            "height": 0.04071773636991028
+          },
+          ".hero-title": {
+            "left": 0.030310647756138866,
+            "top": 0.05649370255348516,
+            "width": 0.9023470575783235,
+            "height": 0.11162870945479642
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "tg-transport": {
+            "left": 0.6091236240474175,
+            "top": 0.7514341787439613,
+            "width": 0.3699989415749365,
+            "height": 0.027605244996549344
+          }
+        }
+      },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "tommygee.programParams.v1": {
+      "main": {
+        "cfg": {
+          "bg": "#F5F5FF",
+          "brightness": 0.283,
+          "modAmount": -0.01,
+          "modRelease": 0.11
+        }
+      },
+      "assemblage": {
+        "cfg": {
+          "bg": "#F5F5FF",
+          "textColor": "#1b1b1b",
+          "textAlpha": 0.9,
+          "notesColor": "#1b1b1b",
+          "notesAlpha": 0.8,
+          "uiTextColor": "#1b1b1b",
+          "lineColor": "#ececea",
+          "lineAlpha": 0.85,
+          "dotColor": "#3e3e3e",
+          "haloColor": "#a0d2ec",
+          "haloAlpha": 0.78,
+          "inkColor": "#1b1b1b",
+          "frameShow": false,
+          "frameColor": "#2271B3",
+          "frameAlpha": 1,
+          "frameWidth": 0.9,
+          "framePad": 59,
+          "trackLenV": 230,
+          "trackLenH": 300,
+          "trackWidth": 1.6,
+          "markerR": 14.5,
+          "numeralSize": 13.5,
+          "labelSize": 14,
+          "handleDot": 4.3,
+          "haloMult": 1.2,
+          "minHalo": 12.4,
+          "minDot": 2.6,
+          "showLeaders": true,
+          "leaderDash": 5.5,
+          "rayWidth": 0.75,
+          "rayAlpha": 0.31,
+          "rayDot": 0.85,
+          "rayDensity": 0.85,
+          "rayLength": 1,
+          "curveCount": 1.45,
+          "curveWidth": 1,
+          "curveAlpha": 0.17,
+          "guideAlpha": 1,
+          "showNotes": true,
+          "notesSize": 8,
+          "notesCount": 1,
+          "pieceW": 3,
+          "pieceH": 2.21,
+          "stackChance": 0.34,
+          "multiplyChance": 0.08,
+          "seed": 419,
+          "border": "white",
+          "borderWidth": 0.25,
+          "seedSize": 136,
+          "washShow": true,
+          "washColor": "#b8e2f5",
+          "washAlpha": 0.29,
+          "washVar": 0.55,
+          "washAmount": 0.2,
+          "washSpread": 0.67,
+          "washBands": 4,
+          "washSkew": 0.93,
+          "followMotion": true,
+          "motionLen": 1.35
+        },
+        "faders": [
+          {
+            "key": "pieces",
+            "v": 1,
+            "pos": {
+              "16:9": {
+                "x": 199.6,
+                "y": 835.4
+              },
+              "9:16": {
+                "x": 877.1,
+                "y": 520.7
+              },
+              "1:1": {
+                "x": 170,
+                "y": 960
+              }
+            }
+          },
+          {
+            "key": "spread",
+            "v": 0.528217946237478,
+            "pos": {
+              "16:9": {
+                "x": 360.7,
+                "y": 858.8
+              },
+              "9:16": {
+                "x": 813.8,
+                "y": 651.9
+              },
+              "1:1": {
+                "x": 307.1428571428571,
+                "y": 960
+              }
+            }
+          },
+          {
+            "key": "displace",
+            "v": 0.03221786068724836,
+            "pos": {
+              "16:9": {
+                "x": 561.4,
+                "y": 919.7
+              },
+              "9:16": {
+                "x": 762.6,
+                "y": 851
+              },
+              "1:1": {
+                "x": 444.2857142857143,
+                "y": 960
+              }
+            }
+          },
+          {
+            "key": "zoom",
+            "v": 0,
+            "pos": {
+              "16:9": {
+                "x": 776.5,
+                "y": 852.4
+              },
+              "9:16": {
+                "x": 839.9,
+                "y": 995.9
+              },
+              "1:1": {
+                "x": 581.4285714285713,
+                "y": 960
+              }
+            }
+          },
+          {
+            "key": "opacity",
+            "v": 1,
+            "pos": {
+              "16:9": {
+                "x": 927.5,
+                "y": 793.3
+              },
+              "9:16": {
+                "x": 858.6,
+                "y": 1179.8
+              },
+              "1:1": {
+                "x": 718.5714285714286,
+                "y": 960
+              }
+            }
+          },
+          {
+            "key": "mono",
+            "v": 0.15,
+            "pos": {
+              "16:9": {
+                "x": 1102.1,
+                "y": 808.3
+              },
+              "9:16": {
+                "x": 977,
+                "y": 1317.8
+              },
+              "1:1": {
+                "x": 855.7142857142858,
+                "y": 960
+              }
+            }
+          },
+          {
+            "key": "lines",
+            "v": 0,
+            "pos": {
+              "16:9": {
+                "x": 1273.3,
+                "y": 790.7
+              },
+              "9:16": {
+                "x": 1042.1,
+                "y": 1456
+              },
+              "1:1": {
+                "x": 992.8571428571428,
+                "y": 960
+              }
+            }
+          },
+          {
+            "key": "reveal",
+            "v": 0,
+            "pos": {
+              "16:9": {
+                "x": 1482.1,
+                "y": 815.9
+              },
+              "9:16": {
+                "x": 983,
+                "y": 1610.1
+              },
+              "1:1": {
+                "x": 1130,
+                "y": 960
+              }
+            }
+          },
+          {
+            "key": "bright",
+            "v": 0.45978403755714176,
+            "pos": {
+              "16:9": {
+                "x": 1610,
+                "y": 800
+              },
+              "9:16": {
+                "x": 877.1,
+                "y": 390
+              },
+              "1:1": {
+                "x": 1267.142857142857,
+                "y": 960
+              }
+            }
+          }
+        ],
+        "motion": {
+          "knobs": [
+            {
+              "key": "speed",
+              "v": 0.204
+            },
+            {
+              "key": "travel",
+              "v": 0.6472447229114745
+            },
+            {
+              "key": "snap",
+              "v": 1
+            },
+            {
+              "key": "breathe",
+              "v": 0.7965892921001504
+            },
+            {
+              "key": "chaos",
+              "v": 0.80755712258048
+            }
+          ],
+          "pos": {
+            "16:9": {
+              "x": 1731.1,
+              "y": 860.2
+            },
+            "9:16": {
+              "x": 823.4,
+              "y": 1793
+            },
+            "1:1": {
+              "x": 1380,
+              "y": 930
+            }
+          }
+        },
+        "seed": {
+          "rings": [
+            {
+              "v": 0.3,
+              "a0": -90
+            },
+            {
+              "v": 0.55,
+              "a0": -35
+            },
+            {
+              "v": 0.7,
+              "a0": 160
+            }
+          ],
+          "on": true,
+          "pos": {
+            "16:9": {
+              "x": 1740,
+              "y": 220
+            },
+            "9:16": {
+              "x": 220,
+              "y": 1700
+            },
+            "1:1": {
+              "x": 220,
+              "y": 1220
+            }
+          }
+        },
+        "format": "16:9",
+        "showControls": true,
+        "group": {
+          "16:9": {
+            "x": 0,
+            "y": 0,
+            "s": 1
+          },
+          "9:16": {
+            "x": 0,
+            "y": 0,
+            "s": 1
+          },
+          "1:1": {
+            "x": 0,
+            "y": 0,
+            "s": 1
+          }
+        },
+        "faderScale": {
+          "16:9": 0.9835570065555749,
+          "9:16": 1,
+          "1:1": 1
+        },
+        "frame": {
+          "16:9": null,
+          "9:16": null,
+          "1:1": null
+        }
+      }
+    },
+    "tommygee.sequences.v1": {
+      "run": true,
+      "slots": [
+        {
+          "steps": [
+            1,
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "audio",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        },
+        {
+          "steps": [],
+          "mode": "fwd",
+          "secs": 8,
+          "recall": "program",
+          "driver": "timer",
+          "thr": 0.6,
+          "gap": 0.3
+        }
+      ]
+    },
+    "tommygee.slots.v1": [
+      {
+        "media": "https://tommygee-cdn.b-cdn.net/Player%20Videos/face1_tommygee_org.mp4",
+        "audio": "https://tommygee-cdn.b-cdn.net/Player%20Music/TD%20animation%201%20135.mp3",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      },
+      {
+        "media": "",
+        "audio": "",
+        "title": ""
+      }
+    ],
+    "tommygee.transport.v1": {
+      "tg-btn-stop": "#B5B8B1",
+      "tg-btn-play": "#0A0A0A",
+      "tg-btn-prev": "#b5b8b1",
+      "tg-btn-next": "#b5b8b1"
     }
   } };
 (function () {
