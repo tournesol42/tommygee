@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v16-bass-brightness -->
+<!-- build: tommygee-v17-safe-preset-clear -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -472,10 +472,10 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=16"></script>
-<script src="deck.js?v=16"></script>
-<script src="programs/assemblage.js?v=16"></script>
-<script src="programs/main.js?v=16"></script>
+<script src="colorpicker.js?v=17"></script>
+<script src="deck.js?v=17"></script>
+<script src="programs/assemblage.js?v=17"></script>
+<script src="programs/main.js?v=17"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -639,8 +639,9 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
       slot.className = 'tg-preset-slot' + (p ? ' filled' : '');
       slot.dataset.i = i;
       slot.textContent = p ? (p.label || String(i + 1)) : String(i + 1);
-      slot.title = p ? 'Click = recall  Shift+Click = overwrite  Alt+Click = add to sequence  × = clear' : 'Shift+Click = store';
+      slot.title = p ? 'Click = recall · Shift+Click = overwrite · Alt+Click = add to sequence · Shift+Alt+Click = clear' : 'Shift+Click = store';
       slot.addEventListener('click', e => {
+        if (e.altKey && e.shiftKey) { if (p && confirm('Clear preset ' + (i + 1) + '?')) { presets[i] = null; savePresets(); buildPresetGrid(); } return; }
         if (e.altKey) { if (p && window.TGSeq) TGSeq.addStep(i); return; }
         if (e.shiftKey) {
           presets[i] = capturePreset(String(i + 1));
@@ -649,11 +650,6 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
           recallPreset(p);
         }
       });
-      const clr = document.createElement('span');
-      clr.textContent = ' ×'; clr.style.cssText = 'color:#555;font-size:8px;cursor:pointer;';
-      clr.title = 'Clear slot';
-      clr.addEventListener('click', e => { e.stopPropagation(); presets[i] = null; savePresets(); buildPresetGrid(); });
-      if (p) slot.appendChild(clr);
       presetGrid.appendChild(slot);
     });
     if (window.TGSeq) TGSeq.markGrid();
@@ -1203,7 +1199,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=16", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=17", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
