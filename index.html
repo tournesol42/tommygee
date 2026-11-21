@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v21-player-parts -->
+<!-- build: tommygee-v22-atmosphere -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -10,7 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { background: var(--tg-page-bg, #fff); color: var(--tg-font, #000); }
+  html { background: var(--tg-page-bg, #fff); }
+  body { background: transparent; color: var(--tg-font, #000); }
   body { font-family: Jost, "Helvetica Neue", sans-serif; min-height: 100vh; }
 
   header, .hero-title { user-select: none; -webkit-user-select: none; }
@@ -478,10 +479,11 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=21"></script>
-<script src="deck.js?v=21"></script>
-<script src="programs/assemblage.js?v=21"></script>
-<script src="programs/main.js?v=21"></script>
+<script src="colorpicker.js?v=22"></script>
+<script src="deck.js?v=22"></script>
+<script src="programs/assemblage.js?v=22"></script>
+<script src="programs/main.js?v=22"></script>
+<script src="atmosphere.js?v=22"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -524,7 +526,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   function applyPageBG(hex) {
     pageBG = hex;
-    document.body.style.background = hex; savePage();
+    document.documentElement.style.setProperty('--tg-page-bg', hex); document.body.style.background = 'transparent'; savePage();
     if (programBGFollows && activeProgram && activeProgram.setParams) {
       activeProgram.setParams({ cfg: { bg: hex } });
     }
@@ -1296,7 +1298,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=21", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=22", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
@@ -1311,7 +1313,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     if (activeProgram) activeProgram.onKey(e);
   });
 
-  window.addEventListener('resize', () => { if (activeProgram) activeProgram.resize(); });
+  window.addEventListener('resize', () => { applyLayout(layoutData); if (activeProgram) activeProgram.resize(); });
   window.addEventListener('keydown', e => { if (e.key === 'Escape' && consolePanel.classList.contains('open')) consolePanel.classList.remove('open'); });
 
   // ---- init ----

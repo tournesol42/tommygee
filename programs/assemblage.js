@@ -693,8 +693,7 @@ window.TG_PROGRAMS.assemblage = {
       const s=Math.min((vw-margin*2)/F.W,(vh-margin*2)/F.H);
       view={s,ox:(vw-F.W*s)/2,oy:(vh-F.H*s)/2};
       ctx.setTransform(dpr,0,0,dpr,0,0);
-      ctx.fillStyle=CFG.bg;
-      ctx.fillRect(0,0,vw,vh);
+      ctx.clearRect(0,0,vw,vh);   // transparent: the page atmosphere shows through
       pxScale=s*dpr;
       ctx.setTransform(dpr*s,0,0,dpr*s,dpr*view.ox,dpr*view.oy);
       drawArt(ctx,{controls:showControls});

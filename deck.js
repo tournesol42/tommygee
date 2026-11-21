@@ -40,6 +40,7 @@
       v.setAttribute('playsinline', '');
       v.src = url;
       v.addEventListener('loadeddata', emit, { once: true });
+      v.addEventListener('seeked', emit);           // redraw the first frame after Stop rewinds
       visual = v;
       if (playing) v.play().catch(() => {});
     } else {

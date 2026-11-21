@@ -1,4 +1,4 @@
-// build: tommygee-v16-main-bass-mod
+// build: tommygee-v22-main-transparent
 // Main — shows the current deck slot's image/video as a plain rectangle (contain-fit to its container).
 // Params (shown in the page console, Program section):
 //   brightness  0 = black, 0.5 = untouched, 1 = white (picture only)
@@ -56,12 +56,15 @@ window.TG_PROGRAMS.main = {
     function draw() {
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
-      g.fillStyle = CFG.bg; g.fillRect(0, 0, W, H);
       const m = deck && deck.visual, d = mediaDims(m);
-      if (!d) return;
+      if (m instanceof HTMLVideoElement && (m.readyState < 2 || m.seeking)) return;   // keep the last picture until the frame is ready
+      g.clearRect(0, 0, W, H);                      // transparent: the page atmosphere shows around the picture
+      if (!d) { window.TGStage = null; return; }
       const s = Math.min(W / d[0], H / d[1]);
       const w = d[0] * s, h = d[1] * s, x = (W - w) / 2, y = (H - h) / 2;
       g.drawImage(m, x, y, w, h);
+      const cr = container.getBoundingClientRect();
+      window.TGStage = { x: cr.left + x, y: cr.top + y, w, h };
       const b = Math.min(1, Math.max(0, CFG.brightness + CFG.modAmount * env));
       if (Math.abs(b - 0.5) > 0.002) {
         g.fillStyle = b < 0.5 ? `rgba(0,0,0,${(0.5 - b) * 2})` : `rgba(255,255,255,${(b - 0.5) * 2})`;
@@ -92,6 +95,7 @@ window.TG_PROGRAMS.main = {
     }
     function destroy() {
       cancelAnimationFrame(raf);
+      window.TGStage = null;
       ro.disconnect();
       offDeck();
       canvas.remove();
