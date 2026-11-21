@@ -355,10 +355,10 @@ window.TG_SITE_DEFAULTS = { rev: 3, saved: '2026-11-20', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=12"></script>
-<script src="deck.js?v=12"></script>
-<script src="programs/assemblage.js?v=12"></script>
-<script src="programs/main.js?v=12"></script>
+<script src="colorpicker.js?v=13"></script>
+<script src="deck.js?v=13"></script>
+<script src="programs/assemblage.js?v=13"></script>
+<script src="programs/main.js?v=13"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -870,7 +870,7 @@ window.TG_SITE_DEFAULTS = { rev: 3, saved: '2026-11-20', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=12", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=13", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();

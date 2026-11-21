@@ -1,4 +1,4 @@
-// build: tommygee-v12-assemblage-deck
+// build: tommygee-v13-dark-labels
 window.TG_PROGRAMS = window.TG_PROGRAMS || {};
 window.TG_PROGRAMS.assemblage = {
   name: 'Assemblage',
@@ -13,7 +13,7 @@ window.TG_PROGRAMS.assemblage = {
 
     const CFG_DEFAULT = {
       bg: '#a7a7a7',
-      textColor: '#f0f0ee', textAlpha: 0.9,
+      textColor: '#1b1b1b', textAlpha: 0.9,
       notesColor: '#1b1b1b', notesAlpha: 0.8,
       uiTextColor: '#1b1b1b',
       lineColor: '#ececea', lineAlpha: 0.85,
@@ -98,8 +98,8 @@ window.TG_PROGRAMS.assemblage = {
 
     // ---- CFG ----
     let CFG = { ...CFG_DEFAULT };
-    const CFG_REV = 3;
-    const REV_DROP = { 2: ['seedSize','border','borderWidth'], 3: ['seedSize'] };
+    const CFG_REV = 4;
+    const REV_DROP = { 2: ['seedSize','border','borderWidth'], 3: ['seedSize'], 4: ['textColor'] };
     try {
       const s = localStorage.getItem(STORE_KEY);
       if (s) {
