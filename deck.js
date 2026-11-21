@@ -1,4 +1,4 @@
-// build: tommygee-v09-progress-bar
+// build: tommygee-v16-low-band
 // TGDeck — page-level player: 10 slots, each = image/video + audio file.
 // Shared by all programs (Main draws deck.visual; others can use it later).
 // Audio: XHR + decodeAudioData + BufferSource (iOS-safe; no fetch, no createMediaElementSource).
@@ -19,6 +19,7 @@
   let index = 0, playing = false;
   let visual = null;              // HTMLImageElement | HTMLVideoElement | null
   let ctx = null, gain = null, source = null, startAt = 0;
+  let lowAn = null, lowBuf = null;
   let buffer = null, bufferUrl = '', loadingUrl = '';
   const bufferCache = new Map();  // url -> AudioBuffer
   const listeners = new Set();
@@ -60,6 +61,11 @@
       if (!AC) return null;
       ctx = new AC();
       gain = ctx.createGain(); gain.connect(ctx.destination);
+      // low band for envelope followers: two 2nd-order low-passes at 50 Hz (≈24 dB/oct) → analyser
+      const lp1 = ctx.createBiquadFilter(), lp2 = ctx.createBiquadFilter();
+      lp1.type = lp2.type = 'lowpass'; lp1.frequency.value = lp2.frequency.value = 50; lp1.Q.value = lp2.Q.value = 0.707;
+      lowAn = ctx.createAnalyser(); lowAn.fftSize = 2048; lowBuf = new Float32Array(lowAn.fftSize);
+      gain.connect(lp1); lp1.connect(lp2); lp2.connect(lowAn);
     }
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
@@ -158,7 +164,14 @@
       const u = sl.audio || sl.media; if (!u) return '';
       try { return decodeURIComponent(u.split('?')[0].split('/').pop()).replace(/\.[a-z0-9]+$/i, '').replace(/[_-]+/g, ' '); } catch (e) { return u; }
     },
-    get output() { return gain; },          // hook for audio-reactive programs later
+    get output() { return gain; },
+    // RMS level of the audio below 50 Hz, 0..~1 (0 when nothing plays)
+    lowLevel() {
+      if (!lowAn || !playing) return 0;
+      lowAn.getFloatTimeDomainData(lowBuf);
+      let sum = 0; for (let i = 0; i < lowBuf.length; i++) sum += lowBuf[i] * lowBuf[i];
+      return Math.sqrt(sum / lowBuf.length);
+    },
     play, stop, next, prev, select, setSlot,
     setSlots(arr) { if (!Array.isArray(arr)) return; for (let i = 0; i < N; i++) slots[i] = Object.assign({ media: '', audio: '', title: '' }, arr[i] || {}); save(); select(index); },
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },

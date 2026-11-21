@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v15-preset-sequencer -->
+<!-- build: tommygee-v16-bass-brightness -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -200,6 +200,7 @@
           <label>Active</label>
           <select class="tg-con-select" id="tg-program-select"></select>
         </div>
+        <div id="tg-prog-controls" style="display:flex;flex-direction:column;gap:6px"></div>
       </div>
       <!-- FONTS section -->
       <div class="tg-con-section">
@@ -471,10 +472,10 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=15"></script>
-<script src="deck.js?v=15"></script>
-<script src="programs/assemblage.js?v=15"></script>
-<script src="programs/main.js?v=15"></script>
+<script src="colorpicker.js?v=16"></script>
+<script src="deck.js?v=16"></script>
+<script src="programs/assemblage.js?v=16"></script>
+<script src="programs/main.js?v=16"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -551,7 +552,41 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     const savedParams = loadAllParams()[id];
     if (savedParams && activeProgram.setParams) activeProgram.setParams(savedParams);
     if (programBGFollows) activeProgram.setParams({ cfg: { bg: pageBG } });
+    renderProgramControls();
   }
+
+  // ---- active program's own controls in the console (Program section) ----
+  function renderProgramControls() {
+    const box = document.getElementById('tg-prog-controls'); if (!box) return;
+    box.innerHTML = '';
+    const ctl = activeProgram && activeProgram.controls;
+    if (!ctl || !ctl.length) {
+      box.innerHTML = '<div class="tg-con-row"><label></label><span style="color:#666;font-size:10px">This program has its own console — press C (console closed)</span></div>';
+      return;
+    }
+    const cfg = activeProgram.getParams().cfg || {};
+    ctl.forEach(c => {
+      const row = document.createElement('div'); row.className = 'tg-con-row';
+      const lab = document.createElement('label'); lab.textContent = c.label;
+      const inp = document.createElement('input'); inp.type = 'range'; inp.min = c.min; inp.max = c.max; inp.step = c.step;
+      inp.style.cssText = 'width:200px;accent-color:#a0d2ec'; inp.title = 'Double-click to reset'; inp.dataset.key = c.key;
+      const val = document.createElement('span'); val.style.cssText = 'font:10px monospace;color:#888;width:40px';
+      const show = v => { inp.value = v; val.textContent = (+v).toFixed(2); };
+      show(cfg[c.key] ?? c.def);
+      inp.addEventListener('input', () => { activeProgram.setParams({ cfg: { [c.key]: parseFloat(inp.value) } }); show(inp.value); });
+      inp.addEventListener('dblclick', () => { activeProgram.setParams({ cfg: { [c.key]: c.def } }); show(c.def); });
+      inp._show = show;
+      row.append(lab, inp, val); box.appendChild(row);
+    });
+  }
+  // keep sliders in step when presets/sequencer change values
+  setInterval(() => {
+    if (!consolePanel || !consolePanel.classList.contains('open') || !activeProgram || !activeProgram.controls) return;
+    const cfg = activeProgram.getParams().cfg || {};
+    document.querySelectorAll('#tg-prog-controls input[data-key]').forEach(inp => {
+      if (document.activeElement !== inp && cfg[inp.dataset.key] !== undefined && +inp.value !== cfg[inp.dataset.key]) inp._show(cfg[inp.dataset.key]);
+    });
+  }, 300);
 
   // ---- console ----
   const consoleStrip = document.getElementById('tg-console-strip');
@@ -1168,7 +1203,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=15", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=16", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
