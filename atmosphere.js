@@ -99,10 +99,10 @@
     const S = 512, c = document.createElement('canvas'); c.width = c.height = S;
     const x = c.getContext('2d');
     // soft mottling (cloudy paper density)
-    for (let i = 0; i < 60; i++) {
-      const px = rnd() * S, py = rnd() * S, r = R(30, 110), dark = rnd() < 0.5;
+    for (let i = 0; i < 45; i++) {
+      const px = rnd() * S, py = rnd() * S, r = R(50, 140), dark = rnd() < 0.5;
       const gr = x.createRadialGradient(px, py, 0, px, py, r);
-      gr.addColorStop(0, dark ? 'rgba(60,55,50,0.035)' : 'rgba(255,255,255,0.06)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      gr.addColorStop(0, dark ? 'rgba(60,55,50,0.022)' : 'rgba(255,255,255,0.045)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
       for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) { x.save(); x.translate(ox, oy); x.fillStyle = gr; x.fillRect(px - r, py - r, r * 2, r * 2); x.restore(); }
     }
     // fine grain
