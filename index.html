@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v19-visible-presets -->
+<!-- build: tommygee-v20-seq-audio-driver -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -245,14 +245,16 @@
         <button class="tg-seq-btn" data-mode="back">Backward</button>
         <button class="tg-seq-btn" data-mode="random">Random</button>
       </div>
-      <div class="tg-seq-row"><label>Step every</label><input type="number" id="tg-seq-secs" min="0.25" step="0.25"> <span class="hint">seconds</span></div>
+      <div class="tg-seq-row"><label>Driven by</label>
+        <button class="tg-seq-btn" data-driver="timer">Timer</button>
+        <button class="tg-seq-btn" data-driver="audio">Audio level</button>
+      </div>
+      <div class="tg-seq-row" id="tg-seq-row-timer"><label>Step every</label><input type="number" id="tg-seq-secs" min="0.25" step="0.25"> <span class="hint">seconds</span></div>
+      <div class="tg-seq-row" id="tg-seq-row-thr"><label>Sensitivity</label><input type="range" id="tg-seq-thr" min="0" max="1" step="0.01" style="width:160px;accent-color:#a0d2ec"> <span class="hint" id="tg-seq-thr-v"></span></div>
+      <div class="tg-seq-row" id="tg-seq-row-gap"><label>Min gap</label><input type="number" id="tg-seq-gap" min="0.05" step="0.05"> <span class="hint">seconds between steps (bass &lt; 50 Hz)</span></div>
       <div class="tg-seq-row"><label>Recall</label>
         <button class="tg-seq-btn" data-recall="program">Program only</button>
         <button class="tg-seq-btn" data-recall="all">Whole preset</button>
-      </div>
-      <div class="tg-seq-row"><label>Driven by</label>
-        <button class="tg-seq-btn on" disabled>Timer</button>
-        <button class="tg-seq-btn" disabled title="Coming later">Audio level</button>
       </div>
       <div class="tg-seq-row"><label>Run</label>
         <button class="tg-seq-btn" id="tg-seq-run">Sequencer on</button>
@@ -474,10 +476,10 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=19"></script>
-<script src="deck.js?v=19"></script>
-<script src="programs/assemblage.js?v=19"></script>
-<script src="programs/main.js?v=19"></script>
+<script src="colorpicker.js?v=20"></script>
+<script src="deck.js?v=20"></script>
+<script src="programs/assemblage.js?v=20"></script>
+<script src="programs/main.js?v=20"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -707,7 +709,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     try { st = JSON.parse(localStorage.getItem(SEQ_KEY)) || {}; } catch (e) {}
     st.run = st.run !== false;
     st.slots = Array.isArray(st.slots) ? st.slots : [];
-    for (let i = 0; i < NS; i++) st.slots[i] = Object.assign({ steps: [], mode: 'fwd', secs: 8, recall: 'program' }, st.slots[i] || {});
+    for (let i = 0; i < NS; i++) st.slots[i] = Object.assign({ steps: [], mode: 'fwd', secs: 8, recall: 'program', driver: 'timer', thr: 0.6, gap: 0.3 }, st.slots[i] || {});
     const save = () => { try { localStorage.setItem(SEQ_KEY, JSON.stringify(st)); } catch (e) {} };
     let edit = (window.TGDeck && TGDeck.index) || 0;   // slot shown in the window
     let pos = -1, timer = null, runningSlot = -1;
@@ -748,9 +750,26 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     function restartTimer() {
       stopTimer();
       if (!st.run || !window.TGDeck || !TGDeck.playing) return;
-      const sq = st.slots[TGDeck.index]; if (!sq.steps.length) return;
+      const sq = st.slots[TGDeck.index]; if (!sq.steps.length || sq.driver === 'audio') return;
       timer = setInterval(() => step(0), Math.max(250, sq.secs * 1000));
     }
+    // audio driver: a bass hit (< 50 Hz, auto-levelled) steps the sequence
+    let aPeak = 0.02, aArmed = true, aLast = 0, aPrevT = performance.now();
+    function audioTick(now) {
+      requestAnimationFrame(audioTick);
+      const dt = Math.min(0.1, (now - aPrevT) / 1000); aPrevT = now;
+      if (!st.run || !window.TGDeck || !TGDeck.playing || !TGDeck.lowLevel) return;
+      const sq = st.slots[TGDeck.index];
+      if (sq.driver !== 'audio' || !sq.steps.length) return;
+      const lvl = TGDeck.lowLevel();
+      aPeak = Math.max(lvl, aPeak * Math.exp(-dt / 8), 0.02);
+      const r = lvl / aPeak;
+      const on = 1 - sq.thr * 0.85;            // sensitivity 1 → reacts to small hits, 0 → only the loudest
+      if (aArmed && r >= on && (now - aLast) / 1000 >= sq.gap) { aArmed = false; aLast = now; step(0); }
+      else if (r < on * 0.7) aArmed = true;     // must drop before the next hit counts
+    }
+    requestAnimationFrame(audioTick);
+
     // follow the player: new song or play → start its sequence from the top; stop → halt
     let lastIdx = -1, lastPlaying = false;
     function onDeck() {
@@ -797,6 +816,14 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
       win.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === sq.mode));
       win.querySelectorAll('[data-recall]').forEach(b => b.classList.toggle('on', b.dataset.recall === sq.recall));
       if (document.activeElement !== secsEl) secsEl.value = sq.secs;
+      win.querySelectorAll('[data-driver]').forEach(b => b.classList.toggle('on', b.dataset.driver === sq.driver));
+      document.getElementById('tg-seq-row-timer').style.display = sq.driver === 'timer' ? '' : 'none';
+      document.getElementById('tg-seq-row-thr').style.display = sq.driver === 'audio' ? '' : 'none';
+      document.getElementById('tg-seq-row-gap').style.display = sq.driver === 'audio' ? '' : 'none';
+      const thrEl = document.getElementById('tg-seq-thr'), gapEl = document.getElementById('tg-seq-gap');
+      if (document.activeElement !== thrEl) thrEl.value = sq.thr;
+      document.getElementById('tg-seq-thr-v').textContent = (+sq.thr).toFixed(2);
+      if (document.activeElement !== gapEl) gapEl.value = sq.gap;
       runBtn.classList.toggle('on', st.run); runBtn.textContent = st.run ? 'Sequencer on' : 'Sequencer off';
       markGrid();
     }
@@ -811,6 +838,9 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     }
     win.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { st.slots[edit].mode = b.dataset.mode; save(); render(); });
     win.querySelectorAll('[data-recall]').forEach(b => b.onclick = () => { st.slots[edit].recall = b.dataset.recall; save(); render(); });
+    win.querySelectorAll('[data-driver]').forEach(b => b.onclick = () => { st.slots[edit].driver = b.dataset.driver; save(); restartTimer(); render(); });
+    document.getElementById('tg-seq-thr').addEventListener('input', e => { st.slots[edit].thr = parseFloat(e.target.value); save(); document.getElementById('tg-seq-thr-v').textContent = st.slots[edit].thr.toFixed(2); });
+    document.getElementById('tg-seq-gap').addEventListener('change', e => { const v = parseFloat(e.target.value); if (v > 0) { st.slots[edit].gap = v; save(); } render(); });
     secsEl.addEventListener('change', () => { const v = parseFloat(secsEl.value); if (v > 0) { st.slots[edit].secs = v; save(); restartTimer(); } render(); });
     runBtn.onclick = () => { st.run = !st.run; save(); if (st.run && window.TGDeck && TGDeck.playing) { pos = -1; runningSlot = TGDeck.index; step(0); } else stopTimer(); render(); };
     document.getElementById('tg-seq-prev').onclick = () => step(-1);
@@ -1206,7 +1236,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=19", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=20", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
