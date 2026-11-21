@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v14-save-all-settings -->
+<!-- build: tommygee-v15-preset-sequencer -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -65,11 +65,30 @@
   .tg-con-check { accent-color: #a0d2ec; }
   select.tg-con-select { background: rgba(255,255,255,0.06); color: #ccc; border: 1px solid rgba(255,255,255,0.12); font: 10px/1.4 Jost, sans-serif; letter-spacing: 0.1em; padding: 3px 6px; }
   /* preset grid */
-  .tg-preset-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
-  .tg-preset-slot { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 5px 4px; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #777; cursor: pointer; text-align: center; white-space: nowrap; overflow: hidden; }
+  .tg-preset-grid { display: grid; grid-template-columns: repeat(16, 30px); gap: 3px; }
+  .tg-preset-slot { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 4px 0; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: #777; cursor: pointer; text-align: center; white-space: nowrap; overflow: hidden; }
   .tg-preset-slot:hover { background: rgba(255,255,255,0.1); color: #ccc; }
   .tg-preset-slot.filled { color: #aaa; border-color: rgba(255,255,255,0.22); }
+  .tg-preset-slot.seq-on { box-shadow: inset 0 -2px 0 #a0d2ec; }
+  .tg-preset-slot.seq-now { background: #a0d2ec; color: #111; }
   .tg-preset-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  /* preset sequencer window */
+  #tg-seq { position: fixed; right: 20px; bottom: 50vh; z-index: 102; width: 460px; background: rgba(10,10,10,0.92); border: 1px solid rgba(255,255,255,0.14); color: #ccc; font: 300 10px/1.4 Jost, "Helvetica Neue", sans-serif; letter-spacing: 0.08em; display: none; }
+  #tg-seq.open { display: block; }
+  #tg-seq-head { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: move; text-transform: uppercase; font-size: 9px; letter-spacing: 0.22em; color: #888; }
+  #tg-seq-head span:last-child { cursor: pointer; }
+  #tg-seq-body { padding: 10px; display: flex; flex-direction: column; gap: 9px; }
+  .tg-seq-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .tg-seq-row > label { width: 64px; color: #777; text-transform: uppercase; font-size: 8px; letter-spacing: 0.18em; }
+  .tg-seq-tab, .tg-seq-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #999; font: 9px/1 Jost, sans-serif; letter-spacing: 0.12em; padding: 4px 7px; cursor: pointer; text-transform: uppercase; }
+  .tg-seq-tab.sel, .tg-seq-btn.on { border-color: #a0d2ec; color: #ddd; }
+  .tg-seq-tab.playing { background: rgba(160,210,236,0.18); }
+  .tg-seq-tab.has { color: #ddd; }
+  .tg-seq-chip { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); padding: 2px 5px; font-size: 9px; cursor: grab; }
+  .tg-seq-chip.now { background: #a0d2ec; color: #111; }
+  .tg-seq-chip b { font-weight: 300; color: #777; margin-left: 4px; cursor: pointer; }
+  #tg-seq input[type=number] { width: 54px; background: none; border: 0; border-bottom: 1px solid rgba(255,255,255,0.2); color: #ccc; font: 11px monospace; }
+  #tg-seq .hint { color: #666; font-size: 9px; letter-spacing: 0.04em; }
   .tg-preset-btns button { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: #aaa; font: 9px/1 Jost, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; padding: 5px 10px; cursor: pointer; }
   .tg-preset-btns button:hover { background: rgba(255,255,255,0.12); color: #ddd; }
   /* TGColorPicker popup */
@@ -204,8 +223,39 @@
         <div class="tg-preset-btns">
           <button id="tg-preset-export">Export JSON</button>
           <button id="tg-preset-import">Import JSON</button>
+          <button id="tg-seq-toggle">Sequencer ▸</button>
         </div>
         <!-- TODO: preset morph slider -->
+      </div>
+    </div>
+  </div>
+
+  <!-- preset sequencer window -->
+  <div id="tg-seq">
+    <div id="tg-seq-head"><span>Preset sequencer</span><span id="tg-seq-close">close ×</span></div>
+    <div id="tg-seq-body">
+      <div class="tg-seq-row"><label>Song slot</label><div id="tg-seq-tabs" style="display:flex;gap:3px;flex-wrap:wrap"></div></div>
+      <div class="tg-seq-row"><label>Steps</label><div id="tg-seq-steps" style="display:flex;gap:3px;flex-wrap:wrap;flex:1;min-height:20px"></div></div>
+      <div class="tg-seq-row"><label></label><span class="hint">Alt+click a preset slot to add it · drag chips to reorder · × removes</span></div>
+      <div class="tg-seq-row"><label>Direction</label>
+        <button class="tg-seq-btn" data-mode="fwd">Forward</button>
+        <button class="tg-seq-btn" data-mode="back">Backward</button>
+        <button class="tg-seq-btn" data-mode="random">Random</button>
+      </div>
+      <div class="tg-seq-row"><label>Step every</label><input type="number" id="tg-seq-secs" min="0.25" step="0.25"> <span class="hint">seconds</span></div>
+      <div class="tg-seq-row"><label>Recall</label>
+        <button class="tg-seq-btn" data-recall="program">Program only</button>
+        <button class="tg-seq-btn" data-recall="all">Whole preset</button>
+      </div>
+      <div class="tg-seq-row"><label>Driven by</label>
+        <button class="tg-seq-btn on" disabled>Timer</button>
+        <button class="tg-seq-btn" disabled title="Coming later">Audio level</button>
+      </div>
+      <div class="tg-seq-row"><label>Run</label>
+        <button class="tg-seq-btn" id="tg-seq-run">Sequencer on</button>
+        <button class="tg-seq-btn" id="tg-seq-prev">◂ step</button>
+        <button class="tg-seq-btn" id="tg-seq-next">step ▸</button>
+        <button class="tg-seq-btn" id="tg-seq-clear">Clear steps</button>
       </div>
     </div>
   </div>
@@ -421,10 +471,10 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=14"></script>
-<script src="deck.js?v=14"></script>
-<script src="programs/assemblage.js?v=14"></script>
-<script src="programs/main.js?v=14"></script>
+<script src="colorpicker.js?v=15"></script>
+<script src="deck.js?v=15"></script>
+<script src="programs/assemblage.js?v=15"></script>
+<script src="programs/main.js?v=15"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -542,7 +592,9 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   // ---- presets ----
   let presets = [];
   try { presets = JSON.parse(localStorage.getItem(PRESETS_KEY)) || []; } catch(e) {}
-  if (!Array.isArray(presets) || presets.length !== 16) presets = Array(16).fill(null);
+  const N_PRESETS = 48;
+  if (!Array.isArray(presets)) presets = [];
+  presets = presets.slice(0, N_PRESETS); while (presets.length < N_PRESETS) presets.push(null);
 
   const presetGrid = document.getElementById('tg-preset-grid');
   function buildPresetGrid() {
@@ -550,9 +602,11 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     presets.forEach((p, i) => {
       const slot = document.createElement('div');
       slot.className = 'tg-preset-slot' + (p ? ' filled' : '');
+      slot.dataset.i = i;
       slot.textContent = p ? (p.label || String(i + 1)) : String(i + 1);
-      slot.title = p ? 'Click = recall  Shift+Click = overwrite  CLR = clear' : 'Shift+Click = store';
+      slot.title = p ? 'Click = recall  Shift+Click = overwrite  Alt+Click = add to sequence  × = clear' : 'Shift+Click = store';
       slot.addEventListener('click', e => {
+        if (e.altKey) { if (p && window.TGSeq) TGSeq.addStep(i); return; }
         if (e.shiftKey) {
           presets[i] = capturePreset(String(i + 1));
           savePresets(); buildPresetGrid();
@@ -567,6 +621,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
       if (p) slot.appendChild(clr);
       presetGrid.appendChild(slot);
     });
+    if (window.TGSeq) TGSeq.markGrid();
   }
   function savePresets() { try { localStorage.setItem(PRESETS_KEY, JSON.stringify(presets)); } catch(e) {} }
   function capturePreset(label) {
@@ -603,8 +658,145 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   document.getElementById('tg-preset-import').addEventListener('click', () => {
     const text = prompt('Paste preset JSON:');
     if (!text) return;
-    try { const arr = JSON.parse(text); if (Array.isArray(arr) && arr.length === 16) { presets = arr; savePresets(); buildPresetGrid(); } else alert('Invalid preset JSON: expected array of 16 slots'); } catch(e) { alert('Could not parse JSON'); }
+    try { const arr = JSON.parse(text); if (Array.isArray(arr)) { presets = arr.slice(0, N_PRESETS); while (presets.length < N_PRESETS) presets.push(null); savePresets(); buildPresetGrid(); } else alert('Invalid preset JSON: expected an array of preset slots'); } catch(e) { alert('Could not parse JSON'); }
   });
+
+  // ---- preset sequencer: one sequence per song slot ----
+  (function () {
+    const SEQ_KEY = 'tommygee.sequences.v1';
+    const NS = (window.TGDeck && TGDeck.N) || 10;
+    let st = {};
+    try { st = JSON.parse(localStorage.getItem(SEQ_KEY)) || {}; } catch (e) {}
+    st.run = st.run !== false;
+    st.slots = Array.isArray(st.slots) ? st.slots : [];
+    for (let i = 0; i < NS; i++) st.slots[i] = Object.assign({ steps: [], mode: 'fwd', secs: 8, recall: 'program' }, st.slots[i] || {});
+    const save = () => { try { localStorage.setItem(SEQ_KEY, JSON.stringify(st)); } catch (e) {} };
+    let edit = (window.TGDeck && TGDeck.index) || 0;   // slot shown in the window
+    let pos = -1, timer = null, runningSlot = -1;
+
+    const win = document.getElementById('tg-seq');
+    const tabs = document.getElementById('tg-seq-tabs');
+    const stepsEl = document.getElementById('tg-seq-steps');
+    const secsEl = document.getElementById('tg-seq-secs');
+    const runBtn = document.getElementById('tg-seq-run');
+
+    function applyStep(slotIdx, k) {
+      const sq = st.slots[slotIdx], pi = sq.steps[k], p = presets[pi];
+      pos = k;
+      if (p) {
+        if (sq.recall === 'all') recallPreset(p);
+        else if (p.programParams && p.activeProgramId) {
+          if (p.activeProgramId !== activeProgramId) { switchProgram(p.activeProgramId); populateProgramSelect(); }
+          const prm = p.programParams[p.activeProgramId];
+          if (prm && activeProgram) activeProgram.setParams(prm);
+        }
+      }
+      render();
+    }
+    function nextIndex(sq, dir) {
+      const n = sq.steps.length; if (!n) return -1;
+      if (pos < 0) return sq.mode === 'back' ? n - 1 : sq.mode === 'random' ? Math.floor(Math.random() * n) : 0;
+      if (sq.mode === 'random' && dir === 0) { if (n === 1) return 0; let r; do { r = Math.floor(Math.random() * n); } while (r === pos); return r; }
+      const d = dir !== 0 ? dir : (sq.mode === 'back' ? -1 : 1);
+      return ((pos + d) % n + n) % n;
+    }
+    function step(dir) {
+      const si = runningSlot >= 0 ? runningSlot : ((window.TGDeck && TGDeck.index) || 0);
+      const sq = st.slots[si]; const k = nextIndex(sq, dir);
+      if (k >= 0) { runningSlot = si; applyStep(si, k); }
+      restartTimer();
+    }
+    function stopTimer() { if (timer) clearInterval(timer); timer = null; }
+    function restartTimer() {
+      stopTimer();
+      if (!st.run || !window.TGDeck || !TGDeck.playing) return;
+      const sq = st.slots[TGDeck.index]; if (!sq.steps.length) return;
+      timer = setInterval(() => step(0), Math.max(250, sq.secs * 1000));
+    }
+    // follow the player: new song or play → start its sequence from the top; stop → halt
+    let lastIdx = -1, lastPlaying = false;
+    function onDeck() {
+      if (!window.TGDeck) return;
+      const idx = TGDeck.index, pl = TGDeck.playing;
+      if (idx !== lastIdx || (pl && !lastPlaying)) {
+        lastIdx = idx; pos = -1; runningSlot = idx;
+        if (st.run && pl && st.slots[idx].steps.length) step(0); else render();
+      }
+      if (!pl) stopTimer(); else if (!timer) restartTimer();
+      lastPlaying = pl;
+      render();
+    }
+    if (window.TGDeck) TGDeck.onChange(onDeck);
+
+    // ---- window ----
+    function render() {
+      if (!win) return;
+      const playIdx = window.TGDeck ? TGDeck.index : -1;
+      tabs.innerHTML = '';
+      for (let i = 0; i < NS; i++) {
+        const b = document.createElement('button');
+        b.className = 'tg-seq-tab' + (i === edit ? ' sel' : '') + (i === playIdx ? ' playing' : '') + (st.slots[i].steps.length ? ' has' : '');
+        const t = window.TGDeck && TGDeck.slots[i] && TGDeck.slots[i].title;
+        b.textContent = String(i + 1); b.title = t || ('Song slot ' + (i + 1));
+        b.onclick = () => { edit = i; render(); };
+        tabs.appendChild(b);
+      }
+      const sq = st.slots[edit];
+      stepsEl.innerHTML = '';
+      if (!sq.steps.length) { const h = document.createElement('span'); h.className = 'hint'; h.textContent = 'empty — Alt+click preset slots'; stepsEl.appendChild(h); }
+      sq.steps.forEach((pi, k) => {
+        const c = document.createElement('span');
+        c.className = 'tg-seq-chip' + (edit === runningSlot && k === pos ? ' now' : '');
+        c.textContent = String(pi + 1); c.draggable = true;
+        c.onclick = () => { runningSlot = edit; applyStep(edit, k); restartTimer(); };
+        c.ondragstart = e => e.dataTransfer.setData('text/plain', String(k));
+        c.ondragover = e => e.preventDefault();
+        c.ondrop = e => { e.preventDefault(); const from = +e.dataTransfer.getData('text/plain'); const [m] = sq.steps.splice(from, 1); sq.steps.splice(k, 0, m); save(); render(); };
+        const x = document.createElement('b'); x.textContent = '×';
+        x.onclick = e => { e.stopPropagation(); sq.steps.splice(k, 1); if (edit === runningSlot) pos = -1; save(); render(); };
+        c.appendChild(x); stepsEl.appendChild(c);
+      });
+      win.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === sq.mode));
+      win.querySelectorAll('[data-recall]').forEach(b => b.classList.toggle('on', b.dataset.recall === sq.recall));
+      if (document.activeElement !== secsEl) secsEl.value = sq.secs;
+      runBtn.classList.toggle('on', st.run); runBtn.textContent = st.run ? 'Sequencer on' : 'Sequencer off';
+      markGrid();
+    }
+    function markGrid() {
+      const sq = st.slots[edit];
+      const now = (edit === runningSlot && pos >= 0) ? sq.steps[pos] : -1;
+      document.querySelectorAll('#tg-preset-grid .tg-preset-slot').forEach(el => {
+        const i = +el.dataset.i;
+        el.classList.toggle('seq-on', sq.steps.includes(i));
+        el.classList.toggle('seq-now', i === now);
+      });
+    }
+    win.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { st.slots[edit].mode = b.dataset.mode; save(); render(); });
+    win.querySelectorAll('[data-recall]').forEach(b => b.onclick = () => { st.slots[edit].recall = b.dataset.recall; save(); render(); });
+    secsEl.addEventListener('change', () => { const v = parseFloat(secsEl.value); if (v > 0) { st.slots[edit].secs = v; save(); restartTimer(); } render(); });
+    runBtn.onclick = () => { st.run = !st.run; save(); if (st.run && window.TGDeck && TGDeck.playing) { pos = -1; runningSlot = TGDeck.index; step(0); } else stopTimer(); render(); };
+    document.getElementById('tg-seq-prev').onclick = () => step(-1);
+    document.getElementById('tg-seq-next').onclick = () => step(1);
+    document.getElementById('tg-seq-clear').onclick = () => { st.slots[edit].steps = []; if (edit === runningSlot) pos = -1; save(); restartTimer(); render(); };
+    const toggle = document.getElementById('tg-seq-toggle');
+    const setOpen = o => { win.classList.toggle('open', o); toggle.textContent = o ? 'Sequencer ▾' : 'Sequencer ▸'; if (o) { edit = window.TGDeck ? TGDeck.index : edit; render(); } };
+    toggle.onclick = () => setOpen(!win.classList.contains('open'));
+    document.getElementById('tg-seq-close').onclick = () => setOpen(false);
+    // drag window by its header
+    (() => {
+      const head = document.getElementById('tg-seq-head'); let d = null;
+      head.addEventListener('pointerdown', e => { if (e.target.id === 'tg-seq-close') return; const r = win.getBoundingClientRect(); d = { sx: e.clientX, sy: e.clientY, ox: r.left, oy: r.top }; head.setPointerCapture(e.pointerId); });
+      head.addEventListener('pointermove', e => { if (!d) return; win.style.left = (d.ox + e.clientX - d.sx) + 'px'; win.style.top = (d.oy + e.clientY - d.sy) + 'px'; win.style.right = 'auto'; win.style.bottom = 'auto'; });
+      head.addEventListener('pointerup', () => { d = null; });
+    })();
+
+    window.TGSeq = {
+      addStep(i) { st.slots[edit].steps.push(i); save(); if (!win.classList.contains('open')) setOpen(true); restartTimer(); render(); },
+      markGrid, step,
+      get state() { return JSON.parse(JSON.stringify(st)); },
+    };
+    render();
+  })();
 
   // ---- all settings: one file ----
   document.getElementById('tg-settings-save').addEventListener('click', () => {
@@ -976,7 +1168,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=14", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=15", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
