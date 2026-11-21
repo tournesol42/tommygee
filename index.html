@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v24-atmosphere-off -->
+<!-- build: tommygee-v25-stop-fix-full-width -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -480,11 +480,11 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=23"></script>
-<script src="deck.js?v=23"></script>
-<script src="programs/assemblage.js?v=23"></script>
-<script src="programs/main.js?v=23"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=23"></script> -->
+<script src="colorpicker.js?v=25"></script>
+<script src="deck.js?v=25"></script>
+<script src="programs/assemblage.js?v=25"></script>
+<script src="programs/main.js?v=25"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=25"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -940,7 +940,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
       el.style.position = 'fixed'; el.style.inset = '';
       el.style.left = (r.left * vw) + 'px'; el.style.top = (r.top * vh) + 'px';
       el.style.width = (r.width * vw) + 'px'; el.style.height = (r.height * vh) + 'px';
-      if (m.isProgContainer) el.style.left = ((vw - r.width * vw) / 2) + 'px';   // program area always centred left-right
+      if (m.isProgContainer) { el.style.left = '0px'; el.style.width = vw + 'px'; }   // program area always full window width
       el.style.right = 'auto'; el.style.bottom = 'auto';
       if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / 0.88) + 'px'; fitTitle(r.width * vw); }
     });
@@ -1052,7 +1052,12 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     if (e.key === 'Escape' && shiftActive) setShiftMode(false);
   });
   document.addEventListener('keyup', e => { if (e.key === 'Shift' && !moveDrag) setShiftMode(false); });
+  // Shift mode can get stuck when the Shift key-up goes elsewhere (e.g. a macOS screenshot): trust the real key state
+  window.addEventListener('blur', () => { if (!moveDrag) setShiftMode(false); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && !moveDrag) setShiftMode(false); });
+  document.addEventListener('pointermove', e => { if (shiftActive && !e.shiftKey && !moveDrag) setShiftMode(false); }, true);
   document.addEventListener('pointerdown', e => {
+    if (shiftActive && !e.shiftKey && !moveDrag) setShiftMode(false);
     if (!shiftActive || e.altKey) return;
     // corner resize
     if (e.target.classList.contains('tg-shift-handle')) {
@@ -1134,7 +1139,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   TBTNS.forEach(b => {
     const el = document.getElementById(b.id);
     el.addEventListener('click', e => {
-      if (e.shiftKey || e.altKey || shiftActive || performance.now() - lastShiftDrag < 400 || performance.now() - lastPartDrag < 400) return;
+      if (e.shiftKey || e.altKey || performance.now() - lastShiftDrag < 400 || performance.now() - lastPartDrag < 400) return;
       b.act();
     });
     const lab = document.createElement('span');
@@ -1300,7 +1305,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=23", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=25", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
