@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v12-defaults-r3 -->
+<!-- build: tommygee-v14-save-all-settings -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -148,6 +148,14 @@
       <button id="tg-console-close">×</button>
     </div>
     <div id="tg-console-panel-inner">
+      <!-- SETTINGS section -->
+      <div class="tg-con-section">
+        <div class="tg-con-section-title">All settings</div>
+        <div class="tg-preset-btns">
+          <button id="tg-settings-save">Save all settings (file)</button>
+          <button id="tg-settings-load">Load settings file</button>
+        </div>
+      </div>
       <!-- PAGE section -->
       <div class="tg-con-section">
         <div class="tg-con-section-title">Page</div>
@@ -413,10 +421,10 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=13"></script>
-<script src="deck.js?v=13"></script>
-<script src="programs/assemblage.js?v=13"></script>
-<script src="programs/main.js?v=13"></script>
+<script src="colorpicker.js?v=14"></script>
+<script src="deck.js?v=14"></script>
+<script src="programs/assemblage.js?v=14"></script>
+<script src="programs/main.js?v=14"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -472,12 +480,26 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   // ---- program container ----
   const progContainer = document.getElementById('tg-program-container');
 
+  // ---- program params (faders, knobs, positions) persist per program ----
+  const PARAMS_KEY = 'tommygee.programParams.v1';
+  function loadAllParams() { try { return JSON.parse(localStorage.getItem(PARAMS_KEY)) || {}; } catch (e) { return {}; } }
+  let settingsLoading = false;
+  function saveProgramParams() {
+    if (settingsLoading || !activeProgram || !activeProgram.getParams || !activeProgramId) return;
+    const all = loadAllParams();
+    try { all[activeProgramId] = activeProgram.getParams(); localStorage.setItem(PARAMS_KEY, JSON.stringify(all)); } catch (e) {}
+  }
+  window.addEventListener('pagehide', saveProgramParams);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveProgramParams(); });
+
   function switchProgram(id) {
-    if (activeProgram) { activeProgram.destroy(); activeProgram = null; activeProgramId = null; }
+    if (activeProgram) { saveProgramParams(); activeProgram.destroy(); activeProgram = null; activeProgramId = null; }
     const def = window.TG_PROGRAMS && window.TG_PROGRAMS[id];
     if (!def) return;
     activeProgram = def.create(progContainer);
     activeProgramId = id; savePage();
+    const savedParams = loadAllParams()[id];
+    if (savedParams && activeProgram.setParams) activeProgram.setParams(savedParams);
     if (programBGFollows) activeProgram.setParams({ cfg: { bg: pageBG } });
   }
 
@@ -582,6 +604,32 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     const text = prompt('Paste preset JSON:');
     if (!text) return;
     try { const arr = JSON.parse(text); if (Array.isArray(arr) && arr.length === 16) { presets = arr; savePresets(); buildPresetGrid(); } else alert('Invalid preset JSON: expected array of 16 slots'); } catch(e) { alert('Could not parse JSON'); }
+  });
+
+  // ---- all settings: one file ----
+  document.getElementById('tg-settings-save').addEventListener('click', () => {
+    saveProgramParams();
+    const out = {};
+    Object.keys(localStorage).filter(k => k.startsWith('tommygee.') && k !== 'tommygee.defaults.rev').sort().forEach(k => {
+      try { out[k] = JSON.parse(localStorage.getItem(k)); } catch (e) {}
+    });
+    const json = JSON.stringify({ tommygeeSettings: 1, saved: new Date().toISOString(), store: out }, null, 2);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+    a.download = 'tommygee_settings.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+  document.getElementById('tg-settings-load').addEventListener('click', () => {
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
+    inp.onchange = () => {
+      const f = inp.files && inp.files[0]; if (!f) return;
+      f.text().then(t => {
+        const d = JSON.parse(t);
+        if (!d || !d.store) throw new Error('not a settings file');
+        Object.entries(d.store).forEach(([k, v]) => { if (k.startsWith('tommygee.')) localStorage.setItem(k, JSON.stringify(v)); });
+        settingsLoading = true;
+        location.reload();
+      }).catch(() => alert('Could not read settings file'));
+    };
+    inp.click();
   });
 
   // ---- page objects: shift-drag movable elements ----
@@ -928,7 +976,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=13", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=14", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
