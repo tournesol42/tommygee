@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v17-safe-preset-clear -->
+<!-- build: tommygee-v18-clear-all-presets -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -225,6 +225,7 @@
           <button id="tg-preset-export">Export JSON</button>
           <button id="tg-preset-import">Import JSON</button>
           <button id="tg-seq-toggle">Sequencer ▸</button>
+          <button id="tg-preset-clear-all">Clear all presets</button>
         </div>
         <!-- TODO: preset morph slider -->
       </div>
@@ -472,10 +473,10 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=17"></script>
-<script src="deck.js?v=17"></script>
-<script src="programs/assemblage.js?v=17"></script>
-<script src="programs/main.js?v=17"></script>
+<script src="colorpicker.js?v=18"></script>
+<script src="deck.js?v=18"></script>
+<script src="programs/assemblage.js?v=18"></script>
+<script src="programs/main.js?v=18"></script>
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -685,6 +686,10 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
     const json = JSON.stringify(presets, null, 2);
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json],{type:'application/json'})); a.download = 'tommygee_presets.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
     navigator.clipboard && navigator.clipboard.writeText(json).catch(()=>{});
+  });
+  document.getElementById('tg-preset-clear-all').addEventListener('click', () => {
+    if (!confirm('Clear all 48 presets? This cannot be undone.')) return;
+    presets = Array(N_PRESETS).fill(null); savePresets(); buildPresetGrid();
   });
   document.getElementById('tg-preset-import').addEventListener('click', () => {
     const text = prompt('Paste preset JSON:');
@@ -1199,7 +1204,7 @@ window.TG_SITE_DEFAULTS = { rev: 4, saved: '2026-11-21', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=17", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=18", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
