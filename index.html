@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v26-autoedit -->
+<!-- build: tommygee-v27-loop-playstop -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -157,7 +157,6 @@
 
   <!-- transport buttons -->
   <div id="tg-transport">
-  <div class="tg-tbtn" id="tg-btn-stop" title="Stop"><svg viewBox="0 0 100 100"><rect x="14" y="14" width="72" height="72"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-play" title="Play"><svg viewBox="0 0 100 100"><polygon points="18,8 92,50 18,92"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-prev" title="Previous"><svg viewBox="0 0 100 100"><polygon points="70,6 82,18 50,50 82,82 70,94 26,50"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-next" title="Next"><svg viewBox="0 0 100 100"><polygon points="30,6 18,18 50,50 18,82 30,94 74,50"/></svg></div>
@@ -355,7 +354,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
+window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
     "tommygee.assemblage.cfg.v1": {
       "_rev": 4,
       "bg": "#F5F5FF",
@@ -417,6 +416,41 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
       "washSkew": 0.93,
       "followMotion": true,
       "motionLen": 1.35
+    },
+    "tommygee.autoedit.cfg.v1": {
+      "bg": "#F5F5FF",
+      "trigger": "bass",
+      "sens": 0.07,
+      "gap": 0.95,
+      "every": 2,
+      "length": "whole",
+      "beats": 2,
+      "cutSens": 0.85
+    },
+    "tommygee.cuts.v1": {
+      "https://tommygee-cdn.b-cdn.net/Player%20Videos/WorkingprogressV3.mov": {
+        "cuts": [
+          0,
+          2.208,
+          5.792,
+          6.208,
+          9,
+          10.417,
+          27,
+          30.417,
+          32,
+          32.792,
+          35.792,
+          39.208,
+          39.625,
+          40,
+          44.208,
+          46.208,
+          50
+        ],
+        "sens": 0.85,
+        "dur": 51.125
+      }
     },
     "tommygee.fonts.v1": {
       "title": {
@@ -488,15 +522,15 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
     },
     "tommygee.main.cfg.v1": {
       "bg": "#F5F5FF",
-      "brightness": 0.283,
-      "modAmount": -0.01,
-      "modRelease": 0.11
+      "brightness": 0,
+      "modAmount": 1,
+      "modRelease": 1.07
     },
     "tommygee.page.v1": {
       "pageBG": "#F5F5FF",
       "pageFontColor": "#0A0A0A",
       "programBGFollows": true,
-      "activeProgramId": "main"
+      "activeProgramId": "assemblage"
     },
     "tommygee.presets.v1": [
       {
@@ -1650,9 +1684,9 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
       "main": {
         "cfg": {
           "bg": "#F5F5FF",
-          "brightness": 0.283,
-          "modAmount": -0.01,
-          "modRelease": 0.11
+          "brightness": 0,
+          "modAmount": 1,
+          "modRelease": 1.07
         }
       },
       "assemblage": {
@@ -1979,6 +2013,18 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
           "9:16": null,
           "1:1": null
         }
+      },
+      "autoedit": {
+        "cfg": {
+          "bg": "#F5F5FF",
+          "trigger": "bass",
+          "sens": 0.07,
+          "gap": 0.95,
+          "every": 2,
+          "length": "whole",
+          "beats": 2,
+          "cutSens": 0.85
+        }
       }
     },
     "tommygee.sequences.v1": {
@@ -2153,12 +2199,12 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=26"></script>
-<script src="deck.js?v=26"></script>
-<script src="programs/assemblage.js?v=26"></script>
-<script src="programs/main.js?v=26"></script>
-<script src="programs/autoedit.js?v=26"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=26"></script> -->
+<script src="colorpicker.js?v=27"></script>
+<script src="deck.js?v=27"></script>
+<script src="programs/assemblage.js?v=27"></script>
+<script src="programs/main.js?v=27"></script>
+<script src="programs/autoedit.js?v=27"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=27"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -2645,7 +2691,7 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
   }
 
   // ---- player parts: Shift+Alt moves / resizes each part (stop, play, prev, next, title bar) ----
-  const PART_IDS = ['tg-btn-stop', 'tg-btn-play', 'tg-btn-prev', 'tg-btn-next', 'tg-bar'];
+  const PART_IDS = [ 'tg-btn-play', 'tg-btn-prev', 'tg-btn-next', 'tg-bar'];
   // parts are stored as fractions of the player box, so resizing the whole player (Shift) scales them
   function applyParts(parts) {
     PART_IDS.forEach(id => {
@@ -2813,8 +2859,7 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
   // ---- transport buttons ----
   const TRANSPORT_KEY = 'tommygee.transport.v1';
   const TBTNS = [
-    { id: 'tg-btn-stop', label: 'Stop', def: '#F8440F', act: () => window.TGDeck && TGDeck.stop() },
-    { id: 'tg-btn-play', label: 'Play', def: '#F8B800', act: () => window.TGDeck && TGDeck.play() },
+    { id: 'tg-btn-play', label: 'Play', def: '#F8B800', act: () => window.TGDeck && (TGDeck.playing ? TGDeck.stop() : TGDeck.play()) },
     { id: 'tg-btn-prev', label: '<',    def: '#1E6FBF', act: () => window.TGDeck && TGDeck.prev() },
     { id: 'tg-btn-next', label: '>',    def: '#9A8EC4', act: () => window.TGDeck && TGDeck.next() },
   ];
@@ -2875,7 +2920,13 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
   function markSlots() {
     if (!window.TGDeck) return;
     slotRows.querySelectorAll('.tg-slot-row').forEach(r => r.classList.toggle('cur', +r.dataset.i === TGDeck.index));
-    document.getElementById('tg-btn-play').classList.toggle('on', TGDeck.playing);
+    const pb = document.getElementById('tg-btn-play');
+    pb.classList.toggle('on', TGDeck.playing);
+    const want = TGDeck.playing ? 'stop' : 'play';
+    if (pb.dataset.icon !== want) {
+      pb.dataset.icon = want; pb.title = TGDeck.playing ? 'Stop' : 'Play';
+      pb.querySelector('svg').innerHTML = TGDeck.playing ? '<rect x="18" y="18" width="64" height="64"/>' : '<polygon points="18,8 92,50 18,92"/>';
+    }
   }
   if (window.TGDeck) TGDeck.onChange(markSlots);
   buildSlotRows();
@@ -3003,7 +3054,7 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=26", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=27", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();

@@ -1,4 +1,4 @@
-// build: tommygee-v26-slot-bpm
+// build: tommygee-v27-loop
 // TGDeck — page-level player: 10 slots, each = image/video + audio file.
 // Shared by all programs (Main draws deck.visual; others can use it later).
 // Audio: XHR + decodeAudioData + BufferSource (iOS-safe; no fetch, no createMediaElementSource).
@@ -118,7 +118,7 @@
     source = ctx.createBufferSource();
     source.buffer = buffer;
     source.connect(gain);
-    source.onended = () => { if (playing) next(); };
+    source.loop = true;            // the song repeats until Stop or skip (video loops on its own)
     startAt = ctx.currentTime;
     source.start();
   }
@@ -179,7 +179,7 @@
     get visual() { return visual; },
     get audioContext() { return ctx; },
     get duration() { return buffer ? buffer.duration : 0; },
-    get progress() { return (playing && source && buffer && ctx) ? Math.min(1, Math.max(0, (ctx.currentTime - startAt) / buffer.duration)) : 0; },
+    get progress() { return (playing && source && buffer && ctx) ? (((ctx.currentTime - startAt) / buffer.duration) % 1 + 1) % 1 : 0; },
     get title() {
       const sl = slots[index]; if (!sl) return '';
       if (sl.title) return sl.title;
