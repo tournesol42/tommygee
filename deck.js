@@ -1,4 +1,4 @@
-// build: tommygee-v23-poster-frame
+// build: tommygee-v26-slot-bpm
 // TGDeck — page-level player: 10 slots, each = image/video + audio file.
 // Shared by all programs (Main draws deck.visual; others can use it later).
 // Audio: XHR + decodeAudioData + BufferSource (iOS-safe; no fetch, no createMediaElementSource).
@@ -163,9 +163,11 @@
   const next = () => step(1), prev = () => step(-1);
 
   function setSlot(i, data) {
+    const before = slots[i] || {};
     slots[i] = Object.assign({ media: '', audio: '', title: '' }, slots[i], data);
     save();
-    if (i === index) select(index);
+    const reload = ('media' in data && data.media !== before.media) || ('audio' in data && data.audio !== before.audio);
+    if (i === index && reload) select(index);   // title / BPM changes don't interrupt playback
     else emit();
   }
 

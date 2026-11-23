@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v25-stop-fix-full-width -->
+<!-- build: tommygee-v26-autoedit -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -115,7 +115,7 @@
   .tg-tbar .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; pointer-events: none; }
   .tg-tbar .t { position: relative; padding: 0 0.9em; color: #fff; text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--tg-menu-font, Jost), Jost, sans-serif; pointer-events: none; }
   /* slot rows */
-  .tg-slot-row { display: grid; grid-template-columns: 22px 0.8fr 1fr 1fr; gap: 8px; align-items: center; }
+  .tg-slot-row { display: grid; grid-template-columns: 22px 0.8fr 1fr 1fr 48px; gap: 8px; align-items: center; }
   .tg-slot-row .n { font-size: 10px; color: #666; text-align: right; cursor: pointer; }
   .tg-slot-row.cur .n { color: #a0d2ec; }
   .tg-slot-row input { background: none; border: 0; border-bottom: 1px solid rgba(255,255,255,0.15); color: #bbb; font: 10px/1.4 monospace; padding: 2px 0; min-width: 0; }
@@ -219,7 +219,7 @@
       </div>
       <!-- SLOTS section -->
       <div class="tg-con-section">
-        <div class="tg-con-section-title">Slots — title + image/video URL + audio URL (Bunny CDN links)</div>
+        <div class="tg-con-section-title">Slots — title + image/video URL + audio URL (Bunny CDN links) + BPM</div>
         <div id="tg-slot-rows" style="display:flex;flex-direction:column;gap:6px"></div>
       </div>
       <!-- PRESETS section -->
@@ -2153,11 +2153,12 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=25"></script>
-<script src="deck.js?v=25"></script>
-<script src="programs/assemblage.js?v=25"></script>
-<script src="programs/main.js?v=25"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=25"></script> -->
+<script src="colorpicker.js?v=26"></script>
+<script src="deck.js?v=26"></script>
+<script src="programs/assemblage.js?v=26"></script>
+<script src="programs/main.js?v=26"></script>
+<script src="programs/autoedit.js?v=26"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=26"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -2248,8 +2249,26 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
     }
     const cfg = activeProgram.getParams().cfg || {};
     ctl.forEach(c => {
+      if (c.show && !c.show(cfg)) return;
       const row = document.createElement('div'); row.className = 'tg-con-row';
       const lab = document.createElement('label'); lab.textContent = c.label;
+      if (c.type === 'select') {
+        const sel = document.createElement('select'); sel.className = 'tg-con-select'; sel.dataset.key = c.key;
+        c.options.forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); });
+        sel.value = cfg[c.key] ?? c.def;
+        sel.addEventListener('change', () => { activeProgram.setParams({ cfg: { [c.key]: sel.value } }); renderProgramControls(); });
+        row.append(lab, sel); box.appendChild(row); return;
+      }
+      if (c.type === 'button') {
+        const b = document.createElement('button'); b.textContent = c.label; b.className = 'tg-seq-btn';
+        b.addEventListener('click', () => c.act());
+        lab.textContent = ''; row.append(lab, b); box.appendChild(row); return;
+      }
+      if (c.type === 'info') {
+        const sp = document.createElement('span'); sp.style.cssText = 'font-size:10px;color:#888;letter-spacing:0.04em'; sp.className = 'tg-prog-info'; sp._text = c.text;
+        sp.textContent = c.text();
+        row.append(lab, sp); box.appendChild(row); return;
+      }
       const inp = document.createElement('input'); inp.type = 'range'; inp.min = c.min; inp.max = c.max; inp.step = c.step;
       inp.style.cssText = 'width:200px;accent-color:#a0d2ec'; inp.title = 'Double-click to reset'; inp.dataset.key = c.key;
       const val = document.createElement('span'); val.style.cssText = 'font:10px monospace;color:#888;width:40px';
@@ -2268,6 +2287,10 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
     document.querySelectorAll('#tg-prog-controls input[data-key]').forEach(inp => {
       if (document.activeElement !== inp && cfg[inp.dataset.key] !== undefined && +inp.value !== cfg[inp.dataset.key]) inp._show(cfg[inp.dataset.key]);
     });
+    let rebuild = false;
+    document.querySelectorAll('#tg-prog-controls select[data-key]').forEach(sel => { if (cfg[sel.dataset.key] !== undefined && sel.value !== cfg[sel.dataset.key] && document.activeElement !== sel) rebuild = true; });
+    if (rebuild) renderProgramControls();
+    document.querySelectorAll('#tg-prog-controls .tg-prog-info').forEach(sp => { const t = sp._text(); if (sp.textContent !== t) sp.textContent = t; });
   }, 300);
 
   // ---- console ----
@@ -2842,7 +2865,9 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
         inp.addEventListener('change', () => TGDeck.setSlot(i, { [key]: inp.value.trim() }));
         return inp;
       };
-      row.append(n, mk('title', 'song title'), mk('media', 'image / video url'), mk('audio', 'audio url (mp3/wav)'));
+      const bpm = mk('bpm', 'BPM'); bpm.title = 'Tempo of this song (used by Auto edit, slice length in beats)';
+      bpm.addEventListener('change', () => { const v = parseFloat(bpm.value); TGDeck.setSlot(i, { bpm: v > 0 ? v : '' }); bpm.value = v > 0 ? v : ''; });
+      row.append(n, mk('title', 'song title'), mk('media', 'image / video url'), mk('audio', 'audio url (mp3/wav)'), bpm);
       slotRows.appendChild(row);
     });
     markSlots();
@@ -2978,7 +3003,7 @@ window.TG_SITE_DEFAULTS = { rev: 7, saved: '2026-11-23', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=25", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=26", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
