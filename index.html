@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v27-loop-playstop -->
+<!-- build: tommygee-v28-seq-fix -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -2199,12 +2199,12 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=27"></script>
-<script src="deck.js?v=27"></script>
-<script src="programs/assemblage.js?v=27"></script>
-<script src="programs/main.js?v=27"></script>
-<script src="programs/autoedit.js?v=27"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=27"></script> -->
+<script src="colorpicker.js?v=28"></script>
+<script src="deck.js?v=28"></script>
+<script src="programs/assemblage.js?v=28"></script>
+<script src="programs/main.js?v=28"></script>
+<script src="programs/autoedit.js?v=28"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=28"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -2478,7 +2478,11 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
           if (prm && activeProgram) activeProgram.setParams(prm);
         }
       }
-      render();
+      markNow();
+    }
+    function markNow() {
+      stepsEl.querySelectorAll('.tg-seq-chip').forEach((c, k) => c.classList.toggle('now', edit === runningSlot && k === pos));
+      markGrid();
     }
     function nextIndex(sq, dir) {
       const n = sq.steps.length; if (!n) return -1;
@@ -2488,7 +2492,8 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
       return ((pos + d) % n + n) % n;
     }
     function step(dir) {
-      const si = runningSlot >= 0 ? runningSlot : ((window.TGDeck && TGDeck.index) || 0);
+      const si = (window.TGDeck && TGDeck.index) || 0;   // always the playing song's own sequence
+      if (si !== runningSlot) pos = -1;
       const sq = st.slots[si]; const k = nextIndex(sq, dir);
       if (k >= 0) { runningSlot = si; applyStep(si, k); }
       restartTimer();
@@ -2552,7 +2557,11 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
         const c = document.createElement('span');
         c.className = 'tg-seq-chip' + (edit === runningSlot && k === pos ? ' now' : '');
         c.textContent = String(pi + 1); c.draggable = true;
-        c.onclick = () => { runningSlot = edit; applyStep(edit, k); restartTimer(); };
+        c.onclick = () => {
+          const playIdx = window.TGDeck ? TGDeck.index : 0;
+          if (edit === playIdx) { runningSlot = edit; applyStep(edit, k); restartTimer(); }
+          else { const p = presets[pi]; if (p) recallPreset(p); }   // other song: just preview that preset
+        };
         c.ondragstart = e => e.dataTransfer.setData('text/plain', String(k));
         c.ondragover = e => e.preventDefault();
         c.ondrop = e => { e.preventDefault(); const from = +e.dataTransfer.getData('text/plain'); const [m] = sq.steps.splice(from, 1); sq.steps.splice(k, 0, m); save(); render(); };
@@ -2606,7 +2615,7 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
     })();
 
     window.TGSeq = {
-      addStep(i) { st.slots[edit].steps.push(i); save(); if (!win.classList.contains('open')) setOpen(true); restartTimer(); render(); },
+      addStep(i) { if (!win.classList.contains('open')) setOpen(true); st.slots[edit].steps.push(i); save(); restartTimer(); render(); },
       markGrid, step,
       get state() { return JSON.parse(JSON.stringify(st)); },
     };
@@ -3054,7 +3063,7 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=27", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=28", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
