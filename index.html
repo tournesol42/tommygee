@@ -355,7 +355,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
+window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
     "tommygee.assemblage.cfg.v1": {
       "_rev": 4,
       "bg": "#F5F5FF",
@@ -419,7 +419,7 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
       "motionLen": 1.35
     },
     "tommygee.autoedit.cfg.v1": {
-      "bg": "#F5F5FF",
+      "bg": "#A5A5A5",
       "trigger": "bass",
       "sens": 0.07,
       "gap": 0.95,
@@ -451,12 +451,19 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
         ],
         "sens": 0.85,
         "dur": 51.125
+      },
+      "https://tommygee-cdn.b-cdn.net/Player%20Videos/face1_tommygee_org.mp4": {
+        "cuts": [
+          0
+        ],
+        "sens": 0.85,
+        "dur": 10.443767
       }
     },
     "tommygee.fonts.v1": {
       "title": {
-        "family": "Helvetica Neue",
-        "weight": 700
+        "family": "Inter Tight",
+        "weight": 300
       },
       "menu": {
         "family": "Georama",
@@ -465,59 +472,53 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
     },
     "tommygee.layout.v1": {
       "header": {
-        "left": -0.6249266431924883,
-        "top": -0.006901311249137336,
-        "width": 0.9241001564945227,
+        "left": -0.6378500683060109,
+        "top": 0.04160196687370601,
+        "width": 0.9240949453551912,
         "height": 0.03914337474120083
       },
       ".hero-title": {
-        "left": 0.02823014475743349,
-        "top": 0.020304951690821256,
-        "width": 0.5634658646322379,
-        "height": 0.07542917529330573
+        "left": 0.050749231557377046,
+        "top": 0.07462042788129744,
+        "width": 0.28215718920765026,
+        "height": 0.04736024844720497
       },
       "tg-program-container": {
         "left": 0,
         "top": 0,
-        "width": 0.9241001564945227,
+        "width": 1,
         "height": 0.961352657004831
       },
       "tg-transport": {
-        "left": 0.7011932707355243,
-        "top": 0.7265571083505866,
-        "width": 0.34191607981220656,
+        "left": 0.6833696209016393,
+        "top": 0.826626121463078,
+        "width": 0.34191427595628415,
         "height": 0.026537698412698412
       },
       "tg-parts": {
-        "tg-btn-stop": {
-          "l": 0.37756561539011657,
-          "t": 1.562779357984559,
-          "w": 0.06962025316455696,
-          "h": 0.6550182852498985
-        },
         "tg-btn-play": {
-          "l": 0.1430308231423872,
-          "t": -0.04063388866314506,
-          "w": 0.21250804548380176,
-          "h": 2.2612759041040227
+          "l": 0.14418154576101885,
+          "t": -0.7631044290938643,
+          "w": 0.28636533899363215,
+          "h": 3.983746444534742
         },
         "tg-btn-prev": {
-          "l": 0.4688550382607452,
-          "t": 1.5794392523364487,
-          "w": 0.06858327969677465,
-          "h": 0.613165379926859
+          "l": 0.4524597328005993,
+          "t": 2.388866314506298,
+          "w": 0.07831814209014858,
+          "h": 0.7716375457131247
         },
         "tg-btn-next": {
-          "l": 0.5611099191875849,
-          "t": 1.6017878911011785,
-          "w": 0.06518629764714295,
-          "h": 0.6147907354733848
+          "l": 0.5554688475465102,
+          "t": 2.3774888256806177,
+          "w": 0.07966038207017105,
+          "h": 0.7716375457131247
         },
         "tg-bar": {
-          "l": 0.13523564328112708,
-          "t": 2.6070702966273873,
-          "w": 0.517557033540728,
-          "h": 0.5591223080048761
+          "l": 0.14321388438007243,
+          "t": 3.482324258431532,
+          "w": 0.5242227494069173,
+          "h": 0.7175944737911418
         }
       }
     },
@@ -528,7 +529,7 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
       "modRelease": 1.07
     },
     "tommygee.page.v1": {
-      "pageBG": "#F5F5FF",
+      "pageBG": "#A5A5A5",
       "pageFontColor": "#0A0A0A",
       "programBGFollows": true,
       "activeProgramId": "autoedit"
@@ -1013,7 +1014,7 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
       },
       "autoedit": {
         "cfg": {
-          "bg": "#F5F5FF",
+          "bg": "#A5A5A5",
           "trigger": "bass",
           "sens": 0.07,
           "gap": 0.95,
@@ -1176,8 +1177,8 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
     "tommygee.transport.v1": {
       "tg-btn-stop": "#B5B8B1",
       "tg-btn-play": "#0A0A0A",
-      "tg-btn-prev": "#b5b8b1",
-      "tg-btn-next": "#b5b8b1"
+      "tg-btn-prev": "#FFFFFF",
+      "tg-btn-next": "#FFFFFF"
     }
   } };
 (function () {
