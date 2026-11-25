@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v29-frame -->
+<!-- build: tommygee-v30-noframe -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -112,7 +112,6 @@
   .tg-tbar { position: relative; flex: 1 1 auto; min-width: 0; height: 100%; border-radius: 10px; overflow: hidden; user-select: none; -webkit-user-select: none; display: flex; align-items: center; }
   #tg-transport.parts-mode > .tg-tbtn, #tg-transport.parts-mode > .tg-tbar { outline: 1px dashed rgba(0,0,0,0.55); outline-offset: 1px; cursor: move; }
   #tg-transport.parts-mode > .tg-tbtn::after, #tg-transport.parts-mode > .tg-tbar::after { content: ''; position: absolute; right: -4px; bottom: -4px; width: 8px; height: 8px; background: rgba(255,255,255,0.85); border: 1px solid rgba(0,0,0,0.5); }
-  #tg-player-frame { position: absolute; border: 0.5px solid #000; pointer-events: none; box-sizing: border-box; }
   .tg-tbar .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; pointer-events: none; }
   #tg-btn-prev svg, #tg-btn-next svg { fill: #000; }
   .tg-tbar .t { position: relative; padding: 0 0.9em; color: #000; text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--tg-menu-font, Jost), Jost, sans-serif; pointer-events: none; }
@@ -163,7 +162,6 @@
   <div class="tg-tbtn" id="tg-btn-prev" title="Previous"><svg viewBox="0 0 100 100"><polygon points="70,6 82,18 50,50 82,82 70,94 26,50"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-next" title="Next"><svg viewBox="0 0 100 100"><polygon points="30,6 18,18 50,50 18,82 30,94 74,50"/></svg></div>
   <div class="tg-tbar" id="tg-bar" title="Now playing"><div class="fill"></div><span class="t"></span></div>
-  <div id="tg-player-frame"></div>
   </div>
 
   <!-- main console: invisible 28px strip at bottom -->
@@ -1191,12 +1189,12 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=29"></script>
-<script src="deck.js?v=29"></script>
-<script src="programs/assemblage.js?v=29"></script>
-<script src="programs/main.js?v=29"></script>
-<script src="programs/autoedit.js?v=29"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=29"></script> -->
+<script src="colorpicker.js?v=30"></script>
+<script src="deck.js?v=30"></script>
+<script src="programs/assemblage.js?v=30"></script>
+<script src="programs/main.js?v=30"></script>
+<script src="programs/autoedit.js?v=30"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=30"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -1705,21 +1703,6 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
       Object.assign(el.style, { position: 'absolute', left: (r.l * 100) + '%', top: (r.t * 100) + '%', width: (r.w * 100) + '%', height: (r.h * 100) + '%', aspectRatio: 'auto', flex: 'none' });
     });
   }
-  // thin black frame around all player parts (follows moves/resizes)
-  (function frameLoop() {
-    const tr = document.getElementById('tg-transport'), fr = document.getElementById('tg-player-frame');
-    let last = '';
-    (function tick() {
-      requestAnimationFrame(tick);
-      if (!tr || !fr) return;
-      const box = tr.getBoundingClientRect(); let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
-      PART_IDS.forEach(id => { const e = document.getElementById(id); if (!e || e.offsetParent === null) return; const q = e.getBoundingClientRect(); l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom); });
-      if (r < l) return;
-      const pad = 12, key = [l, t, r, b, box.left, box.top].map(Math.round).join(',');
-      if (key === last) return; last = key;
-      Object.assign(fr.style, { left: (l - box.left - pad) + 'px', top: (t - box.top - pad) + 'px', width: (r - l + 2 * pad) + 'px', height: (b - t + 2 * pad) + 'px' });
-    })();
-  })();
   function freezeParts() {
     if (layoutData['tg-parts']) return;
     const box = document.getElementById('tg-transport').getBoundingClientRect(), parts = {};
@@ -2073,7 +2056,7 @@ window.TG_SITE_DEFAULTS = { rev: 11, saved: '2026-11-25', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=29", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=30", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
