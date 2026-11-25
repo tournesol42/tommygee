@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v28-seq-fix -->
+<!-- build: tommygee-v29-frame -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -112,8 +112,10 @@
   .tg-tbar { position: relative; flex: 1 1 auto; min-width: 0; height: 100%; border-radius: 10px; overflow: hidden; user-select: none; -webkit-user-select: none; display: flex; align-items: center; }
   #tg-transport.parts-mode > .tg-tbtn, #tg-transport.parts-mode > .tg-tbar { outline: 1px dashed rgba(0,0,0,0.55); outline-offset: 1px; cursor: move; }
   #tg-transport.parts-mode > .tg-tbtn::after, #tg-transport.parts-mode > .tg-tbar::after { content: ''; position: absolute; right: -4px; bottom: -4px; width: 8px; height: 8px; background: rgba(255,255,255,0.85); border: 1px solid rgba(0,0,0,0.5); }
+  #tg-player-frame { position: absolute; border: 0.5px solid #000; pointer-events: none; box-sizing: border-box; }
   .tg-tbar .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; pointer-events: none; }
-  .tg-tbar .t { position: relative; padding: 0 0.9em; color: #fff; text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--tg-menu-font, Jost), Jost, sans-serif; pointer-events: none; }
+  #tg-btn-prev svg, #tg-btn-next svg { fill: #000; }
+  .tg-tbar .t { position: relative; padding: 0 0.9em; color: #000; text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--tg-menu-font, Jost), Jost, sans-serif; pointer-events: none; }
   /* slot rows */
   .tg-slot-row { display: grid; grid-template-columns: 22px 0.8fr 1fr 1fr 48px; gap: 8px; align-items: center; }
   .tg-slot-row .n { font-size: 10px; color: #666; text-align: right; cursor: pointer; }
@@ -161,6 +163,7 @@
   <div class="tg-tbtn" id="tg-btn-prev" title="Previous"><svg viewBox="0 0 100 100"><polygon points="70,6 82,18 50,50 82,82 70,94 26,50"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-next" title="Next"><svg viewBox="0 0 100 100"><polygon points="30,6 18,18 50,50 18,82 30,94 74,50"/></svg></div>
   <div class="tg-tbar" id="tg-bar" title="Now playing"><div class="fill"></div><span class="t"></span></div>
+  <div id="tg-player-frame"></div>
   </div>
 
   <!-- main console: invisible 28px strip at bottom -->
@@ -354,7 +357,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
+window.TG_SITE_DEFAULTS = { rev: 9, saved: '2026-11-25', store: {
     "tommygee.assemblage.cfg.v1": {
       "_rev": 4,
       "bg": "#F5F5FF",
@@ -530,7 +533,7 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
       "pageBG": "#F5F5FF",
       "pageFontColor": "#0A0A0A",
       "programBGFollows": true,
-      "activeProgramId": "assemblage"
+      "activeProgramId": "autoedit"
     },
     "tommygee.presets.v1": [
       {
@@ -538,7 +541,7 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
         "pageBG": "#F5F5FF",
         "pageFontColor": "#0A0A0A",
         "programBGFollows": true,
-        "activeProgramId": "main",
+        "activeProgramId": "autoedit",
         "transportColours": {
           "tg-btn-stop": "#B5B8B1",
           "tg-btn-play": "#0A0A0A",
@@ -556,1089 +559,85 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
           }
         },
         "programParams": {
-          "main": {
+          "autoedit": {
             "cfg": {
               "bg": "#F5F5FF",
-              "brightness": 0,
-              "modAmount": 0.37,
-              "modRelease": 0.61
+              "trigger": "bass",
+              "sens": 0.07,
+              "gap": 0.95,
+              "every": 2,
+              "length": "whole",
+              "beats": 2,
+              "cutSens": 0.85
             }
           }
         },
         "layout": {
           "header": {
-            "left": -0.6762542337002541,
-            "top": -0.00718167701863354,
-            "width": 1,
-            "height": 0.04071773636991028
+            "left": -0.6249266431924883,
+            "top": -0.006901311249137336,
+            "width": 0.9241001564945227,
+            "height": 0.03914337474120083
           },
           ".hero-title": {
-            "left": 0.030310647756138866,
-            "top": 0.05649370255348516,
-            "width": 0.9023470575783235,
-            "height": 0.11162870945479642
+            "left": 0.02823014475743349,
+            "top": 0.020304951690821256,
+            "width": 0.5634658646322379,
+            "height": 0.07542917529330573
           },
           "tg-program-container": {
             "left": 0,
             "top": 0,
-            "width": 1,
-            "height": 1
+            "width": 0.9241001564945227,
+            "height": 0.961352657004831
           },
           "tg-transport": {
-            "left": 0.6091236240474175,
-            "top": 0.7514341787439613,
-            "width": 0.3699989415749365,
-            "height": 0.027605244996549344
-          }
-        }
-      },
-      {
-        "label": "2",
-        "pageBG": "#F5F5FF",
-        "pageFontColor": "#0A0A0A",
-        "programBGFollows": true,
-        "activeProgramId": "main",
-        "transportColours": {
-          "tg-btn-stop": "#B5B8B1",
-          "tg-btn-play": "#0A0A0A",
-          "tg-btn-prev": "#b5b8b1",
-          "tg-btn-next": "#b5b8b1"
-        },
-        "fonts": {
-          "title": {
-            "family": "Helvetica Neue",
-            "weight": 700
+            "left": 0.7011932707355243,
+            "top": 0.7265571083505866,
+            "width": 0.34191607981220656,
+            "height": 0.026537698412698412
           },
-          "menu": {
-            "family": "Georama",
-            "weight": 200
-          }
-        },
-        "programParams": {
-          "main": {
-            "cfg": {
-              "bg": "#F5F5FF",
-              "brightness": 0.283,
-              "modAmount": -0.01,
-              "modRelease": 0.11
+          "tg-parts": {
+            "tg-btn-stop": {
+              "l": 0.37756561539011657,
+              "t": 1.562779357984559,
+              "w": 0.06962025316455696,
+              "h": 0.6550182852498985
+            },
+            "tg-btn-play": {
+              "l": 0.1430308231423872,
+              "t": -0.04063388866314506,
+              "w": 0.21250804548380176,
+              "h": 2.2612759041040227
+            },
+            "tg-btn-prev": {
+              "l": 0.4688550382607452,
+              "t": 1.5794392523364487,
+              "w": 0.06858327969677465,
+              "h": 0.613165379926859
+            },
+            "tg-btn-next": {
+              "l": 0.5611099191875849,
+              "t": 1.6017878911011785,
+              "w": 0.06518629764714295,
+              "h": 0.6147907354733848
+            },
+            "tg-bar": {
+              "l": 0.13523564328112708,
+              "t": 2.6070702966273873,
+              "w": 0.517557033540728,
+              "h": 0.5591223080048761
             }
           }
-        },
-        "layout": {
-          "header": {
-            "left": -0.6762542337002541,
-            "top": -0.00718167701863354,
-            "width": 1,
-            "height": 0.04071773636991028
-          },
-          ".hero-title": {
-            "left": 0.030310647756138866,
-            "top": 0.05649370255348516,
-            "width": 0.9023470575783235,
-            "height": 0.11162870945479642
-          },
-          "tg-program-container": {
-            "left": 0,
-            "top": 0,
-            "width": 1,
-            "height": 1
-          },
-          "tg-transport": {
-            "left": 0.6091236240474175,
-            "top": 0.7514341787439613,
-            "width": 0.3699989415749365,
-            "height": 0.027605244996549344
-          }
         }
       },
-      {
-        "label": "3",
-        "pageBG": "#F5F5FF",
-        "pageFontColor": "#0A0A0A",
-        "programBGFollows": true,
-        "activeProgramId": "main",
-        "transportColours": {
-          "tg-btn-stop": "#B5B8B1",
-          "tg-btn-play": "#0A0A0A",
-          "tg-btn-prev": "#b5b8b1",
-          "tg-btn-next": "#b5b8b1"
-        },
-        "fonts": {
-          "title": {
-            "family": "Helvetica Neue",
-            "weight": 700
-          },
-          "menu": {
-            "family": "Georama",
-            "weight": 200
-          }
-        },
-        "programParams": {
-          "main": {
-            "cfg": {
-              "bg": "#F5F5FF",
-              "brightness": 0,
-              "modAmount": 0.2,
-              "modRelease": 0.11
-            }
-          }
-        },
-        "layout": {
-          "header": {
-            "left": -0.6762542337002541,
-            "top": -0.00718167701863354,
-            "width": 1,
-            "height": 0.04071773636991028
-          },
-          ".hero-title": {
-            "left": 0.030310647756138866,
-            "top": 0.05649370255348516,
-            "width": 0.9023470575783235,
-            "height": 0.11162870945479642
-          },
-          "tg-program-container": {
-            "left": 0,
-            "top": 0,
-            "width": 1,
-            "height": 1
-          },
-          "tg-transport": {
-            "left": 0.6091236240474175,
-            "top": 0.7514341787439613,
-            "width": 0.3699989415749365,
-            "height": 0.027605244996549344
-          }
-        }
-      },
-      {
-        "label": "4",
-        "pageBG": "#F5F5FF",
-        "pageFontColor": "#0A0A0A",
-        "programBGFollows": true,
-        "activeProgramId": "main",
-        "transportColours": {
-          "tg-btn-stop": "#B5B8B1",
-          "tg-btn-play": "#0A0A0A",
-          "tg-btn-prev": "#b5b8b1",
-          "tg-btn-next": "#b5b8b1"
-        },
-        "fonts": {
-          "title": {
-            "family": "Helvetica Neue",
-            "weight": 700
-          },
-          "menu": {
-            "family": "Georama",
-            "weight": 200
-          }
-        },
-        "programParams": {
-          "main": {
-            "cfg": {
-              "bg": "#F5F5FF",
-              "brightness": 0,
-              "modAmount": 1,
-              "modRelease": 1.07
-            }
-          }
-        },
-        "layout": {
-          "header": {
-            "left": -0.6762542337002541,
-            "top": -0.00718167701863354,
-            "width": 1,
-            "height": 0.04071773636991028
-          },
-          ".hero-title": {
-            "left": 0.030310647756138866,
-            "top": 0.05649370255348516,
-            "width": 0.9023470575783235,
-            "height": 0.11162870945479642
-          },
-          "tg-program-container": {
-            "left": 0,
-            "top": 0,
-            "width": 1,
-            "height": 1
-          },
-          "tg-transport": {
-            "left": 0.6091236240474175,
-            "top": 0.7514341787439613,
-            "width": 0.3699989415749365,
-            "height": 0.027605244996549344
-          }
-        }
-      },
-      {
-        "label": "5",
-        "pageBG": "#F5F5FF",
-        "pageFontColor": "#0A0A0A",
-        "programBGFollows": true,
-        "activeProgramId": "assemblage",
-        "transportColours": {
-          "tg-btn-stop": "#B5B8B1",
-          "tg-btn-play": "#0A0A0A",
-          "tg-btn-prev": "#b5b8b1",
-          "tg-btn-next": "#b5b8b1"
-        },
-        "fonts": {
-          "title": {
-            "family": "Helvetica Neue",
-            "weight": 700
-          },
-          "menu": {
-            "family": "Georama",
-            "weight": 200
-          }
-        },
-        "programParams": {
-          "assemblage": {
-            "cfg": {
-              "bg": "#F5F5FF",
-              "textColor": "#1b1b1b",
-              "textAlpha": 0.9,
-              "notesColor": "#1b1b1b",
-              "notesAlpha": 0.8,
-              "uiTextColor": "#1b1b1b",
-              "lineColor": "#ececea",
-              "lineAlpha": 0.85,
-              "dotColor": "#3e3e3e",
-              "haloColor": "#a0d2ec",
-              "haloAlpha": 0.78,
-              "inkColor": "#1b1b1b",
-              "frameShow": false,
-              "frameColor": "#2271B3",
-              "frameAlpha": 1,
-              "frameWidth": 0.9,
-              "framePad": 59,
-              "trackLenV": 230,
-              "trackLenH": 300,
-              "trackWidth": 1.6,
-              "markerR": 14.5,
-              "numeralSize": 13.5,
-              "labelSize": 14,
-              "handleDot": 4.3,
-              "haloMult": 1.2,
-              "minHalo": 12.4,
-              "minDot": 2.6,
-              "showLeaders": true,
-              "leaderDash": 5.5,
-              "rayWidth": 0.75,
-              "rayAlpha": 0.31,
-              "rayDot": 0.85,
-              "rayDensity": 0.85,
-              "rayLength": 1,
-              "curveCount": 1.45,
-              "curveWidth": 1,
-              "curveAlpha": 0.17,
-              "guideAlpha": 1,
-              "showNotes": true,
-              "notesSize": 8,
-              "notesCount": 1,
-              "pieceW": 1.42,
-              "pieceH": 2.21,
-              "stackChance": 0.34,
-              "multiplyChance": 0.08,
-              "seed": 419,
-              "border": "white",
-              "borderWidth": 0.25,
-              "seedSize": 136,
-              "washShow": true,
-              "washColor": "#b8e2f5",
-              "washAlpha": 0.29,
-              "washVar": 0.55,
-              "washAmount": 0.2,
-              "washSpread": 0.67,
-              "washBands": 4,
-              "washSkew": 0.93,
-              "followMotion": true,
-              "motionLen": 1.35
-            },
-            "faders": [
-              {
-                "key": "pieces",
-                "v": 0.7459320514303082,
-                "pos": {
-                  "16:9": {
-                    "x": 199.6,
-                    "y": 835.4
-                  },
-                  "9:16": {
-                    "x": 877.1,
-                    "y": 520.7
-                  },
-                  "1:1": {
-                    "x": 170,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "spread",
-                "v": 0.55,
-                "pos": {
-                  "16:9": {
-                    "x": 360.7,
-                    "y": 858.8
-                  },
-                  "9:16": {
-                    "x": 813.8,
-                    "y": 651.9
-                  },
-                  "1:1": {
-                    "x": 307.1428571428571,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "displace",
-                "v": 0.03221786068724836,
-                "pos": {
-                  "16:9": {
-                    "x": 561.4,
-                    "y": 919.7
-                  },
-                  "9:16": {
-                    "x": 762.6,
-                    "y": 851
-                  },
-                  "1:1": {
-                    "x": 444.2857142857143,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "zoom",
-                "v": 0,
-                "pos": {
-                  "16:9": {
-                    "x": 776.5,
-                    "y": 852.4
-                  },
-                  "9:16": {
-                    "x": 839.9,
-                    "y": 995.9
-                  },
-                  "1:1": {
-                    "x": 581.4285714285713,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "opacity",
-                "v": 1,
-                "pos": {
-                  "16:9": {
-                    "x": 927.5,
-                    "y": 793.3
-                  },
-                  "9:16": {
-                    "x": 858.6,
-                    "y": 1179.8
-                  },
-                  "1:1": {
-                    "x": 718.5714285714286,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "mono",
-                "v": 0.15,
-                "pos": {
-                  "16:9": {
-                    "x": 1102.1,
-                    "y": 808.3
-                  },
-                  "9:16": {
-                    "x": 977,
-                    "y": 1317.8
-                  },
-                  "1:1": {
-                    "x": 855.7142857142858,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "lines",
-                "v": 0,
-                "pos": {
-                  "16:9": {
-                    "x": 1273.3,
-                    "y": 790.7
-                  },
-                  "9:16": {
-                    "x": 1042.1,
-                    "y": 1456
-                  },
-                  "1:1": {
-                    "x": 992.8571428571428,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "reveal",
-                "v": 0.6067513878631957,
-                "pos": {
-                  "16:9": {
-                    "x": 1482.1,
-                    "y": 815.9
-                  },
-                  "9:16": {
-                    "x": 983,
-                    "y": 1610.1
-                  },
-                  "1:1": {
-                    "x": 1130,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "bright",
-                "v": 0.5,
-                "pos": {
-                  "16:9": {
-                    "x": 1610,
-                    "y": 800
-                  },
-                  "9:16": {
-                    "x": 877.1,
-                    "y": 390
-                  },
-                  "1:1": {
-                    "x": 1267.142857142857,
-                    "y": 960
-                  }
-                }
-              }
-            ],
-            "motion": {
-              "knobs": [
-                {
-                  "key": "speed",
-                  "v": 0.204
-                },
-                {
-                  "key": "travel",
-                  "v": 0.2853063170606018
-                },
-                {
-                  "key": "snap",
-                  "v": 0.24215028843147937
-                },
-                {
-                  "key": "breathe",
-                  "v": 0.274
-                },
-                {
-                  "key": "chaos",
-                  "v": 0.272
-                }
-              ],
-              "pos": {
-                "16:9": {
-                  "x": 1731.1,
-                  "y": 860.2
-                },
-                "9:16": {
-                  "x": 823.4,
-                  "y": 1793
-                },
-                "1:1": {
-                  "x": 1380,
-                  "y": 930
-                }
-              }
-            },
-            "seed": {
-              "rings": [
-                {
-                  "v": 0.3,
-                  "a0": -90
-                },
-                {
-                  "v": 0.55,
-                  "a0": -35
-                },
-                {
-                  "v": 0.7,
-                  "a0": 160
-                }
-              ],
-              "on": true,
-              "pos": {
-                "16:9": {
-                  "x": 1740,
-                  "y": 220
-                },
-                "9:16": {
-                  "x": 220,
-                  "y": 1700
-                },
-                "1:1": {
-                  "x": 220,
-                  "y": 1220
-                }
-              }
-            },
-            "format": "16:9",
-            "showControls": true,
-            "group": {
-              "16:9": {
-                "x": 0,
-                "y": 0,
-                "s": 1
-              },
-              "9:16": {
-                "x": 0,
-                "y": 0,
-                "s": 1
-              },
-              "1:1": {
-                "x": 0,
-                "y": 0,
-                "s": 1
-              }
-            },
-            "faderScale": {
-              "16:9": 0.9835570065555749,
-              "9:16": 1,
-              "1:1": 1
-            },
-            "frame": {
-              "16:9": null,
-              "9:16": null,
-              "1:1": null
-            }
-          }
-        },
-        "layout": {
-          "header": {
-            "left": -0.6762542337002541,
-            "top": -0.00718167701863354,
-            "width": 1,
-            "height": 0.04071773636991028
-          },
-          ".hero-title": {
-            "left": 0.030310647756138866,
-            "top": 0.05649370255348516,
-            "width": 0.9023470575783235,
-            "height": 0.11162870945479642
-          },
-          "tg-program-container": {
-            "left": 0,
-            "top": 0,
-            "width": 1,
-            "height": 1
-          },
-          "tg-transport": {
-            "left": 0.6091236240474175,
-            "top": 0.7514341787439613,
-            "width": 0.3699989415749365,
-            "height": 0.027605244996549344
-          }
-        }
-      },
-      {
-        "label": "6",
-        "pageBG": "#F5F5FF",
-        "pageFontColor": "#0A0A0A",
-        "programBGFollows": true,
-        "activeProgramId": "assemblage",
-        "transportColours": {
-          "tg-btn-stop": "#B5B8B1",
-          "tg-btn-play": "#0A0A0A",
-          "tg-btn-prev": "#b5b8b1",
-          "tg-btn-next": "#b5b8b1"
-        },
-        "fonts": {
-          "title": {
-            "family": "Helvetica Neue",
-            "weight": 700
-          },
-          "menu": {
-            "family": "Georama",
-            "weight": 200
-          }
-        },
-        "programParams": {
-          "assemblage": {
-            "cfg": {
-              "bg": "#F5F5FF",
-              "textColor": "#1b1b1b",
-              "textAlpha": 0.9,
-              "notesColor": "#1b1b1b",
-              "notesAlpha": 0.8,
-              "uiTextColor": "#1b1b1b",
-              "lineColor": "#ececea",
-              "lineAlpha": 0.85,
-              "dotColor": "#3e3e3e",
-              "haloColor": "#a0d2ec",
-              "haloAlpha": 0.78,
-              "inkColor": "#1b1b1b",
-              "frameShow": false,
-              "frameColor": "#2271B3",
-              "frameAlpha": 1,
-              "frameWidth": 0.9,
-              "framePad": 59,
-              "trackLenV": 230,
-              "trackLenH": 300,
-              "trackWidth": 1.6,
-              "markerR": 14.5,
-              "numeralSize": 13.5,
-              "labelSize": 14,
-              "handleDot": 4.3,
-              "haloMult": 1.2,
-              "minHalo": 12.4,
-              "minDot": 2.6,
-              "showLeaders": true,
-              "leaderDash": 5.5,
-              "rayWidth": 0.75,
-              "rayAlpha": 0.31,
-              "rayDot": 0.85,
-              "rayDensity": 0.85,
-              "rayLength": 1,
-              "curveCount": 1.45,
-              "curveWidth": 1,
-              "curveAlpha": 0.17,
-              "guideAlpha": 1,
-              "showNotes": true,
-              "notesSize": 8,
-              "notesCount": 1,
-              "pieceW": 3,
-              "pieceH": 2.21,
-              "stackChance": 0.34,
-              "multiplyChance": 0.08,
-              "seed": 419,
-              "border": "white",
-              "borderWidth": 0.25,
-              "seedSize": 136,
-              "washShow": true,
-              "washColor": "#b8e2f5",
-              "washAlpha": 0.29,
-              "washVar": 0.55,
-              "washAmount": 0.2,
-              "washSpread": 0.67,
-              "washBands": 4,
-              "washSkew": 0.93,
-              "followMotion": true,
-              "motionLen": 1.35
-            },
-            "faders": [
-              {
-                "key": "pieces",
-                "v": 1,
-                "pos": {
-                  "16:9": {
-                    "x": 199.6,
-                    "y": 835.4
-                  },
-                  "9:16": {
-                    "x": 877.1,
-                    "y": 520.7
-                  },
-                  "1:1": {
-                    "x": 170,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "spread",
-                "v": 0.528217946237478,
-                "pos": {
-                  "16:9": {
-                    "x": 360.7,
-                    "y": 858.8
-                  },
-                  "9:16": {
-                    "x": 813.8,
-                    "y": 651.9
-                  },
-                  "1:1": {
-                    "x": 307.1428571428571,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "displace",
-                "v": 0.03221786068724836,
-                "pos": {
-                  "16:9": {
-                    "x": 561.4,
-                    "y": 919.7
-                  },
-                  "9:16": {
-                    "x": 762.6,
-                    "y": 851
-                  },
-                  "1:1": {
-                    "x": 444.2857142857143,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "zoom",
-                "v": 0,
-                "pos": {
-                  "16:9": {
-                    "x": 776.5,
-                    "y": 852.4
-                  },
-                  "9:16": {
-                    "x": 839.9,
-                    "y": 995.9
-                  },
-                  "1:1": {
-                    "x": 581.4285714285713,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "opacity",
-                "v": 1,
-                "pos": {
-                  "16:9": {
-                    "x": 927.5,
-                    "y": 793.3
-                  },
-                  "9:16": {
-                    "x": 858.6,
-                    "y": 1179.8
-                  },
-                  "1:1": {
-                    "x": 718.5714285714286,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "mono",
-                "v": 0.15,
-                "pos": {
-                  "16:9": {
-                    "x": 1102.1,
-                    "y": 808.3
-                  },
-                  "9:16": {
-                    "x": 977,
-                    "y": 1317.8
-                  },
-                  "1:1": {
-                    "x": 855.7142857142858,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "lines",
-                "v": 0,
-                "pos": {
-                  "16:9": {
-                    "x": 1273.3,
-                    "y": 790.7
-                  },
-                  "9:16": {
-                    "x": 1042.1,
-                    "y": 1456
-                  },
-                  "1:1": {
-                    "x": 992.8571428571428,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "reveal",
-                "v": 0,
-                "pos": {
-                  "16:9": {
-                    "x": 1482.1,
-                    "y": 815.9
-                  },
-                  "9:16": {
-                    "x": 983,
-                    "y": 1610.1
-                  },
-                  "1:1": {
-                    "x": 1130,
-                    "y": 960
-                  }
-                }
-              },
-              {
-                "key": "bright",
-                "v": 0.45978403755714176,
-                "pos": {
-                  "16:9": {
-                    "x": 1610,
-                    "y": 800
-                  },
-                  "9:16": {
-                    "x": 877.1,
-                    "y": 390
-                  },
-                  "1:1": {
-                    "x": 1267.142857142857,
-                    "y": 960
-                  }
-                }
-              }
-            ],
-            "motion": {
-              "knobs": [
-                {
-                  "key": "speed",
-                  "v": 0.204
-                },
-                {
-                  "key": "travel",
-                  "v": 0.6472447229114745
-                },
-                {
-                  "key": "snap",
-                  "v": 1
-                },
-                {
-                  "key": "breathe",
-                  "v": 0.7965892921001504
-                },
-                {
-                  "key": "chaos",
-                  "v": 0.80755712258048
-                }
-              ],
-              "pos": {
-                "16:9": {
-                  "x": 1731.1,
-                  "y": 860.2
-                },
-                "9:16": {
-                  "x": 823.4,
-                  "y": 1793
-                },
-                "1:1": {
-                  "x": 1380,
-                  "y": 930
-                }
-              }
-            },
-            "seed": {
-              "rings": [
-                {
-                  "v": 0.3,
-                  "a0": -90
-                },
-                {
-                  "v": 0.55,
-                  "a0": -35
-                },
-                {
-                  "v": 0.7,
-                  "a0": 160
-                }
-              ],
-              "on": true,
-              "pos": {
-                "16:9": {
-                  "x": 1740,
-                  "y": 220
-                },
-                "9:16": {
-                  "x": 220,
-                  "y": 1700
-                },
-                "1:1": {
-                  "x": 220,
-                  "y": 1220
-                }
-              }
-            },
-            "format": "16:9",
-            "showControls": true,
-            "group": {
-              "16:9": {
-                "x": 0,
-                "y": 0,
-                "s": 1
-              },
-              "9:16": {
-                "x": 0,
-                "y": 0,
-                "s": 1
-              },
-              "1:1": {
-                "x": 0,
-                "y": 0,
-                "s": 1
-              }
-            },
-            "faderScale": {
-              "16:9": 0.9835570065555749,
-              "9:16": 1,
-              "1:1": 1
-            },
-            "frame": {
-              "16:9": null,
-              "9:16": null,
-              "1:1": null
-            }
-          }
-        },
-        "layout": {
-          "header": {
-            "left": -0.6762542337002541,
-            "top": -0.00718167701863354,
-            "width": 1,
-            "height": 0.04071773636991028
-          },
-          ".hero-title": {
-            "left": 0.030310647756138866,
-            "top": 0.05649370255348516,
-            "width": 0.9023470575783235,
-            "height": 0.11162870945479642
-          },
-          "tg-program-container": {
-            "left": 0,
-            "top": 0,
-            "width": 1,
-            "height": 1
-          },
-          "tg-transport": {
-            "left": 0.6091236240474175,
-            "top": 0.7514341787439613,
-            "width": 0.3699989415749365,
-            "height": 0.027605244996549344
-          }
-        }
-      },
-      {
-        "label": "7",
-        "pageBG": "#F5F5FF",
-        "pageFontColor": "#0A0A0A",
-        "programBGFollows": true,
-        "activeProgramId": "main",
-        "transportColours": {
-          "tg-btn-stop": "#B5B8B1",
-          "tg-btn-play": "#0A0A0A",
-          "tg-btn-prev": "#b5b8b1",
-          "tg-btn-next": "#b5b8b1"
-        },
-        "fonts": {
-          "title": {
-            "family": "Helvetica Neue",
-            "weight": 700
-          },
-          "menu": {
-            "family": "Georama",
-            "weight": 200
-          }
-        },
-        "programParams": {
-          "main": {
-            "cfg": {
-              "bg": "#F5F5FF",
-              "brightness": 0,
-              "modAmount": 1,
-              "modRelease": 1.07
-            }
-          }
-        },
-        "layout": {
-          "header": {
-            "left": -0.6762542337002541,
-            "top": -0.00718167701863354,
-            "width": 1,
-            "height": 0.04071773636991028
-          },
-          ".hero-title": {
-            "left": 0.030310647756138866,
-            "top": 0.05649370255348516,
-            "width": 0.9023470575783235,
-            "height": 0.11162870945479642
-          },
-          "tg-program-container": {
-            "left": 0,
-            "top": 0,
-            "width": 1,
-            "height": 1
-          },
-          "tg-transport": {
-            "left": 0.6091236240474175,
-            "top": 0.7514341787439613,
-            "width": 0.3699989415749365,
-            "height": 0.027605244996549344
-          }
-        }
-      },
-      {
-        "label": "8",
-        "pageBG": "#F5F5FF",
-        "pageFontColor": "#0A0A0A",
-        "programBGFollows": true,
-        "activeProgramId": "main",
-        "transportColours": {
-          "tg-btn-stop": "#B5B8B1",
-          "tg-btn-play": "#0A0A0A",
-          "tg-btn-prev": "#b5b8b1",
-          "tg-btn-next": "#b5b8b1"
-        },
-        "fonts": {
-          "title": {
-            "family": "Helvetica Neue",
-            "weight": 700
-          },
-          "menu": {
-            "family": "Georama",
-            "weight": 200
-          }
-        },
-        "programParams": {
-          "main": {
-            "cfg": {
-              "bg": "#F5F5FF",
-              "brightness": 0,
-              "modAmount": 1,
-              "modRelease": 1.62
-            }
-          }
-        },
-        "layout": {
-          "header": {
-            "left": -0.6762542337002541,
-            "top": -0.00718167701863354,
-            "width": 1,
-            "height": 0.04071773636991028
-          },
-          ".hero-title": {
-            "left": 0.030310647756138866,
-            "top": 0.05649370255348516,
-            "width": 0.9023470575783235,
-            "height": 0.11162870945479642
-          },
-          "tg-program-container": {
-            "left": 0,
-            "top": 0,
-            "width": 1,
-            "height": 1
-          },
-          "tg-transport": {
-            "left": 0.6091236240474175,
-            "top": 0.7514341787439613,
-            "width": 0.3699989415749365,
-            "height": 0.027605244996549344
-          }
-        }
-      },
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
       null,
       null,
       null,
@@ -2032,14 +1031,7 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
       "slots": [
         {
           "steps": [
-            1,
-            0,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7
+            0
           ],
           "mode": "fwd",
           "secs": 8,
@@ -2199,12 +1191,12 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=28"></script>
-<script src="deck.js?v=28"></script>
-<script src="programs/assemblage.js?v=28"></script>
-<script src="programs/main.js?v=28"></script>
-<script src="programs/autoedit.js?v=28"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=28"></script> -->
+<script src="colorpicker.js?v=29"></script>
+<script src="deck.js?v=29"></script>
+<script src="programs/assemblage.js?v=29"></script>
+<script src="programs/main.js?v=29"></script>
+<script src="programs/autoedit.js?v=29"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=29"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -2494,7 +1486,10 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
     function step(dir) {
       const si = (window.TGDeck && TGDeck.index) || 0;   // always the playing song's own sequence
       if (si !== runningSlot) pos = -1;
-      const sq = st.slots[si]; const k = nextIndex(sq, dir);
+      const sq = st.slots[si];
+      let k = nextIndex(sq, dir);
+      for (let tries = 0; k >= 0 && !presets[sq.steps[k]] && tries < sq.steps.length * 2; tries++) { pos = k; k = nextIndex(sq, dir); }   // skip empty preset slots
+      if (k >= 0 && !presets[sq.steps[k]]) k = -1;
       if (k >= 0) { runningSlot = si; applyStep(si, k); }
       restartTimer();
     }
@@ -2710,6 +1705,21 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
       Object.assign(el.style, { position: 'absolute', left: (r.l * 100) + '%', top: (r.t * 100) + '%', width: (r.w * 100) + '%', height: (r.h * 100) + '%', aspectRatio: 'auto', flex: 'none' });
     });
   }
+  // thin black frame around all player parts (follows moves/resizes)
+  (function frameLoop() {
+    const tr = document.getElementById('tg-transport'), fr = document.getElementById('tg-player-frame');
+    let last = '';
+    (function tick() {
+      requestAnimationFrame(tick);
+      if (!tr || !fr) return;
+      const box = tr.getBoundingClientRect(); let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
+      PART_IDS.forEach(id => { const e = document.getElementById(id); if (!e || e.offsetParent === null) return; const q = e.getBoundingClientRect(); l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom); });
+      if (r < l) return;
+      const pad = 12, key = [l, t, r, b, box.left, box.top].map(Math.round).join(',');
+      if (key === last) return; last = key;
+      Object.assign(fr.style, { left: (l - box.left - pad) + 'px', top: (t - box.top - pad) + 'px', width: (r - l + 2 * pad) + 'px', height: (b - t + 2 * pad) + 'px' });
+    })();
+  })();
   function freezeParts() {
     if (layoutData['tg-parts']) return;
     const box = document.getElementById('tg-transport').getBoundingClientRect(), parts = {};
@@ -3063,7 +2073,7 @@ window.TG_SITE_DEFAULTS = { rev: 8, saved: '2026-11-23', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=28", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=29", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
