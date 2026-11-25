@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v30-noframe -->
+<!-- build: tommygee-v31-console-scroll -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -49,6 +49,8 @@
   #tg-console-strip:hover::after { content: ''; display: block; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.18); }
   #tg-console-panel { position: fixed; bottom: 0; left: 0; right: 0; max-height: 45vh; z-index: 101; background: rgba(10,10,10,0.9); border-top: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; font-family: Jost, "Helvetica Neue", sans-serif; font-weight: 300; color: #ccc; overflow: hidden; }
   #tg-console-panel.open { display: flex; }
+  /* while the console is open the page can be scrolled up behind it (wheel / trackpad) */
+  header, .hero-title, #tg-transport, #tg-program-container { translate: 0 var(--tg-shift, 0px); }
   #tg-console-panel-inner { overflow-y: auto; padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 20px; }
   #tg-console-panel-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
   #tg-console-panel-head span { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #888; }
@@ -1190,12 +1192,12 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=30"></script>
-<script src="deck.js?v=30"></script>
-<script src="programs/assemblage.js?v=30"></script>
-<script src="programs/main.js?v=30"></script>
-<script src="programs/autoedit.js?v=30"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=30"></script> -->
+<script src="colorpicker.js?v=31"></script>
+<script src="deck.js?v=31"></script>
+<script src="programs/assemblage.js?v=31"></script>
+<script src="programs/main.js?v=31"></script>
+<script src="programs/autoedit.js?v=31"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=31"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -1335,6 +1337,16 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
   const consolePanel = document.getElementById('tg-console-panel');
   const consoleClose = document.getElementById('tg-console-close');
   function toggleConsole() { consolePanel.classList.toggle('open'); }
+  // scroll the page up behind the open console (wheel/trackpad over the page, not over the console)
+  window.TG_SHIFT = 0;
+  const setShift = v => { window.TG_SHIFT = v; document.documentElement.style.setProperty('--tg-shift', v + 'px'); };
+  window.addEventListener('wheel', e => {
+    if (!consolePanel.classList.contains('open') || consolePanel.contains(e.target)) return;
+    if (e.target.closest && e.target.closest('#tg-seq, .tg-cp, [id^="tg-fp"]')) return;
+    const max = consolePanel.offsetHeight;
+    setShift(Math.max(-max, Math.min(0, window.TG_SHIFT - e.deltaY)));
+  }, { passive: true });
+  new MutationObserver(() => { if (!consolePanel.classList.contains('open')) setShift(0); else if (window.TG_SHIFT < -consolePanel.offsetHeight) setShift(-consolePanel.offsetHeight); }).observe(consolePanel, { attributes: true, attributeFilter: ['class'] });
   consoleStrip.addEventListener('click', toggleConsole);
   consoleClose.addEventListener('click', toggleConsole);
 
@@ -1662,7 +1674,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
       const key = m.id || m.selector;
       const vw = window.innerWidth, vh = window.innerHeight;
       const r = el.getBoundingClientRect();
-      layoutData[key] = { left: r.left/vw, top: r.top/vh, width: r.width/vw, height: r.height/vh };
+      layoutData[key] = { left: r.left/vw, top: (r.top - (window.TG_SHIFT || 0))/vh, width: r.width/vw, height: r.height/vh };   // ignore the console scroll
     });
     try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layoutData)); } catch(e) {}
   }
@@ -1778,7 +1790,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
   function freezeBox(el, isTitle) {
     const r = el.getBoundingClientRect();
     el.style.position = 'fixed'; el.style.inset = '';
-    el.style.left = r.left + 'px'; el.style.top = r.top + 'px';
+    el.style.left = r.left + 'px'; el.style.top = (r.top - (window.TG_SHIFT || 0)) + 'px';
     el.style.right = 'auto'; el.style.bottom = 'auto';
     if (isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; }
     else { el.style.width = r.width + 'px'; el.style.height = r.height + 'px'; }
@@ -1812,7 +1824,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
       const isT = targetKey === '.hero-title';
       const r = freezeBox(el, isT);
       lastShiftDrag = performance.now();
-      moveDrag = { type:'resize', el, corner, isTitle: isT, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top, ow:r.width, oh:r.height };
+      moveDrag = { type:'resize', el, corner, isTitle: isT, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top - (window.TG_SHIFT || 0), ow:r.width, oh:r.height };
       startDrag(e); return;
     }
     // hit order: header and title by closest(), program container by outer-band check
@@ -1824,7 +1836,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
       const el = getMovableEl(m);
       if (!el || !el.contains(e.target)) continue;
       const r = freezeBox(el, !!m.isTitle);
-      moveDrag = { type:'move', el, isTitle: !!m.isTitle, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
+      moveDrag = { type:'move', el, isTitle: !!m.isTitle, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top - (window.TG_SHIFT || 0) };
       lastShiftDrag = performance.now();
       startDrag(e); return;
     }
@@ -1833,7 +1845,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
       if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
         const inner = e.clientX > r.left+12 && e.clientX < r.right-12 && e.clientY > r.top+12 && e.clientY < r.bottom-12;
         if (inner) return;
-        moveDrag = { type:'move', el:progEl, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top };
+        moveDrag = { type:'move', el:progEl, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top - (window.TG_SHIFT || 0) };
         e.stopPropagation(); e.preventDefault();
       }
     }
@@ -2057,7 +2069,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=30", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=31", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
