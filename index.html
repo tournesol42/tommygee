@@ -357,7 +357,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
+window.TG_SITE_DEFAULTS = { rev: 13, saved: '2026-11-26', store: {
     "tommygee.assemblage.cfg.v1": {
       "_rev": 4,
       "bg": "#F5F5FF",
@@ -401,8 +401,8 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
       "showNotes": true,
       "notesSize": 8,
       "notesCount": 1,
-      "pieceW": 3,
-      "pieceH": 2.21,
+      "pieceW": 0.96,
+      "pieceH": 1.99,
       "stackChance": 0.34,
       "multiplyChance": 0.08,
       "seed": 419,
@@ -421,7 +421,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
       "motionLen": 1.35
     },
     "tommygee.autoedit.cfg.v1": {
-      "bg": "#A5A5A5",
+      "bg": "#F5F5FF",
       "trigger": "bass",
       "sens": 0.07,
       "gap": 0.95,
@@ -464,8 +464,8 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
     },
     "tommygee.fonts.v1": {
       "title": {
-        "family": "Inter Tight",
-        "weight": 300
+        "family": "Helvetica Neue",
+        "weight": 700
       },
       "menu": {
         "family": "Georama",
@@ -474,67 +474,73 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
     },
     "tommygee.layout.v1": {
       "header": {
-        "left": -0.6378500683060109,
-        "top": 0.04160196687370601,
-        "width": 0.9240949453551912,
+        "left": -0.6249266431924883,
+        "top": -0.006901311249137336,
+        "width": 0.9241001564945227,
         "height": 0.03914337474120083
       },
       ".hero-title": {
-        "left": 0.050749231557377046,
-        "top": 0.07462042788129744,
-        "width": 0.28215718920765026,
-        "height": 0.04736024844720497
+        "left": 0.02823014475743349,
+        "top": 0.020304951690821256,
+        "width": 0.5634658646322379,
+        "height": 0.07542917529330573
       },
       "tg-program-container": {
         "left": 0,
         "top": 0,
-        "width": 1,
+        "width": 0.9241001564945227,
         "height": 0.961352657004831
       },
       "tg-transport": {
-        "left": 0.6833696209016393,
-        "top": 0.826626121463078,
-        "width": 0.34191427595628415,
+        "left": 0.7011932707355243,
+        "top": 0.7265571083505866,
+        "width": 0.34191607981220656,
         "height": 0.026537698412698412
       },
       "tg-parts": {
+        "tg-btn-stop": {
+          "l": 0.37756561539011657,
+          "t": 1.562779357984559,
+          "w": 0.06962025316455696,
+          "h": 0.6550182852498985
+        },
         "tg-btn-play": {
-          "l": 0.14418154576101885,
-          "t": -0.7631044290938643,
-          "w": 0.28636533899363215,
-          "h": 3.983746444534742
+          "l": 0.1430308231423872,
+          "t": -0.04063388866314506,
+          "w": 0.21250804548380176,
+          "h": 2.2612759041040227
         },
         "tg-btn-prev": {
-          "l": 0.4524597328005993,
-          "t": 2.388866314506298,
-          "w": 0.07831814209014858,
-          "h": 0.7716375457131247
+          "l": 0.4688550382607452,
+          "t": 1.5794392523364487,
+          "w": 0.06858327969677465,
+          "h": 0.613165379926859
         },
         "tg-btn-next": {
-          "l": 0.5554688475465102,
-          "t": 2.3774888256806177,
-          "w": 0.07966038207017105,
-          "h": 0.7716375457131247
+          "l": 0.5611099191875849,
+          "t": 1.6017878911011785,
+          "w": 0.06518629764714295,
+          "h": 0.6147907354733848
         },
         "tg-bar": {
-          "l": 0.14321388438007243,
-          "t": 3.482324258431532,
-          "w": 0.5242227494069173,
-          "h": 0.7175944737911418
+          "l": 0.13523564328112708,
+          "t": 2.6070702966273873,
+          "w": 0.517557033540728,
+          "h": 0.5591223080048761
         }
       }
     },
     "tommygee.main.cfg.v1": {
       "bg": "#F5F5FF",
-      "brightness": 0,
+      "brightness": 0.126,
       "modAmount": 1,
       "modRelease": 1.07
     },
     "tommygee.page.v1": {
-      "pageBG": "#A5A5A5",
+      "pageBG": "#F5F5FF",
       "pageFontColor": "#0A0A0A",
       "programBGFollows": true,
-      "activeProgramId": "autoedit"
+      "activeProgramId": "main"
     },
     "tommygee.presets.v1": [
       {
@@ -542,7 +548,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
         "pageBG": "#F5F5FF",
         "pageFontColor": "#0A0A0A",
         "programBGFollows": true,
-        "activeProgramId": "autoedit",
+        "activeProgramId": "assemblage",
         "transportColours": {
           "tg-btn-stop": "#B5B8B1",
           "tg-btn-play": "#0A0A0A",
@@ -560,16 +566,1917 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
           }
         },
         "programParams": {
-          "autoedit": {
+          "assemblage": {
             "cfg": {
               "bg": "#F5F5FF",
-              "trigger": "bass",
-              "sens": 0.07,
-              "gap": 0.95,
-              "every": 2,
-              "length": "whole",
-              "beats": 2,
-              "cutSens": 0.85
+              "textColor": "#1b1b1b",
+              "textAlpha": 0.9,
+              "notesColor": "#1b1b1b",
+              "notesAlpha": 0.8,
+              "uiTextColor": "#1b1b1b",
+              "lineColor": "#ececea",
+              "lineAlpha": 0.85,
+              "dotColor": "#3e3e3e",
+              "haloColor": "#a0d2ec",
+              "haloAlpha": 0.78,
+              "inkColor": "#1b1b1b",
+              "frameShow": false,
+              "frameColor": "#2271B3",
+              "frameAlpha": 1,
+              "frameWidth": 0.9,
+              "framePad": 59,
+              "trackLenV": 230,
+              "trackLenH": 300,
+              "trackWidth": 1.6,
+              "markerR": 14.5,
+              "numeralSize": 13.5,
+              "labelSize": 14,
+              "handleDot": 4.3,
+              "haloMult": 1.2,
+              "minHalo": 12.4,
+              "minDot": 2.6,
+              "showLeaders": true,
+              "leaderDash": 5.5,
+              "rayWidth": 0.75,
+              "rayAlpha": 0.31,
+              "rayDot": 0.85,
+              "rayDensity": 0.85,
+              "rayLength": 1,
+              "curveCount": 1.45,
+              "curveWidth": 1,
+              "curveAlpha": 0.17,
+              "guideAlpha": 1,
+              "showNotes": true,
+              "notesSize": 8,
+              "notesCount": 1,
+              "pieceW": 3,
+              "pieceH": 1.34,
+              "stackChance": 0.34,
+              "multiplyChance": 0.08,
+              "seed": 419,
+              "border": "white",
+              "borderWidth": 0.25,
+              "seedSize": 136,
+              "washShow": true,
+              "washColor": "#b8e2f5",
+              "washAlpha": 0.29,
+              "washVar": 0.55,
+              "washAmount": 0.2,
+              "washSpread": 0.67,
+              "washBands": 4,
+              "washSkew": 0.93,
+              "followMotion": true,
+              "motionLen": 1.35
+            },
+            "faders": [
+              {
+                "key": "pieces",
+                "v": 0.8791613718061622,
+                "pos": {
+                  "16:9": {
+                    "x": 199.6,
+                    "y": 835.4
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 520.7
+                  },
+                  "1:1": {
+                    "x": 170,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "spread",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 360.7,
+                    "y": 858.8
+                  },
+                  "9:16": {
+                    "x": 813.8,
+                    "y": 651.9
+                  },
+                  "1:1": {
+                    "x": 307.1428571428571,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "displace",
+                "v": 0.03221786068724836,
+                "pos": {
+                  "16:9": {
+                    "x": 561.4,
+                    "y": 919.7
+                  },
+                  "9:16": {
+                    "x": 762.6,
+                    "y": 851
+                  },
+                  "1:1": {
+                    "x": 444.2857142857143,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "zoom",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 776.5,
+                    "y": 852.4
+                  },
+                  "9:16": {
+                    "x": 839.9,
+                    "y": 995.9
+                  },
+                  "1:1": {
+                    "x": 581.4285714285713,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "opacity",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 927.5,
+                    "y": 793.3
+                  },
+                  "9:16": {
+                    "x": 858.6,
+                    "y": 1179.8
+                  },
+                  "1:1": {
+                    "x": 718.5714285714286,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "mono",
+                "v": 0.15,
+                "pos": {
+                  "16:9": {
+                    "x": 1102.1,
+                    "y": 808.3
+                  },
+                  "9:16": {
+                    "x": 977,
+                    "y": 1317.8
+                  },
+                  "1:1": {
+                    "x": 855.7142857142858,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "lines",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 1273.3,
+                    "y": 790.7
+                  },
+                  "9:16": {
+                    "x": 1042.1,
+                    "y": 1456
+                  },
+                  "1:1": {
+                    "x": 992.8571428571428,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "reveal",
+                "v": 0.048323616085413745,
+                "pos": {
+                  "16:9": {
+                    "x": 1482.1,
+                    "y": 815.9
+                  },
+                  "9:16": {
+                    "x": 983,
+                    "y": 1610.1
+                  },
+                  "1:1": {
+                    "x": 1130,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "bright",
+                "v": 0.45978403755714176,
+                "pos": {
+                  "16:9": {
+                    "x": 1610,
+                    "y": 800
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 390
+                  },
+                  "1:1": {
+                    "x": 1267.142857142857,
+                    "y": 960
+                  }
+                }
+              }
+            ],
+            "motion": {
+              "knobs": [
+                {
+                  "key": "speed",
+                  "v": 0.204
+                },
+                {
+                  "key": "travel",
+                  "v": 0
+                },
+                {
+                  "key": "snap",
+                  "v": 0.8041573210716781
+                },
+                {
+                  "key": "breathe",
+                  "v": 0.7965892921001504
+                },
+                {
+                  "key": "chaos",
+                  "v": 0.80755712258048
+                }
+              ],
+              "pos": {
+                "16:9": {
+                  "x": 1731.1,
+                  "y": 860.2
+                },
+                "9:16": {
+                  "x": 823.4,
+                  "y": 1793
+                },
+                "1:1": {
+                  "x": 1380,
+                  "y": 930
+                }
+              }
+            },
+            "seed": {
+              "rings": [
+                {
+                  "v": 0.3,
+                  "a0": -90
+                },
+                {
+                  "v": 0.55,
+                  "a0": -35
+                },
+                {
+                  "v": 0.7,
+                  "a0": 160
+                }
+              ],
+              "on": true,
+              "pos": {
+                "16:9": {
+                  "x": 1740,
+                  "y": 220
+                },
+                "9:16": {
+                  "x": 220,
+                  "y": 1700
+                },
+                "1:1": {
+                  "x": 220,
+                  "y": 1220
+                }
+              }
+            },
+            "format": "16:9",
+            "showControls": false,
+            "group": {
+              "16:9": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "9:16": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "1:1": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              }
+            },
+            "faderScale": {
+              "16:9": 0.9835570065555749,
+              "9:16": 1,
+              "1:1": 1
+            },
+            "frame": {
+              "16:9": null,
+              "9:16": null,
+              "1:1": null
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6249266431924883,
+            "top": -0.006901311249137336,
+            "width": 0.9241001564945227,
+            "height": 0.03914337474120083
+          },
+          ".hero-title": {
+            "left": 0.02823014475743349,
+            "top": 0.020304951690821256,
+            "width": 0.5634658646322379,
+            "height": 0.07542917529330573
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 0.9241001564945227,
+            "height": 0.961352657004831
+          },
+          "tg-transport": {
+            "left": 0.7011932707355243,
+            "top": 0.7265571083505866,
+            "width": 0.34191607981220656,
+            "height": 0.026537698412698412
+          },
+          "tg-parts": {
+            "tg-btn-stop": {
+              "l": 0.37756561539011657,
+              "t": 1.562779357984559,
+              "w": 0.06962025316455696,
+              "h": 0.6550182852498985
+            },
+            "tg-btn-play": {
+              "l": 0.1430308231423872,
+              "t": -0.04063388866314506,
+              "w": 0.21250804548380176,
+              "h": 2.2612759041040227
+            },
+            "tg-btn-prev": {
+              "l": 0.4688550382607452,
+              "t": 1.5794392523364487,
+              "w": 0.06858327969677465,
+              "h": 0.613165379926859
+            },
+            "tg-btn-next": {
+              "l": 0.5611099191875849,
+              "t": 1.6017878911011785,
+              "w": 0.06518629764714295,
+              "h": 0.6147907354733848
+            },
+            "tg-bar": {
+              "l": 0.13523564328112708,
+              "t": 2.6070702966273873,
+              "w": 0.517557033540728,
+              "h": 0.5591223080048761
+            }
+          }
+        }
+      },
+      {
+        "label": "2",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0.316,
+              "modAmount": 1,
+              "modRelease": 1.07
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6249266431924883,
+            "top": -0.006901311249137336,
+            "width": 0.9241001564945227,
+            "height": 0.03914337474120083
+          },
+          ".hero-title": {
+            "left": 0.02823014475743349,
+            "top": 0.020304951690821256,
+            "width": 0.5634658646322379,
+            "height": 0.07542917529330573
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 0.9241001564945227,
+            "height": 0.961352657004831
+          },
+          "tg-transport": {
+            "left": 0.7011932707355243,
+            "top": 0.7265571083505866,
+            "width": 0.34191607981220656,
+            "height": 0.026537698412698412
+          },
+          "tg-parts": {
+            "tg-btn-stop": {
+              "l": 0.37756561539011657,
+              "t": 1.562779357984559,
+              "w": 0.06962025316455696,
+              "h": 0.6550182852498985
+            },
+            "tg-btn-play": {
+              "l": 0.1430308231423872,
+              "t": -0.04063388866314506,
+              "w": 0.21250804548380176,
+              "h": 2.2612759041040227
+            },
+            "tg-btn-prev": {
+              "l": 0.4688550382607452,
+              "t": 1.5794392523364487,
+              "w": 0.06858327969677465,
+              "h": 0.613165379926859
+            },
+            "tg-btn-next": {
+              "l": 0.5611099191875849,
+              "t": 1.6017878911011785,
+              "w": 0.06518629764714295,
+              "h": 0.6147907354733848
+            },
+            "tg-bar": {
+              "l": 0.13523564328112708,
+              "t": 2.6070702966273873,
+              "w": 0.517557033540728,
+              "h": 0.5591223080048761
+            }
+          }
+        }
+      },
+      {
+        "label": "3",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0.756,
+              "modAmount": 1,
+              "modRelease": 1.07
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6249266431924883,
+            "top": -0.006901311249137336,
+            "width": 0.9241001564945227,
+            "height": 0.03914337474120083
+          },
+          ".hero-title": {
+            "left": 0.02823014475743349,
+            "top": 0.020304951690821256,
+            "width": 0.5634658646322379,
+            "height": 0.07542917529330573
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 0.9241001564945227,
+            "height": 0.961352657004831
+          },
+          "tg-transport": {
+            "left": 0.7011932707355243,
+            "top": 0.7265571083505866,
+            "width": 0.34191607981220656,
+            "height": 0.026537698412698412
+          },
+          "tg-parts": {
+            "tg-btn-stop": {
+              "l": 0.37756561539011657,
+              "t": 1.562779357984559,
+              "w": 0.06962025316455696,
+              "h": 0.6550182852498985
+            },
+            "tg-btn-play": {
+              "l": 0.1430308231423872,
+              "t": -0.04063388866314506,
+              "w": 0.21250804548380176,
+              "h": 2.2612759041040227
+            },
+            "tg-btn-prev": {
+              "l": 0.4688550382607452,
+              "t": 1.5794392523364487,
+              "w": 0.06858327969677465,
+              "h": 0.613165379926859
+            },
+            "tg-btn-next": {
+              "l": 0.5611099191875849,
+              "t": 1.6017878911011785,
+              "w": 0.06518629764714295,
+              "h": 0.6147907354733848
+            },
+            "tg-bar": {
+              "l": 0.13523564328112708,
+              "t": 2.6070702966273873,
+              "w": 0.517557033540728,
+              "h": 0.5591223080048761
+            }
+          }
+        }
+      },
+      {
+        "label": "4",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "assemblage",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "assemblage": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "textColor": "#1b1b1b",
+              "textAlpha": 0.9,
+              "notesColor": "#1b1b1b",
+              "notesAlpha": 0.8,
+              "uiTextColor": "#1b1b1b",
+              "lineColor": "#ececea",
+              "lineAlpha": 0.85,
+              "dotColor": "#3e3e3e",
+              "haloColor": "#a0d2ec",
+              "haloAlpha": 0.78,
+              "inkColor": "#1b1b1b",
+              "frameShow": false,
+              "frameColor": "#2271B3",
+              "frameAlpha": 1,
+              "frameWidth": 0.9,
+              "framePad": 59,
+              "trackLenV": 230,
+              "trackLenH": 300,
+              "trackWidth": 1.6,
+              "markerR": 14.5,
+              "numeralSize": 13.5,
+              "labelSize": 14,
+              "handleDot": 4.3,
+              "haloMult": 1.2,
+              "minHalo": 12.4,
+              "minDot": 2.6,
+              "showLeaders": true,
+              "leaderDash": 5.5,
+              "rayWidth": 0.75,
+              "rayAlpha": 0.31,
+              "rayDot": 0.85,
+              "rayDensity": 0.85,
+              "rayLength": 1,
+              "curveCount": 1.45,
+              "curveWidth": 1,
+              "curveAlpha": 0.17,
+              "guideAlpha": 1,
+              "showNotes": true,
+              "notesSize": 8,
+              "notesCount": 1,
+              "pieceW": 1.42,
+              "pieceH": 0.47,
+              "stackChance": 0.34,
+              "multiplyChance": 0.08,
+              "seed": 419,
+              "border": "white",
+              "borderWidth": 0.25,
+              "seedSize": 136,
+              "washShow": true,
+              "washColor": "#b8e2f5",
+              "washAlpha": 0.29,
+              "washVar": 0.55,
+              "washAmount": 0.2,
+              "washSpread": 0.67,
+              "washBands": 4,
+              "washSkew": 0.93,
+              "followMotion": true,
+              "motionLen": 1.35
+            },
+            "faders": [
+              {
+                "key": "pieces",
+                "v": 0.8791613718061622,
+                "pos": {
+                  "16:9": {
+                    "x": 199.6,
+                    "y": 835.4
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 520.7
+                  },
+                  "1:1": {
+                    "x": 170,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "spread",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 360.7,
+                    "y": 858.8
+                  },
+                  "9:16": {
+                    "x": 813.8,
+                    "y": 651.9
+                  },
+                  "1:1": {
+                    "x": 307.1428571428571,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "displace",
+                "v": 0.03221786068724836,
+                "pos": {
+                  "16:9": {
+                    "x": 561.4,
+                    "y": 919.7
+                  },
+                  "9:16": {
+                    "x": 762.6,
+                    "y": 851
+                  },
+                  "1:1": {
+                    "x": 444.2857142857143,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "zoom",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 776.5,
+                    "y": 852.4
+                  },
+                  "9:16": {
+                    "x": 839.9,
+                    "y": 995.9
+                  },
+                  "1:1": {
+                    "x": 581.4285714285713,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "opacity",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 927.5,
+                    "y": 793.3
+                  },
+                  "9:16": {
+                    "x": 858.6,
+                    "y": 1179.8
+                  },
+                  "1:1": {
+                    "x": 718.5714285714286,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "mono",
+                "v": 0.15,
+                "pos": {
+                  "16:9": {
+                    "x": 1102.1,
+                    "y": 808.3
+                  },
+                  "9:16": {
+                    "x": 977,
+                    "y": 1317.8
+                  },
+                  "1:1": {
+                    "x": 855.7142857142858,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "lines",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 1273.3,
+                    "y": 790.7
+                  },
+                  "9:16": {
+                    "x": 1042.1,
+                    "y": 1456
+                  },
+                  "1:1": {
+                    "x": 992.8571428571428,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "reveal",
+                "v": 0.048323616085413745,
+                "pos": {
+                  "16:9": {
+                    "x": 1482.1,
+                    "y": 815.9
+                  },
+                  "9:16": {
+                    "x": 983,
+                    "y": 1610.1
+                  },
+                  "1:1": {
+                    "x": 1130,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "bright",
+                "v": 0.45978403755714176,
+                "pos": {
+                  "16:9": {
+                    "x": 1610,
+                    "y": 800
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 390
+                  },
+                  "1:1": {
+                    "x": 1267.142857142857,
+                    "y": 960
+                  }
+                }
+              }
+            ],
+            "motion": {
+              "knobs": [
+                {
+                  "key": "speed",
+                  "v": 0.204
+                },
+                {
+                  "key": "travel",
+                  "v": 0
+                },
+                {
+                  "key": "snap",
+                  "v": 0.8041573210716781
+                },
+                {
+                  "key": "breathe",
+                  "v": 0.7965892921001504
+                },
+                {
+                  "key": "chaos",
+                  "v": 0.80755712258048
+                }
+              ],
+              "pos": {
+                "16:9": {
+                  "x": 1731.1,
+                  "y": 860.2
+                },
+                "9:16": {
+                  "x": 823.4,
+                  "y": 1793
+                },
+                "1:1": {
+                  "x": 1380,
+                  "y": 930
+                }
+              }
+            },
+            "seed": {
+              "rings": [
+                {
+                  "v": 0.3,
+                  "a0": -90
+                },
+                {
+                  "v": 0.55,
+                  "a0": -35
+                },
+                {
+                  "v": 0.7,
+                  "a0": 160
+                }
+              ],
+              "on": true,
+              "pos": {
+                "16:9": {
+                  "x": 1740,
+                  "y": 220
+                },
+                "9:16": {
+                  "x": 220,
+                  "y": 1700
+                },
+                "1:1": {
+                  "x": 220,
+                  "y": 1220
+                }
+              }
+            },
+            "format": "16:9",
+            "showControls": false,
+            "group": {
+              "16:9": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "9:16": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "1:1": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              }
+            },
+            "faderScale": {
+              "16:9": 0.9835570065555749,
+              "9:16": 1,
+              "1:1": 1
+            },
+            "frame": {
+              "16:9": null,
+              "9:16": null,
+              "1:1": null
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6249266431924883,
+            "top": -0.006901311249137336,
+            "width": 0.9241001564945227,
+            "height": 0.03914337474120083
+          },
+          ".hero-title": {
+            "left": 0.02823014475743349,
+            "top": 0.020304951690821256,
+            "width": 0.5634658646322379,
+            "height": 0.07542917529330573
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 0.9241001564945227,
+            "height": 0.961352657004831
+          },
+          "tg-transport": {
+            "left": 0.7011932707355243,
+            "top": 0.7265571083505866,
+            "width": 0.34191607981220656,
+            "height": 0.026537698412698412
+          },
+          "tg-parts": {
+            "tg-btn-stop": {
+              "l": 0.37756561539011657,
+              "t": 1.562779357984559,
+              "w": 0.06962025316455696,
+              "h": 0.6550182852498985
+            },
+            "tg-btn-play": {
+              "l": 0.1430308231423872,
+              "t": -0.04063388866314506,
+              "w": 0.21250804548380176,
+              "h": 2.2612759041040227
+            },
+            "tg-btn-prev": {
+              "l": 0.4688550382607452,
+              "t": 1.5794392523364487,
+              "w": 0.06858327969677465,
+              "h": 0.613165379926859
+            },
+            "tg-btn-next": {
+              "l": 0.5611099191875849,
+              "t": 1.6017878911011785,
+              "w": 0.06518629764714295,
+              "h": 0.6147907354733848
+            },
+            "tg-bar": {
+              "l": 0.13523564328112708,
+              "t": 2.6070702966273873,
+              "w": 0.517557033540728,
+              "h": 0.5591223080048761
+            }
+          }
+        }
+      },
+      {
+        "label": "5",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "assemblage",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "assemblage": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "textColor": "#1b1b1b",
+              "textAlpha": 0.9,
+              "notesColor": "#1b1b1b",
+              "notesAlpha": 0.8,
+              "uiTextColor": "#1b1b1b",
+              "lineColor": "#ececea",
+              "lineAlpha": 0.85,
+              "dotColor": "#3e3e3e",
+              "haloColor": "#a0d2ec",
+              "haloAlpha": 0.78,
+              "inkColor": "#1b1b1b",
+              "frameShow": false,
+              "frameColor": "#2271B3",
+              "frameAlpha": 1,
+              "frameWidth": 0.9,
+              "framePad": 59,
+              "trackLenV": 230,
+              "trackLenH": 300,
+              "trackWidth": 1.6,
+              "markerR": 14.5,
+              "numeralSize": 13.5,
+              "labelSize": 14,
+              "handleDot": 4.3,
+              "haloMult": 1.2,
+              "minHalo": 12.4,
+              "minDot": 2.6,
+              "showLeaders": true,
+              "leaderDash": 5.5,
+              "rayWidth": 0.75,
+              "rayAlpha": 0.31,
+              "rayDot": 0.85,
+              "rayDensity": 0.85,
+              "rayLength": 1,
+              "curveCount": 1.45,
+              "curveWidth": 1,
+              "curveAlpha": 0.17,
+              "guideAlpha": 1,
+              "showNotes": true,
+              "notesSize": 8,
+              "notesCount": 1,
+              "pieceW": 0.88,
+              "pieceH": 1.99,
+              "stackChance": 0.34,
+              "multiplyChance": 0.08,
+              "seed": 419,
+              "border": "white",
+              "borderWidth": 0.25,
+              "seedSize": 136,
+              "washShow": true,
+              "washColor": "#b8e2f5",
+              "washAlpha": 0.29,
+              "washVar": 0.55,
+              "washAmount": 0.2,
+              "washSpread": 0.67,
+              "washBands": 4,
+              "washSkew": 0.93,
+              "followMotion": true,
+              "motionLen": 1.35
+            },
+            "faders": [
+              {
+                "key": "pieces",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 199.6,
+                    "y": 835.4
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 520.7
+                  },
+                  "1:1": {
+                    "x": 170,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "spread",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 356.8765376126915,
+                    "y": 874.3092558809133
+                  },
+                  "9:16": {
+                    "x": 813.8,
+                    "y": 651.9
+                  },
+                  "1:1": {
+                    "x": 307.1428571428571,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "displace",
+                "v": 0.03221786068724836,
+                "pos": {
+                  "16:9": {
+                    "x": 561.4,
+                    "y": 919.7
+                  },
+                  "9:16": {
+                    "x": 762.6,
+                    "y": 851
+                  },
+                  "1:1": {
+                    "x": 444.2857142857143,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "zoom",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 776.5,
+                    "y": 852.4
+                  },
+                  "9:16": {
+                    "x": 839.9,
+                    "y": 995.9
+                  },
+                  "1:1": {
+                    "x": 581.4285714285713,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "opacity",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 927.5,
+                    "y": 793.3
+                  },
+                  "9:16": {
+                    "x": 858.6,
+                    "y": 1179.8
+                  },
+                  "1:1": {
+                    "x": 718.5714285714286,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "mono",
+                "v": 0.15,
+                "pos": {
+                  "16:9": {
+                    "x": 1102.1,
+                    "y": 808.3
+                  },
+                  "9:16": {
+                    "x": 977,
+                    "y": 1317.8
+                  },
+                  "1:1": {
+                    "x": 855.7142857142858,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "lines",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 1273.3,
+                    "y": 790.7
+                  },
+                  "9:16": {
+                    "x": 1042.1,
+                    "y": 1456
+                  },
+                  "1:1": {
+                    "x": 992.8571428571428,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "reveal",
+                "v": 0.048323616085413745,
+                "pos": {
+                  "16:9": {
+                    "x": 1482.1,
+                    "y": 815.9
+                  },
+                  "9:16": {
+                    "x": 983,
+                    "y": 1610.1
+                  },
+                  "1:1": {
+                    "x": 1130,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "bright",
+                "v": 0.45978403755714176,
+                "pos": {
+                  "16:9": {
+                    "x": 1610,
+                    "y": 800
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 390
+                  },
+                  "1:1": {
+                    "x": 1267.142857142857,
+                    "y": 960
+                  }
+                }
+              }
+            ],
+            "motion": {
+              "knobs": [
+                {
+                  "key": "speed",
+                  "v": 0.204
+                },
+                {
+                  "key": "travel",
+                  "v": 0
+                },
+                {
+                  "key": "snap",
+                  "v": 0.8041573210716781
+                },
+                {
+                  "key": "breathe",
+                  "v": 0.7965892921001504
+                },
+                {
+                  "key": "chaos",
+                  "v": 0.80755712258048
+                }
+              ],
+              "pos": {
+                "16:9": {
+                  "x": 1731.1,
+                  "y": 860.2
+                },
+                "9:16": {
+                  "x": 823.4,
+                  "y": 1793
+                },
+                "1:1": {
+                  "x": 1380,
+                  "y": 930
+                }
+              }
+            },
+            "seed": {
+              "rings": [
+                {
+                  "v": 0.3,
+                  "a0": -90
+                },
+                {
+                  "v": 0.55,
+                  "a0": -35
+                },
+                {
+                  "v": 0.7,
+                  "a0": 160
+                }
+              ],
+              "on": true,
+              "pos": {
+                "16:9": {
+                  "x": 1740,
+                  "y": 220
+                },
+                "9:16": {
+                  "x": 220,
+                  "y": 1700
+                },
+                "1:1": {
+                  "x": 220,
+                  "y": 1220
+                }
+              }
+            },
+            "format": "16:9",
+            "showControls": false,
+            "group": {
+              "16:9": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "9:16": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "1:1": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              }
+            },
+            "faderScale": {
+              "16:9": 0.9835570065555749,
+              "9:16": 1,
+              "1:1": 1
+            },
+            "frame": {
+              "16:9": null,
+              "9:16": null,
+              "1:1": null
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6249266431924883,
+            "top": -0.006901311249137336,
+            "width": 0.9241001564945227,
+            "height": 0.03914337474120083
+          },
+          ".hero-title": {
+            "left": 0.02823014475743349,
+            "top": 0.020304951690821256,
+            "width": 0.5634658646322379,
+            "height": 0.07542917529330573
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 0.9241001564945227,
+            "height": 0.961352657004831
+          },
+          "tg-transport": {
+            "left": 0.7011932707355243,
+            "top": 0.7265571083505866,
+            "width": 0.34191607981220656,
+            "height": 0.026537698412698412
+          },
+          "tg-parts": {
+            "tg-btn-stop": {
+              "l": 0.37756561539011657,
+              "t": 1.562779357984559,
+              "w": 0.06962025316455696,
+              "h": 0.6550182852498985
+            },
+            "tg-btn-play": {
+              "l": 0.1430308231423872,
+              "t": -0.04063388866314506,
+              "w": 0.21250804548380176,
+              "h": 2.2612759041040227
+            },
+            "tg-btn-prev": {
+              "l": 0.4688550382607452,
+              "t": 1.5794392523364487,
+              "w": 0.06858327969677465,
+              "h": 0.613165379926859
+            },
+            "tg-btn-next": {
+              "l": 0.5611099191875849,
+              "t": 1.6017878911011785,
+              "w": 0.06518629764714295,
+              "h": 0.6147907354733848
+            },
+            "tg-bar": {
+              "l": 0.13523564328112708,
+              "t": 2.6070702966273873,
+              "w": 0.517557033540728,
+              "h": 0.5591223080048761
+            }
+          }
+        }
+      },
+      {
+        "label": "6",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "assemblage",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "assemblage": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "textColor": "#1b1b1b",
+              "textAlpha": 0.9,
+              "notesColor": "#1b1b1b",
+              "notesAlpha": 0.8,
+              "uiTextColor": "#1b1b1b",
+              "lineColor": "#ececea",
+              "lineAlpha": 0.85,
+              "dotColor": "#3e3e3e",
+              "haloColor": "#a0d2ec",
+              "haloAlpha": 0.78,
+              "inkColor": "#1b1b1b",
+              "frameShow": false,
+              "frameColor": "#2271B3",
+              "frameAlpha": 1,
+              "frameWidth": 0.9,
+              "framePad": 59,
+              "trackLenV": 230,
+              "trackLenH": 300,
+              "trackWidth": 1.6,
+              "markerR": 14.5,
+              "numeralSize": 13.5,
+              "labelSize": 14,
+              "handleDot": 4.3,
+              "haloMult": 1.2,
+              "minHalo": 12.4,
+              "minDot": 2.6,
+              "showLeaders": true,
+              "leaderDash": 5.5,
+              "rayWidth": 0.75,
+              "rayAlpha": 0.31,
+              "rayDot": 0.85,
+              "rayDensity": 0.85,
+              "rayLength": 1,
+              "curveCount": 1.45,
+              "curveWidth": 1,
+              "curveAlpha": 0.17,
+              "guideAlpha": 1,
+              "showNotes": true,
+              "notesSize": 8,
+              "notesCount": 1,
+              "pieceW": 0.96,
+              "pieceH": 1.99,
+              "stackChance": 0.34,
+              "multiplyChance": 0.08,
+              "seed": 419,
+              "border": "white",
+              "borderWidth": 0.25,
+              "seedSize": 136,
+              "washShow": true,
+              "washColor": "#b8e2f5",
+              "washAlpha": 0.29,
+              "washVar": 0.55,
+              "washAmount": 0.2,
+              "washSpread": 0.67,
+              "washBands": 4,
+              "washSkew": 0.93,
+              "followMotion": true,
+              "motionLen": 1.35
+            },
+            "faders": [
+              {
+                "key": "pieces",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 199.6,
+                    "y": 835.4
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 520.7
+                  },
+                  "1:1": {
+                    "x": 170,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "spread",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 356.8765376126915,
+                    "y": 874.3092558809133
+                  },
+                  "9:16": {
+                    "x": 813.8,
+                    "y": 651.9
+                  },
+                  "1:1": {
+                    "x": 307.1428571428571,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "displace",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 561.4,
+                    "y": 919.7
+                  },
+                  "9:16": {
+                    "x": 762.6,
+                    "y": 851
+                  },
+                  "1:1": {
+                    "x": 444.2857142857143,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "zoom",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 776.5,
+                    "y": 852.4
+                  },
+                  "9:16": {
+                    "x": 839.9,
+                    "y": 995.9
+                  },
+                  "1:1": {
+                    "x": 581.4285714285713,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "opacity",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 927.5,
+                    "y": 793.3
+                  },
+                  "9:16": {
+                    "x": 858.6,
+                    "y": 1179.8
+                  },
+                  "1:1": {
+                    "x": 718.5714285714286,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "mono",
+                "v": 0.15,
+                "pos": {
+                  "16:9": {
+                    "x": 1102.1,
+                    "y": 808.3
+                  },
+                  "9:16": {
+                    "x": 977,
+                    "y": 1317.8
+                  },
+                  "1:1": {
+                    "x": 855.7142857142858,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "lines",
+                "v": 0,
+                "pos": {
+                  "16:9": {
+                    "x": 1273.3,
+                    "y": 790.7
+                  },
+                  "9:16": {
+                    "x": 1042.1,
+                    "y": 1456
+                  },
+                  "1:1": {
+                    "x": 992.8571428571428,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "reveal",
+                "v": 1,
+                "pos": {
+                  "16:9": {
+                    "x": 1482.1,
+                    "y": 815.9
+                  },
+                  "9:16": {
+                    "x": 983,
+                    "y": 1610.1
+                  },
+                  "1:1": {
+                    "x": 1130,
+                    "y": 960
+                  }
+                }
+              },
+              {
+                "key": "bright",
+                "v": 0.5492473071068474,
+                "pos": {
+                  "16:9": {
+                    "x": 1610,
+                    "y": 800
+                  },
+                  "9:16": {
+                    "x": 877.1,
+                    "y": 390
+                  },
+                  "1:1": {
+                    "x": 1267.142857142857,
+                    "y": 960
+                  }
+                }
+              }
+            ],
+            "motion": {
+              "knobs": [
+                {
+                  "key": "speed",
+                  "v": 0.204
+                },
+                {
+                  "key": "travel",
+                  "v": 0
+                },
+                {
+                  "key": "snap",
+                  "v": 0.8041573210716781
+                },
+                {
+                  "key": "breathe",
+                  "v": 0.7965892921001504
+                },
+                {
+                  "key": "chaos",
+                  "v": 0.80755712258048
+                }
+              ],
+              "pos": {
+                "16:9": {
+                  "x": 1731.1,
+                  "y": 860.2
+                },
+                "9:16": {
+                  "x": 823.4,
+                  "y": 1793
+                },
+                "1:1": {
+                  "x": 1380,
+                  "y": 930
+                }
+              }
+            },
+            "seed": {
+              "rings": [
+                {
+                  "v": 0.3,
+                  "a0": -90
+                },
+                {
+                  "v": 0.55,
+                  "a0": -35
+                },
+                {
+                  "v": 0.7,
+                  "a0": 160
+                }
+              ],
+              "on": true,
+              "pos": {
+                "16:9": {
+                  "x": 1740,
+                  "y": 220
+                },
+                "9:16": {
+                  "x": 220,
+                  "y": 1700
+                },
+                "1:1": {
+                  "x": 220,
+                  "y": 1220
+                }
+              }
+            },
+            "format": "16:9",
+            "showControls": false,
+            "group": {
+              "16:9": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "9:16": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              },
+              "1:1": {
+                "x": 0,
+                "y": 0,
+                "s": 1
+              }
+            },
+            "faderScale": {
+              "16:9": 0.9835570065555749,
+              "9:16": 1,
+              "1:1": 1
+            },
+            "frame": {
+              "16:9": null,
+              "9:16": null,
+              "1:1": null
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6249266431924883,
+            "top": -0.006901311249137336,
+            "width": 0.9241001564945227,
+            "height": 0.03914337474120083
+          },
+          ".hero-title": {
+            "left": 0.02823014475743349,
+            "top": 0.020304951690821256,
+            "width": 0.5634658646322379,
+            "height": 0.07542917529330573
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 0.9241001564945227,
+            "height": 0.961352657004831
+          },
+          "tg-transport": {
+            "left": 0.7011932707355243,
+            "top": 0.7265571083505866,
+            "width": 0.34191607981220656,
+            "height": 0.026537698412698412
+          },
+          "tg-parts": {
+            "tg-btn-stop": {
+              "l": 0.37756561539011657,
+              "t": 1.562779357984559,
+              "w": 0.06962025316455696,
+              "h": 0.6550182852498985
+            },
+            "tg-btn-play": {
+              "l": 0.1430308231423872,
+              "t": -0.04063388866314506,
+              "w": 0.21250804548380176,
+              "h": 2.2612759041040227
+            },
+            "tg-btn-prev": {
+              "l": 0.4688550382607452,
+              "t": 1.5794392523364487,
+              "w": 0.06858327969677465,
+              "h": 0.613165379926859
+            },
+            "tg-btn-next": {
+              "l": 0.5611099191875849,
+              "t": 1.6017878911011785,
+              "w": 0.06518629764714295,
+              "h": 0.6147907354733848
+            },
+            "tg-bar": {
+              "l": 0.13523564328112708,
+              "t": 2.6070702966273873,
+              "w": 0.517557033540728,
+              "h": 0.5591223080048761
+            }
+          }
+        }
+      },
+      {
+        "label": "7",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0.039,
+              "modAmount": 1,
+              "modRelease": 1.07
+            }
+          }
+        },
+        "layout": {
+          "header": {
+            "left": -0.6249266431924883,
+            "top": -0.006901311249137336,
+            "width": 0.9241001564945227,
+            "height": 0.03914337474120083
+          },
+          ".hero-title": {
+            "left": 0.02823014475743349,
+            "top": 0.020304951690821256,
+            "width": 0.5634658646322379,
+            "height": 0.07542917529330573
+          },
+          "tg-program-container": {
+            "left": 0,
+            "top": 0,
+            "width": 0.9241001564945227,
+            "height": 0.961352657004831
+          },
+          "tg-transport": {
+            "left": 0.7011932707355243,
+            "top": 0.7265571083505866,
+            "width": 0.34191607981220656,
+            "height": 0.026537698412698412
+          },
+          "tg-parts": {
+            "tg-btn-stop": {
+              "l": 0.37756561539011657,
+              "t": 1.562779357984559,
+              "w": 0.06962025316455696,
+              "h": 0.6550182852498985
+            },
+            "tg-btn-play": {
+              "l": 0.1430308231423872,
+              "t": -0.04063388866314506,
+              "w": 0.21250804548380176,
+              "h": 2.2612759041040227
+            },
+            "tg-btn-prev": {
+              "l": 0.4688550382607452,
+              "t": 1.5794392523364487,
+              "w": 0.06858327969677465,
+              "h": 0.613165379926859
+            },
+            "tg-btn-next": {
+              "l": 0.5611099191875849,
+              "t": 1.6017878911011785,
+              "w": 0.06518629764714295,
+              "h": 0.6147907354733848
+            },
+            "tg-bar": {
+              "l": 0.13523564328112708,
+              "t": 2.6070702966273873,
+              "w": 0.517557033540728,
+              "h": 0.5591223080048761
+            }
+          }
+        }
+      },
+      {
+        "label": "8",
+        "pageBG": "#F5F5FF",
+        "pageFontColor": "#0A0A0A",
+        "programBGFollows": true,
+        "activeProgramId": "main",
+        "transportColours": {
+          "tg-btn-stop": "#B5B8B1",
+          "tg-btn-play": "#0A0A0A",
+          "tg-btn-prev": "#b5b8b1",
+          "tg-btn-next": "#b5b8b1"
+        },
+        "fonts": {
+          "title": {
+            "family": "Helvetica Neue",
+            "weight": 700
+          },
+          "menu": {
+            "family": "Georama",
+            "weight": 200
+          }
+        },
+        "programParams": {
+          "main": {
+            "cfg": {
+              "bg": "#F5F5FF",
+              "brightness": 0.126,
+              "modAmount": 1,
+              "modRelease": 1.07
             }
           }
         },
@@ -671,20 +2578,13 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
       null,
       null,
       null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
       null
     ],
     "tommygee.programParams.v1": {
       "main": {
         "cfg": {
           "bg": "#F5F5FF",
-          "brightness": 0,
+          "brightness": 0.126,
           "modAmount": 1,
           "modRelease": 1.07
         }
@@ -732,8 +2632,8 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
           "showNotes": true,
           "notesSize": 8,
           "notesCount": 1,
-          "pieceW": 3,
-          "pieceH": 2.21,
+          "pieceW": 0.96,
+          "pieceH": 1.99,
           "stackChance": 0.34,
           "multiplyChance": 0.08,
           "seed": 419,
@@ -772,11 +2672,11 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
           },
           {
             "key": "spread",
-            "v": 0.528217946237478,
+            "v": 1,
             "pos": {
               "16:9": {
-                "x": 360.7,
-                "y": 858.8
+                "x": 356.8765376126915,
+                "y": 874.3092558809133
               },
               "9:16": {
                 "x": 813.8,
@@ -790,7 +2690,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
           },
           {
             "key": "displace",
-            "v": 0.03221786068724836,
+            "v": 0,
             "pos": {
               "16:9": {
                 "x": 561.4,
@@ -880,7 +2780,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
           },
           {
             "key": "reveal",
-            "v": 0,
+            "v": 1,
             "pos": {
               "16:9": {
                 "x": 1482.1,
@@ -898,7 +2798,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
           },
           {
             "key": "bright",
-            "v": 0.45978403755714176,
+            "v": 0.5492473071068474,
             "pos": {
               "16:9": {
                 "x": 1610,
@@ -923,11 +2823,11 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
             },
             {
               "key": "travel",
-              "v": 0.6472447229114745
+              "v": 0
             },
             {
               "key": "snap",
-              "v": 1
+              "v": 0.8041573210716781
             },
             {
               "key": "breathe",
@@ -985,7 +2885,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
           }
         },
         "format": "16:9",
-        "showControls": true,
+        "showControls": false,
         "group": {
           "16:9": {
             "x": 0,
@@ -1016,7 +2916,7 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
       },
       "autoedit": {
         "cfg": {
-          "bg": "#A5A5A5",
+          "bg": "#F5F5FF",
           "trigger": "bass",
           "sens": 0.07,
           "gap": 0.95,
@@ -1179,8 +3079,8 @@ window.TG_SITE_DEFAULTS = { rev: 12, saved: '2026-11-25', store: {
     "tommygee.transport.v1": {
       "tg-btn-stop": "#B5B8B1",
       "tg-btn-play": "#0A0A0A",
-      "tg-btn-prev": "#FFFFFF",
-      "tg-btn-next": "#FFFFFF"
+      "tg-btn-prev": "#b5b8b1",
+      "tg-btn-next": "#b5b8b1"
     }
   } };
 (function () {
