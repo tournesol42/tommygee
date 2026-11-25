@@ -1087,7 +1087,7 @@ window.TG_PROGRAMS.assemblage = {
       };
     }
     function setParams(obj) {
-      if (obj.cfg){CFG={...CFG_DEFAULT,...obj.cfg};saveCFG();}
+      if (obj.cfg){CFG={...CFG_DEFAULT,...CFG,...obj.cfg};saveCFG();}   // merge: a bg-only update must not reset the rest
       if (obj.faders) obj.faders.forEach(fd=>{const f=faders.find(x=>x.key===fd.key);if(f){f.v=fd.v;if(fd.pos)FMT_KEYS.forEach(fm=>{if(fd.pos[fm])f.pos[fm]={...fd.pos[fm]};});}});
       if (obj.motion){obj.motion.knobs.forEach(mk=>{const k=motion.knobs.find(x=>x.key===mk.key);if(k)k.v=mk.v;});if(obj.motion.pos)FMT_KEYS.forEach(fm=>{if(obj.motion.pos[fm])motion.pos[fm]={...obj.motion.pos[fm]};});}
       if (obj.seed){obj.seed.rings.forEach((r,i)=>{if(seedCtl.rings[i])Object.assign(seedCtl.rings[i],r);});if(obj.seed.on!==undefined)seedCtl.on=obj.seed.on;if(obj.seed.pos)FMT_KEYS.forEach(fm=>{if(obj.seed.pos[fm])seedCtl.pos[fm]={...obj.seed.pos[fm]};});}

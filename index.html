@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v31-console-scroll -->
+<!-- build: tommygee-v32-cinema -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -199,6 +199,24 @@
           <label>Program BG follows page</label>
           <input class="tg-con-check" type="checkbox" id="tg-bg-follow" checked>
         </div>
+        <div class="tg-con-row">
+          <label>Go dark on play</label>
+          <input class="tg-con-check" type="checkbox" id="tg-cin-on">
+        </div>
+        <div class="tg-con-row">
+          <label>Dark background</label>
+          <div class="tg-con-swatch" id="tg-cin-bg-swatch"></div>
+          <input class="tg-con-hex" id="tg-cin-bg-hex" type="text" maxlength="7" spellcheck="false">
+        </div>
+        <div class="tg-con-row">
+          <label>Dark text colour</label>
+          <div class="tg-con-swatch" id="tg-cin-fg-swatch"></div>
+          <input class="tg-con-hex" id="tg-cin-fg-hex" type="text" maxlength="7" spellcheck="false">
+        </div>
+        <div class="tg-con-row">
+          <label>Fade (s)</label>
+          <input class="tg-con-hex" id="tg-cin-fade" type="number" min="0" max="10" step="0.1">
+        </div>
       </div>
       <!-- PROGRAM section -->
       <div class="tg-con-section">
@@ -357,7 +375,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
+window.TG_SITE_DEFAULTS = { rev: 15, saved: '2026-11-26', store: {
     "tommygee.assemblage.cfg.v1": {
       "_rev": 4,
       "bg": "#F5F5FF",
@@ -474,73 +492,73 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
     },
     "tommygee.layout.v1": {
       "header": {
-        "left": -0.6249266431924883,
+        "left": -0.6249252903005464,
         "top": -0.006901311249137336,
-        "width": 0.9241001564945227,
+        "width": 0.9240949453551912,
         "height": 0.03914337474120083
       },
       ".hero-title": {
-        "left": 0.02823014475743349,
+        "left": 0.028229593579234973,
         "top": 0.020304951690821256,
-        "width": 0.5634658646322379,
+        "width": 0.4918886612021858,
         "height": 0.07542917529330573
       },
       "tg-program-container": {
         "left": 0,
         "top": 0,
-        "width": 0.9241001564945227,
+        "width": 1,
         "height": 0.961352657004831
       },
       "tg-transport": {
-        "left": 0.7011932707355243,
-        "top": 0.7265571083505866,
-        "width": 0.34191607981220656,
+        "left": 0.7501707650273224,
+        "top": 0.8156055900621118,
+        "width": 0.34191427595628415,
         "height": 0.026537698412698412
       },
       "tg-parts": {
-        "tg-btn-stop": {
-          "l": 0.37756561539011657,
-          "t": 1.562779357984559,
-          "w": 0.06962025316455696,
-          "h": 0.6550182852498985
-        },
         "tg-btn-play": {
-          "l": 0.1430308231423872,
-          "t": -0.04063388866314506,
-          "w": 0.21250804548380176,
-          "h": 2.2612759041040227
+          "l": 0.1428705206642527,
+          "t": -0.9959366111336855,
+          "w": 0.26907229366962165,
+          "h": 3.1787891101178385
         },
         "tg-btn-prev": {
-          "l": 0.4688550382607452,
+          "l": 0.46884754651017607,
           "t": 1.5794392523364487,
-          "w": 0.06858327969677465,
+          "w": 0.06857909851417156,
           "h": 0.613165379926859
         },
         "tg-btn-next": {
-          "l": 0.5611099191875849,
+          "l": 0.5610875265326508,
           "t": 1.6017878911011785,
-          "w": 0.06518629764714295,
+          "w": 0.06517667623923086,
           "h": 0.6147907354733848
         },
         "tg-bar": {
-          "l": 0.13523564328112708,
+          "l": 0.13522287426645024,
           "t": 2.6070702966273873,
-          "w": 0.517557033540728,
+          "w": 0.5175427643900612,
           "h": 0.5591223080048761
         }
       }
     },
     "tommygee.main.cfg.v1": {
-      "bg": "#F5F5FF",
-      "brightness": 0.126,
+      "bg": "#00BFFF",
+      "brightness": 0.316,
       "modAmount": 1,
       "modRelease": 1.07
     },
     "tommygee.page.v1": {
-      "pageBG": "#F5F5FF",
+      "pageBG": "#00BFFF",
       "pageFontColor": "#0A0A0A",
       "programBGFollows": true,
-      "activeProgramId": "assemblage"
+      "activeProgramId": "main",
+      "cinema": {
+        "on": true,
+        "bg": "#000000",
+        "fg": "#E6E6E6",
+        "fade": 1.5
+      }
     },
     "tommygee.presets.v1": [
       {
@@ -2583,8 +2601,8 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
     "tommygee.programParams.v1": {
       "main": {
         "cfg": {
-          "bg": "#F5F5FF",
-          "brightness": 0.126,
+          "bg": "#00BFFF",
+          "brightness": 0.316,
           "modAmount": 1,
           "modRelease": 1.07
         }
@@ -3087,8 +3105,8 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
     "tommygee.transport.v1": {
       "tg-btn-stop": "#B5B8B1",
       "tg-btn-play": "#0A0A0A",
-      "tg-btn-prev": "#b5b8b1",
-      "tg-btn-next": "#b5b8b1"
+      "tg-btn-prev": "#F6F6F6",
+      "tg-btn-next": "#F6F6F6"
     }
   } };
 (function () {
@@ -3100,12 +3118,12 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=31"></script>
-<script src="deck.js?v=31"></script>
-<script src="programs/assemblage.js?v=31"></script>
-<script src="programs/main.js?v=31"></script>
-<script src="programs/autoedit.js?v=31"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=31"></script> -->
+<script src="colorpicker.js?v=32"></script>
+<script src="deck.js?v=32"></script>
+<script src="programs/assemblage.js?v=32"></script>
+<script src="programs/main.js?v=32"></script>
+<script src="programs/autoedit.js?v=32"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=32"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -3142,13 +3160,16 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
   let pageBG = pageState.pageBG || '#a7a7a7';
   let pageFontColor = pageState.pageFontColor || '#000000';
   let programBGFollows = pageState.programBGFollows !== false;
-  function savePage() { try { localStorage.setItem(PAGE_KEY, JSON.stringify({ pageBG, pageFontColor, programBGFollows, activeProgramId })); } catch (e) {} }
+  // cinema mode: while a song plays the page fades to a dark background with light text
+  let cinema = Object.assign({ on: true, bg: '#000000', fg: '#E6E6E6', fade: 1.5 }, pageState.cinema || {});
+  function savePage() { try { localStorage.setItem(PAGE_KEY, JSON.stringify({ pageBG, pageFontColor, programBGFollows, activeProgramId, cinema })); } catch (e) {} }
   let activeProgram = null;
   let activeProgramId = null;
 
   function applyPageBG(hex) {
     pageBG = hex;
     document.documentElement.style.setProperty('--tg-page-bg', hex); document.body.style.background = 'transparent'; savePage();
+    if (window.TGCinemaApply) TGCinemaApply();
     if (programBGFollows && activeProgram && activeProgram.setParams) {
       activeProgram.setParams({ cfg: { bg: hex } });
     }
@@ -3156,6 +3177,7 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
   function applyFontColor(hex) {
     pageFontColor = hex; savePage();
     document.documentElement.style.setProperty('--tg-font', hex);
+    if (window.TGCinemaApply) TGCinemaApply();
   }
 
   // ---- program container ----
@@ -3272,6 +3294,17 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
   bgHex.addEventListener('change', () => { const v = bgHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/i.test(v)) { applyPageBG(v); syncBGUI(v); } });
   fontSwatch.addEventListener('click', () => TGColorPicker.open(fontSwatch, pageFontColor, hex => { applyFontColor(hex); syncFontUI(hex); }));
   fontHex.addEventListener('change', () => { const v = fontHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/i.test(v)) { applyFontColor(v); syncFontUI(v); } });
+  const cinOn = document.getElementById('tg-cin-on'), cinBgSw = document.getElementById('tg-cin-bg-swatch'), cinBgHex = document.getElementById('tg-cin-bg-hex');
+  const cinFgSw = document.getElementById('tg-cin-fg-swatch'), cinFgHex = document.getElementById('tg-cin-fg-hex'), cinFade = document.getElementById('tg-cin-fade');
+  function syncCinemaUI() { cinOn.checked = !!cinema.on; cinBgSw.style.background = cinema.bg; cinBgHex.value = cinema.bg; cinFgSw.style.background = cinema.fg; cinFgHex.value = cinema.fg; cinFade.value = cinema.fade; }
+  const setCin = (k, v) => { cinema[k] = v; savePage(); syncCinemaUI(); if (window.TGCinemaApply) TGCinemaApply(); };
+  cinOn.addEventListener('change', () => setCin('on', cinOn.checked));
+  cinBgSw.addEventListener('click', () => TGColorPicker.open(cinBgSw, cinema.bg, hex => setCin('bg', hex)));
+  cinFgSw.addEventListener('click', () => TGColorPicker.open(cinFgSw, cinema.fg, hex => setCin('fg', hex)));
+  cinBgHex.addEventListener('change', () => { const v = cinBgHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/.test(v)) setCin('bg', v); });
+  cinFgHex.addEventListener('change', () => { const v = cinFgHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/.test(v)) setCin('fg', v); });
+  cinFade.addEventListener('change', () => { const v = parseFloat(String(cinFade.value).replace(',', '.')); if (v >= 0) setCin('fade', v); else syncCinemaUI(); });
+  syncCinemaUI();
   bgFollow.addEventListener('change', () => { programBGFollows = bgFollow.checked; savePage(); if (programBGFollows && activeProgram) activeProgram.setParams({ cfg: { bg: pageBG } }); });
 
   // program dropdown
@@ -3799,7 +3832,35 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
       document.getElementById(b.id).style.background = c;
       const sw = tcRow.querySelector('[data-btn="' + b.id + '"]'); if (sw) sw.style.background = c;
     });
+    if (window.TGCinemaApply) TGCinemaApply();
   }
+  // ---- cinema mode engine ----
+  (function () {
+    const rgb = h => { const n = parseInt(String(h || '#000').replace('#', '').padEnd(6, '0').slice(0, 6), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+    const mix = (a, b, t) => { const A = rgb(a), B = rgb(b); return 'rgb(' + A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',') + ')'; };
+    let amt = 0, last = performance.now();
+    function apply() {
+      const r = document.documentElement.style;
+      r.setProperty('--tg-page-bg', amt > 0 ? mix(pageBG, cinema.bg, amt) : pageBG);
+      r.setProperty('--tg-font', amt > 0 ? mix(pageFontColor, cinema.fg, amt) : pageFontColor);
+      const pb = document.getElementById('tg-btn-play');   // keep the play button visible on black
+      if (pb) {
+        const base = transportColours['tg-btn-play'] || '#0A0A0A';
+        pb.style.background = amt > 0 ? mix(base, cinema.fg, amt) : base;
+        const svg = pb.querySelector('svg'); if (svg) svg.style.fill = amt > 0 ? mix('#ffffff', cinema.bg, amt) : '';
+      }
+    }
+    window.TGCinemaApply = apply;
+    (function tick(now) {
+      requestAnimationFrame(tick);
+      const dt = Math.min(0.1, (now - last) / 1000); last = now;
+      const target = (cinema.on && window.TGDeck && TGDeck.playing) ? 1 : 0;
+      if (amt === target) return;
+      const step = dt / Math.max(0.05, +cinema.fade || 0);
+      amt = target > amt ? Math.min(target, amt + step) : Math.max(target, amt - step);
+      apply();
+    })(performance.now());
+  })();
   TBTNS.forEach(b => {
     const el = document.getElementById(b.id);
     el.addEventListener('click', e => {
@@ -3977,7 +4038,7 @@ window.TG_SITE_DEFAULTS = { rev: 14, saved: '2026-11-26', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=31", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=32", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
