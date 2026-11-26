@@ -107,7 +107,7 @@
     if (cfg.style === 'number') {
       const h = pr.height * 0.62, x = pr.left + innerWidth * 0.04, y = pr.top + (pr.height - h) / 2;
       const n = Math.max(0, shown + 1), n0 = Math.floor(n), fr = n - n0;
-      g.save(); g.beginPath(); g.rect(x - 10, y - h * 0.08, innerWidth * 0.6, h * 1.16); g.clip();
+      g.save(); g.beginPath(); g.rect(x - 10, y - h * 0.08, innerWidth, h * 1.16); g.clip();
       g.fillStyle = col; g.font = '700 ' + Math.round(h) + 'px "Helvetica Neue", Helvetica, sans-serif'; g.textBaseline = 'top';
       g.fillText(String(n0).padStart(2, '0'), x, y - fr * h * 1.1);
       g.fillText(String(n0 + 1).padStart(2, '0'), x, y + h * 1.1 - fr * h * 1.1);
