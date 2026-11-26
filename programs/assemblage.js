@@ -1,4 +1,4 @@
-// build: tommygee-v40-barcode
+// build: tommygee-v41-barcode-height
 window.TG_PROGRAMS = window.TG_PROGRAMS || {};
 window.TG_PROGRAMS.assemblage = {
   name: 'Assemblage',
@@ -34,10 +34,10 @@ window.TG_PROGRAMS.assemblage = {
       followMotion: true, motionLen: 1.35,
       // BARCODE mode (from the standalone assemblage.html, 2026-11-26)
       mode: 'collage', barAxis: 'v', bcVals: null,
-      bcGapVar: 0.25, bcDir: 0.5, bcSlit: 0, bcGuard: 0,
+      bcGapVar: 0.25, bcDir: 0.5, bcSlit: 0, bcGuard: 0, bcHeight: 0,
       modeLen: 0.55,
     };
-    const REGEN_KEYS = new Set(['seed','bcGapVar','bcDir','bcSlit','bcGuard','barAxis','washAmount','washSpread','washBands','washSkew','rayDensity','rayLength','curveCount','notesCount','pieceW','pieceH','stackChance','multiplyChance']);
+    const REGEN_KEYS = new Set(['seed','bcGapVar','bcDir','bcSlit','bcGuard','bcHeight','barAxis','washAmount','washSpread','washBands','washSkew','rayDensity','rayLength','curveCount','notesCount','pieceW','pieceH','stackChance','multiplyChance']);
 
     const FORMATS = {
       '16:9': { W: 1920, H: 1080, axis: 'h' },
@@ -85,7 +85,7 @@ window.TG_PROGRAMS.assemblage = {
     const MODES = ['collage','barcode'];
     const MODE_LABELS = { collage: 'COLLAGE', barcode: 'BARCODE' };
     const BC_DEFS = [
-      { lo:'FEW',    hi:'MANY',    v:0.00 },
+      { lo:'FEW',    hi:'MANY',    v:0.00, h2:'bcHeight' },
       { lo:'TIGHT',  hi:'WIDE',    v:0.068, h2:'bcGapVar' },
       { lo:'EQUAL',  hi:'EXP',     v:0.543, h2:'bcDir' },
       { lo:'FULL',   hi:'NEAR',    v:0.00, h2:'bcSlit' },
@@ -459,11 +459,20 @@ window.TG_PROGRAMS.assemblage = {
 
     // ---- motion ----
     // ---- BARCODE: the image cut into slim bars ----
+    // the band the bars fill. bcHeight 0 = narrow band, 1 = the whole image height (or width in 9:16)
     function barcodeBox() {
-      const fr=collageFrame();
-      if (fr.axis==='v') return {x:fr.c-200,y:fr.u0,w:400,h:fr.L};
-      const half=format==='1:1'?240:260;
-      return {x:fr.u0,y:fr.c-half,w:fr.L,h:half*2};
+      const fr=collageFrame(),F=FORMATS[format];
+      let [IW,IH]=img?srcDims():[16,9];
+      if (IW<=1||IH<=1){IW=16;IH=9;}   // video without dimensions yet → 16:9
+      const k=clamp(CFG.bcHeight||0,0,1);
+      if (fr.axis==='v') {
+        const full=Math.min(F.W-80,fr.L*IW/IH),w=400+(Math.max(400,full)-400)*k;
+        return {x:fr.c-w/2,y:fr.u0,w,h:fr.L};
+      }
+      const n=(format==='1:1'?240:260)*2;
+      const full=Math.min(F.H-80,fr.L*IH/IW),h=n+(Math.max(n,full)-n)*k;
+      const cy=fr.c+(F.H/2-40-fr.c)*k*0.6;
+      return {x:fr.u0,y:cy-h/2,w:fr.L,h};
     }
     function generateBarcode() {
       const [IW,IH]=srcDims();
@@ -1048,7 +1057,7 @@ window.TG_PROGRAMS.assemblage = {
       const r1=v=>Math.round(v*10)/10;
       const box=b=>b?{x:r1(b.x),y:r1(b.y),w:r1(b.w),h:r1(b.h)}:null;
       const posOf=o=>Object.fromEntries(Object.entries(o.pos).map(([fm,q])=>[fm,{x:r1(q.x),y:r1(q.y)}]));
-      const data={program:'Assemblage',format,artboard:{W:FORMATS[format].W,H:FORMATS[format].H},faders:faders.map(f=>({n:ROMAN[f.i],key:f.key,value:Math.round(f.v*1000)/1000,halo:f.halo,position:posOf(f)})),seedControl:{on:seedCtl.on,seed:CFG.seed,rings:seedCtl.rings.map(r=>Math.round(r.v*1000)/1000),position:posOf(seedCtl)},motion:{knobs:motion.knobs.map(k=>({key:k.key,value:Math.round(k.v*1000)/1000})),position:posOf(motion)},faderScale:{...faderScale},imageArea:Object.fromEntries(Object.entries(group).map(([fm,G])=>[fm,{moveX:r1(G.x),moveY:r1(G.y),scale:Math.round(G.s*1000)/1000}])),frame:Object.fromEntries(Object.entries(frame).map(([fm,b])=>[fm,b?box(b):'auto'])),settings:{...CFG}};
+      const data={program:'Assemblage',format,artboard:{W:FORMATS[format].W,H:FORMATS[format].H},faders:faders.map(f=>({n:ROMAN[f.i],key:f.key,value:Math.round(f.v*1000)/1000,halo:f.halo,position:posOf(f)})),seedControl:{on:seedCtl.on,seed:CFG.seed,rings:seedCtl.rings.map(r=>Math.round(r.v*1000)/1000),position:posOf(seedCtl)},mode:{current:mode,bars:CFG.barAxis==='h'?'horizontal':'vertical',position:posOf(modeCtl),barcodeSmallHandles:{height:CFG.bcHeight,gapVar:CFG.bcGapVar,direction:CFG.bcDir,slit:CFG.bcSlit,guard:CFG.bcGuard}},motion:{knobs:motion.knobs.map(k=>({key:k.key,value:Math.round(k.v*1000)/1000})),position:posOf(motion)},faderScale:{...faderScale},imageArea:Object.fromEntries(Object.entries(group).map(([fm,G])=>[fm,{moveX:r1(G.x),moveY:r1(G.y),scale:Math.round(G.s*1000)/1000}])),frame:Object.fromEntries(Object.entries(frame).map(([fm,b])=>[fm,b?box(b):'auto'])),settings:{...CFG}};
       const json=JSON.stringify(data,null,2);
       download(json,`assemblage_positions_${format.replace(':','x')}_${Date.now()}.json`,'application/json');
       if(navigator.clipboard)navigator.clipboard.writeText(json).catch(()=>{});
