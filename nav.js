@@ -38,7 +38,7 @@
       const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => draw(im); im.src = url;
     } else {
       const v = document.createElement('video'); v.crossOrigin = 'anonymous'; v.muted = true; v.playsInline = true; v.preload = 'auto';
-      v.addEventListener('loadeddata', () => { v.currentTime = Math.min(2, (v.duration || 4) * 0.25); }, { once: true });
+      v.addEventListener('loadeddata', () => { v.currentTime = (v.duration || 4) * 0.3; }, { once: true });
       v.addEventListener('seeked', () => { draw(v); v.removeAttribute('src'); v.load(); }, { once: true });
       v.src = url;
     }
