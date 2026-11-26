@@ -3130,13 +3130,13 @@ window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=35"></script>
-<script src="deck.js?v=35"></script>
-<script src="counter.js?v=35b"></script>
-<script src="programs/assemblage.js?v=35"></script>
-<script src="programs/main.js?v=35"></script>
-<script src="programs/autoedit.js?v=35"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=35"></script> -->
+<script src="colorpicker.js?v=35c"></script>
+<script src="deck.js?v=35c"></script>
+<script src="counter.js?v=35c"></script>
+<script src="programs/assemblage.js?v=35c"></script>
+<script src="programs/main.js?v=35c"></script>
+<script src="programs/autoedit.js?v=35c"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=35c"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -3678,7 +3678,7 @@ window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
       let r = parts && parts[id];
       if (!r && id === 'tg-counter' && parts) {   // first time: put the counter where the title bar was
         const b = parts['tg-bar'] || { l: 0.14, t: 2.6 };
-        r = { l: b.l, t: b.t - 0.2, w: 0.85, h: 1.6 };
+        r = { l: b.l, t: b.t - 0.2, w: 0.55, h: 2.2 };
       }
       if (!r) { ['position','left','top','width','height','aspectRatio','flex'].forEach(k => el.style[k] = ''); return; }
       Object.assign(el.style, { position: 'absolute', left: (r.l * 100) + '%', top: (r.t * 100) + '%', width: (r.w * 100) + '%', height: (r.h * 100) + '%', aspectRatio: 'auto', flex: 'none' });
@@ -4078,7 +4078,7 @@ window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=35", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=35c", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
