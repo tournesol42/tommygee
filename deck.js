@@ -1,4 +1,4 @@
-// build: tommygee-v27-loop
+// build: tommygee-v38-ios-video
 // TGDeck — page-level player: 10 slots, each = image/video + audio file.
 // Shared by all programs (Main draws deck.visual; others can use it later).
 // Audio: XHR + decodeAudioData + BufferSource (iOS-safe; no fetch, no createMediaElementSource).
@@ -48,17 +48,36 @@
     };
     if (v.readyState >= 2 && !v.seeking) check(); else v.addEventListener('seeked', check, { once: true });
   }
+  // iPhone/iPad (WebKit) only decodes and paints video frames for <video> elements that are in the page,
+  // and does not preload data before a play() — so the video lives in a hidden 1px holder and is
+  // kicked once with a muted play()/pause() to get the first frame.
+  let holder = null;
+  function holderEl() {
+    if (holder || !document.body) return holder;
+    holder = document.createElement('div');
+    holder.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0.01;pointer-events:none;z-index:-1';
+    document.body.appendChild(holder);
+    return holder;
+  }
   function loadVisual(url) {
-    if (visual instanceof HTMLVideoElement) { visual.pause(); visual.removeAttribute('src'); visual.load(); }
+    if (visual instanceof HTMLVideoElement) { visual.pause(); visual.removeAttribute('src'); visual.load(); if (visual.parentNode) visual.parentNode.removeChild(visual); }
     visual = null;
     if (!url) { emit(); return; }
     if (VIDEO_RE.test(url)) {
       const v = document.createElement('video');
       v.crossOrigin = 'anonymous';          // before src
       v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
-      v.setAttribute('playsinline', '');
+      v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', ''); v.setAttribute('muted', '');
+      v.style.cssText = 'width:1px;height:1px';
+      const h = holderEl(); if (h) h.appendChild(v);
       v.src = url;
+      v.load();
       v.addEventListener('loadeddata', () => { emit(); showPosterFrame(v); }, { once: true });
+      v.addEventListener('loadedmetadata', () => {   // iOS: no frame data until played once
+        if (!playing && v.readyState < 2 && v === visual) {
+          const p = v.play(); if (p && p.then) p.then(() => { if (!playing) v.pause(); }).catch(() => {});
+        }
+      }, { once: true });
       v.addEventListener('seeked', emit);           // redraw the first frame after Stop rewinds
       visual = v;
       if (playing) v.play().catch(() => {});
