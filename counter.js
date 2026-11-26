@@ -137,7 +137,7 @@
     g.fillStyle = color;
 
     // layout: labels row + digits row
-    const labH = H * 0.2, s = Math.min((H - labH) / 19.5, W / 125);
+    const labH = H * 0.2, s = Math.min((H - labH) / 19.5, W / 148);
     const cw = 11 * s, gap = 6 * s, y = labH + (H - labH - 18 * s) / 2;
     const scr = now < scrambleUntil, rnd = () => Math.floor(Math.random() * 10);
     const dur = TGDeck.duration, t = TGDeck.playing ? (TGDeck.progress * dur) : 0;
