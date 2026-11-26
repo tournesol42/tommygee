@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v35-counter -->
+<!-- build: tommygee-v36-nav-looks -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -55,9 +55,8 @@
   html, body { overscroll-behavior: none; }
   /* v35: the counter replaces the skip buttons and the title bar */
   #tg-btn-prev, #tg-btn-next, #tg-bar { display: none !important; }
-  #tg-counter { position: relative; flex: 1 1 auto; height: 100%; min-width: 220px; user-select: none; -webkit-user-select: none; }
+  #tg-counter { position: fixed; left: 4vw; bottom: 6vh; width: 30vw; height: 9vh; z-index: 56; opacity: 0; user-select: none; -webkit-user-select: none; translate: 0 var(--tg-shift, 0px); }
   #tg-counter canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
-  #tg-transport.parts-mode > #tg-counter { outline: 1px dashed rgba(0,0,0,0.55); outline-offset: 1px; cursor: move; }
   #tg-console-panel-inner { overflow-y: auto; padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 20px; }
   #tg-console-panel-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
   #tg-console-panel-head span { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #888; }
@@ -166,12 +165,12 @@
   <div id="tg-program-container"></div>
 
   <!-- transport buttons -->
-  <div id="tg-transport">
+  <div id="tg-counter" title="Scroll / swipe to change track"></div>
+<div id="tg-transport">
   <div class="tg-tbtn" id="tg-btn-play" title="Play"><svg viewBox="0 0 100 100"><polygon points="18,8 92,50 18,92"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-prev" title="Previous"><svg viewBox="0 0 100 100"><polygon points="70,6 82,18 50,50 82,82 70,94 26,50"/></svg></div>
   <div class="tg-tbtn" id="tg-btn-next" title="Next"><svg viewBox="0 0 100 100"><polygon points="30,6 18,18 50,50 18,82 30,94 74,50"/></svg></div>
   <div class="tg-tbar" id="tg-bar" title="Now playing"><div class="fill"></div><span class="t"></span></div>
-  <div id="tg-counter" title="Scroll / swipe to change track"></div>
   </div>
 
   <!-- main console: invisible 28px strip at bottom -->
@@ -206,6 +205,18 @@
         <div class="tg-con-row">
           <label>Program BG follows page</label>
           <input class="tg-con-check" type="checkbox" id="tg-bg-follow" checked>
+        </div>
+        <div class="tg-con-row">
+          <label>Track scroll look</label>
+          <select class="tg-con-select" id="tg-nav-style">
+            <option value="strip">Film strip</option><option value="shutter">Colour shutter</option>
+            <option value="number">Giant number</option><option value="paternoster">Paternoster</option><option value="none">None</option>
+          </select>
+        </div>
+        <div class="tg-con-row">
+          <label>Scroll look colour</label>
+          <div class="tg-con-swatch" id="tg-nav-swatch"></div>
+          <input class="tg-con-hex" id="tg-nav-hex" type="text" maxlength="7" spellcheck="false">
         </div>
         <div class="tg-con-row">
           <label>Go dark on play</label>
@@ -3130,13 +3141,14 @@ window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=35c"></script>
-<script src="deck.js?v=35c"></script>
-<script src="counter.js?v=35c"></script>
-<script src="programs/assemblage.js?v=35c"></script>
-<script src="programs/main.js?v=35c"></script>
-<script src="programs/autoedit.js?v=35c"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=35c"></script> -->
+<script src="colorpicker.js?v=36"></script>
+<script src="deck.js?v=36"></script>
+<script src="counter.js?v=36"></script>
+<script src="nav.js?v=36"></script>
+<script src="programs/assemblage.js?v=36"></script>
+<script src="programs/main.js?v=36"></script>
+<script src="programs/autoedit.js?v=36"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=36"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -3318,6 +3330,14 @@ window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
   cinFgHex.addEventListener('change', () => { const v = cinFgHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/.test(v)) setCin('fg', v); });
   cinFade.addEventListener('change', () => { const v = parseFloat(String(cinFade.value).replace(',', '.')); if (v >= 0) setCin('fade', v); else syncCinemaUI(); });
   syncCinemaUI();
+  { // track scroll look (nav.js)
+    const st = document.getElementById('tg-nav-style'), sw = document.getElementById('tg-nav-swatch'), hx = document.getElementById('tg-nav-hex');
+    const sync = () => { if (!window.TGNav) return; st.value = TGNav.style; sw.style.background = TGNav.color; hx.value = TGNav.color; };
+    st.addEventListener('change', () => { if (window.TGNav) TGNav.style = st.value; sync(); });
+    sw.addEventListener('click', () => window.TGNav && TGColorPicker.open(sw, TGNav.color, hex => { TGNav.color = hex; sync(); }));
+    hx.addEventListener('change', () => { if (window.TGNav) TGNav.color = hx.value.trim(); sync(); });
+    sync();
+  }
   bgFollow.addEventListener('change', () => { programBGFollows = bgFollow.checked; savePage(); if (programBGFollows && activeProgram) activeProgram.setParams({ cfg: { bg: pageBG } }); });
 
   // program dropdown
@@ -3623,6 +3643,7 @@ window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
     { selector: 'header', isProgContainer: false },
     { selector: '.hero-title', isProgContainer: false, isTitle: true },
     { id: 'tg-transport' },
+    { id: 'tg-counter' },
     { id: 'tg-program-container', isProgContainer: true },
   ];
   let layoutData = {};
@@ -3670,7 +3691,7 @@ window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
   }
 
   // ---- player parts: Shift+Alt moves / resizes each part (stop, play, prev, next, title bar) ----
-  const PART_IDS = [ 'tg-btn-play', 'tg-counter'];
+  const PART_IDS = [ 'tg-btn-play'];
   // parts are stored as fractions of the player box, so resizing the whole player (Shift) scales them
   function applyParts(parts) {
     PART_IDS.forEach(id => {
@@ -4078,7 +4099,7 @@ window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=35c", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=36", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();

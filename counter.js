@@ -1,4 +1,4 @@
-// build: tommygee-v35-counter
+// build: tommygee-v36-counter-free
 // TGCounter — red 7-segment counter (TRACK · MIN · SEC · BPM · LEVEL) that is also the track switch.
 // Scroll / swipe (iPhone) / arrow keys move one track; the TRACK digits roll with the gesture like an
 // odometer, overshoot and spring back; the other fields scramble on a change. The picture gets a small
@@ -53,7 +53,10 @@
   let vel = 0;                        // spring velocity
   let drag = 0;                       // live gesture offset in tracks (-1..1)
   let dragging = false, lastIndex = TGDeck.index, scrambleUntil = 0, lockUntil = 0;
-  let lvlEnv = 0, lvlPeak = 0.02;
+  let lvlEnv = 0, lvlPeak = 0.02, vis = 0, shiftHeld = false;
+  window.addEventListener('keydown', e => { if (e.key === 'Shift') shiftHeld = true; });
+  window.addEventListener('keyup', e => { if (e.key === 'Shift') shiftHeld = false; });
+  window.addEventListener('blur', () => { shiftHeld = false; });
 
   function commit(dir) {
     if (performance.now() < lockUntil) return;
@@ -121,13 +124,19 @@
     if (dragging) { shown += (target - shown) * Math.min(1, dt * 30); vel = 0; }
     else { vel += ((target - shown) * 210 - vel * 15) * dt; shown += vel * dt; }
 
-    // elastic nudge of the picture
+    // picture nudge is done by nav.js when present
     const p = prog();
-    if (p) {
+    if (p && !window.TGNav) {
       const nudge = -(shown - TGDeck.index) * 46;
       p.style.setProperty('--tg-nudge', nudge.toFixed(1) + 'px');
       p.style.scale = (1 - Math.min(0.03, Math.abs(shown - TGDeck.index) * 0.03)).toFixed(4);
     }
+    // v36: the counter only shows while playing (and while editing: console open or Shift held)
+    const cpOpen = !!document.querySelector('#tg-console-panel.open');
+    const visT = (TGDeck.playing || cpOpen || shiftHeld) ? 1 : 0;
+    vis += (visT - vis) * Math.min(1, dt * 2.2);
+    el.style.opacity = vis.toFixed(3);
+    el.style.pointerEvents = vis > 0.05 ? '' : 'none';
 
     // canvas size
     const r = el.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -173,5 +182,6 @@
   }
   requestAnimationFrame(frame);
 
-  window.TGCounter = { setColor(c) { if (/^#[0-9a-f]{6}$/i.test(c)) color = c; }, get color() { return color; } };
+  window.TGCounter = { setColor(c) { if (/^#[0-9a-f]{6}$/i.test(c)) color = c; }, get color() { return color; },
+    get shown() { return shown; }, get drag() { return drag; }, get dragging() { return dragging; } };
 })();
