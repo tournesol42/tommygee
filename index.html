@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v43-defaults-rev23 -->
+<!-- build: tommygee-v44-hide-title-on-play -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -221,6 +221,10 @@
         <div class="tg-con-row">
           <label>Go dark on play</label>
           <input class="tg-con-check" type="checkbox" id="tg-cin-on">
+        </div>
+        <div class="tg-con-row">
+          <label>Hide title + menu on play</label>
+          <input class="tg-con-check" type="checkbox" id="tg-cin-hide">
         </div>
         <div class="tg-con-row">
           <label>Dark background</label>
@@ -3933,7 +3937,7 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
   let pageFontColor = pageState.pageFontColor || '#000000';
   let programBGFollows = pageState.programBGFollows !== false;
   // cinema mode: while a song plays the page fades to a dark background with light text
-  let cinema = Object.assign({ on: true, bg: '#000000', fg: '#E6E6E6', fade: 1.5 }, pageState.cinema || {});
+  let cinema = Object.assign({ on: true, bg: '#000000', fg: '#E6E6E6', fade: 1.5, hideText: true }, pageState.cinema || {});
   function savePage() { try { localStorage.setItem(PAGE_KEY, JSON.stringify({ pageBG, pageFontColor, programBGFollows, activeProgramId, cinema })); } catch (e) {} }
   let activeProgram = null;
   let activeProgramId = null;
@@ -4068,8 +4072,10 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
   fontHex.addEventListener('change', () => { const v = fontHex.value.trim(); if (/^#[0-9a-fA-F]{6}$/i.test(v)) { applyFontColor(v); syncFontUI(v); } });
   const cinOn = document.getElementById('tg-cin-on'), cinBgSw = document.getElementById('tg-cin-bg-swatch'), cinBgHex = document.getElementById('tg-cin-bg-hex');
   const cinFgSw = document.getElementById('tg-cin-fg-swatch'), cinFgHex = document.getElementById('tg-cin-fg-hex'), cinFade = document.getElementById('tg-cin-fade');
-  function syncCinemaUI() { cinOn.checked = !!cinema.on; cinBgSw.style.background = cinema.bg; cinBgHex.value = cinema.bg; cinFgSw.style.background = cinema.fg; cinFgHex.value = cinema.fg; cinFade.value = cinema.fade; }
+  function syncCinemaUI() { cinOn.checked = !!cinema.on; cinHide.checked = cinema.hideText !== false; cinBgSw.style.background = cinema.bg; cinBgHex.value = cinema.bg; cinFgSw.style.background = cinema.fg; cinFgHex.value = cinema.fg; cinFade.value = cinema.fade; }
   const setCin = (k, v) => { cinema[k] = v; savePage(); syncCinemaUI(); if (window.TGCinemaApply) TGCinemaApply(); };
+  const cinHide = document.getElementById('tg-cin-hide');
+  cinHide.addEventListener('change', () => setCin('hideText', cinHide.checked));
   cinOn.addEventListener('change', () => setCin('on', cinOn.checked));
   cinBgSw.addEventListener('click', () => TGColorPicker.open(cinBgSw, cinema.bg, hex => setCin('bg', hex)));
   cinFgSw.addEventListener('click', () => TGColorPicker.open(cinFgSw, cinema.fg, hex => setCin('fg', hex)));
@@ -4647,6 +4653,12 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
         pb.style.background = amt > 0 ? mix(base, cinema.fg, amt) : base;
         const svg = pb.querySelector('svg'); if (svg) svg.style.fill = amt > 0 ? mix('#ffffff', cinema.bg, amt) : '';
       }
+      // title + menu fade out while playing (cinema.hideText), back on Stop
+      const hide = cinema.hideText !== false ? amt : 0;
+      document.querySelectorAll('header, .hero-title').forEach(el => {
+        el.style.opacity = hide > 0 ? String(1 - hide) : '';
+        el.style.pointerEvents = hide > 0.5 ? 'none' : '';
+      });
     }
     window.TGCinemaApply = apply;
     (function tick(now) {
