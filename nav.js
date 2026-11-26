@@ -1,4 +1,4 @@
-// build: tommygee-v36-nav
+// build: tommygee-v37-nav-number-on-touch
 // TGNav — one big graphical element that moves when you scroll/swipe between tracks.
 // Styles (console → Page → "Track scroll look"):
 //   strip      – full-height colour column at the right edge with a still of every track; it slides, the current one sits in the marker
@@ -11,7 +11,7 @@
   'use strict';
   if (!window.TGDeck || !window.TGCounter) return;
   const KEY = 'tommygee.nav.v1';
-  let cfg = { style: 'strip', color: '#FF2A1A' };
+  let cfg = { style: 'number', color: '#FF2A1A' };
   try { Object.assign(cfg, JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) {}
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch (e) {} };
 
@@ -53,10 +53,18 @@
     return L.length - 1 + (x - L[L.length - 1]);
   }
 
+  // ---- giant number: shows while you touch/scroll (not while a film plays), fades out after ----
+  let numA = 0, pDown = false, showUntil = 0;
+  const uiTarget = e => e.target && e.target.closest && e.target.closest('#tg-console-panel, #tg-seq, .overlay, #tg-transport, header, [id^="tg-fp"], .tg-cp');
+  window.addEventListener('pointerdown', e => { if (!uiTarget(e)) pDown = true; });
+  window.addEventListener('pointerup', () => { pDown = false; });
+  window.addEventListener('pointercancel', () => { pDown = false; });
+  window.addEventListener('wheel', () => { showUntil = performance.now() + 250; }, { passive: true });
+
   // ---- shutter animation state ----
   let lastIndex = TGDeck.index, wipeT = 1, wipeDir = 1;
   TGDeck.onChange(() => {
-    if (TGDeck.index !== lastIndex) { wipeDir = Math.sign(TGCounter.drag) || (TGDeck.index > lastIndex ? 1 : -1); lastIndex = TGDeck.index; wipeT = 0; }
+    if (TGDeck.index !== lastIndex) { showUntil = performance.now() + 700; wipeDir = Math.sign(TGCounter.drag) || (TGDeck.index > lastIndex ? 1 : -1); lastIndex = TGDeck.index; wipeT = 0; }
   });
 
   const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -105,13 +113,17 @@
     }
 
     if (cfg.style === 'number') {
+      const want = !TGDeck.playing && (pDown || TGCounter.dragging || performance.now() < showUntil) ? 1 : 0;
+      numA += (want - numA) * Math.min(1, dt * (want ? 9 : 2.2));
+      if (numA < 0.01) return;
+      g.globalAlpha = numA;
       const h = pr.height * 0.62, x = pr.left + innerWidth * 0.04, y = pr.top + (pr.height - h) / 2;
       const n = Math.max(0, shown + 1), n0 = Math.floor(n), fr = n - n0;
       g.save(); g.beginPath(); g.rect(x - 10, y - h * 0.08, innerWidth, h * 1.16); g.clip();
       g.fillStyle = col; g.font = '700 ' + Math.round(h) + 'px "Helvetica Neue", Helvetica, sans-serif'; g.textBaseline = 'top';
       g.fillText(String(n0).padStart(2, '0'), x, y - fr * h * 1.1);
       g.fillText(String(n0 + 1).padStart(2, '0'), x, y + h * 1.1 - fr * h * 1.1);
-      g.restore();
+      g.restore(); g.globalAlpha = 1;
     }
 
     if (cfg.style === 'shutter') {
