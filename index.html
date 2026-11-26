@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v32-cinema -->
+<!-- build: tommygee-v33-cue-first-preset -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -3122,12 +3122,12 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=32"></script>
-<script src="deck.js?v=32"></script>
-<script src="programs/assemblage.js?v=32"></script>
-<script src="programs/main.js?v=32"></script>
-<script src="programs/autoedit.js?v=32"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=32"></script> -->
+<script src="colorpicker.js?v=33"></script>
+<script src="deck.js?v=33"></script>
+<script src="programs/assemblage.js?v=33"></script>
+<script src="programs/main.js?v=33"></script>
+<script src="programs/autoedit.js?v=33"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=33"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -3568,6 +3568,15 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
     window.TGSeq = {
       addStep(i) { if (!win.classList.contains('open')) setOpen(true); st.slots[edit].steps.push(i); save(); restartTimer(); render(); },
       markGrid, step,
+      // show the current song's first sequence step before Play (page open)
+      cue() {
+        const si = (window.TGDeck && TGDeck.index) || 0, sq = st.slots[si];
+        if (!st.run || !sq || !sq.steps.length) return;
+        pos = -1; let k = nextIndex(sq, 0);
+        for (let t = 0; k >= 0 && !presets[sq.steps[k]] && t < sq.steps.length * 2; t++) { pos = k; k = nextIndex(sq, 0); }
+        if (k >= 0 && presets[sq.steps[k]]) { runningSlot = si; applyStep(si, k); }
+        pos = -1;   // Play still starts the sequence from the top
+      },
       get state() { return JSON.parse(JSON.stringify(st)); },
     };
     render();
@@ -4042,7 +4051,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=32", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=33", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
@@ -4070,6 +4079,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
     if (startProgram) { switchProgram(startProgram); progSelect.value = startProgram; }
     applyLayout(layoutData);
     buildPresetGrid();
+    if (window.TGSeq && TGSeq.cue) TGSeq.cue();
   });
 </script>
 </body>
