@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v33-cue-first-preset -->
+<!-- build: tommygee-v34-seq-keeps-page-bg -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -375,7 +375,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
+window.TG_SITE_DEFAULTS = { rev: 18, saved: '2026-11-26', store: {
     "tommygee.assemblage.cfg.v1": {
       "bg": "#F5F5FF",
       "textColor": "#1b1b1b",
@@ -418,7 +418,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
       "showNotes": true,
       "notesSize": 8,
       "notesCount": 1,
-      "pieceW": 0.96,
+      "pieceW": 0.88,
       "pieceH": 1.99,
       "stackChance": 0.34,
       "multiplyChance": 0.08,
@@ -549,16 +549,16 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
       }
     },
     "tommygee.main.cfg.v1": {
-      "bg": "#F5F5FF",
+      "bg": "#00BFFF",
       "brightness": 0.316,
       "modAmount": 1,
       "modRelease": 1.07
     },
     "tommygee.page.v1": {
-      "pageBG": "#F5F5FF",
+      "pageBG": "#00BFFF",
       "pageFontColor": "#0A0A0A",
       "programBGFollows": true,
-      "activeProgramId": "assemblage",
+      "activeProgramId": "main",
       "cinema": {
         "on": true,
         "bg": "#000000",
@@ -2607,7 +2607,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
     "tommygee.programParams.v1": {
       "main": {
         "cfg": {
-          "bg": "#F5F5FF",
+          "bg": "#00BFFF",
           "brightness": 0.316,
           "modAmount": 1,
           "modRelease": 1.07
@@ -2656,7 +2656,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
           "showNotes": true,
           "notesSize": 8,
           "notesCount": 1,
-          "pieceW": 0.96,
+          "pieceW": 0.88,
           "pieceH": 1.99,
           "stackChance": 0.34,
           "multiplyChance": 0.08,
@@ -2715,7 +2715,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
           },
           {
             "key": "displace",
-            "v": 0,
+            "v": 0.03221786068724836,
             "pos": {
               "16:9": {
                 "x": 561.4,
@@ -2805,7 +2805,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
           },
           {
             "key": "reveal",
-            "v": 1,
+            "v": 0.048323616085413745,
             "pos": {
               "16:9": {
                 "x": 1482.1,
@@ -2823,7 +2823,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
           },
           {
             "key": "bright",
-            "v": 0.5492473071068474,
+            "v": 0.45978403755714176,
             "pos": {
               "16:9": {
                 "x": 1610,
@@ -3122,12 +3122,12 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
   } catch (e) {}
 })();
 </script>
-<script src="colorpicker.js?v=33"></script>
-<script src="deck.js?v=33"></script>
-<script src="programs/assemblage.js?v=33"></script>
-<script src="programs/main.js?v=33"></script>
-<script src="programs/autoedit.js?v=33"></script>
-<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=33"></script> -->
+<script src="colorpicker.js?v=34"></script>
+<script src="deck.js?v=34"></script>
+<script src="programs/assemblage.js?v=34"></script>
+<script src="programs/main.js?v=34"></script>
+<script src="programs/autoedit.js?v=34"></script>
+<!-- atmosphere (background graphics + page scroll) switched off for now: <script src="atmosphere.js?v=34"></script> -->
 <script>
   // ---- overlay nav ----
   const links = document.querySelectorAll('nav a');
@@ -3424,6 +3424,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
           if (p.activeProgramId !== activeProgramId) { switchProgram(p.activeProgramId); populateProgramSelect(); }
           const prm = p.programParams[p.activeProgramId];
           if (prm && activeProgram) activeProgram.setParams(prm);
+          if (programBGFollows && activeProgram) activeProgram.setParams({ cfg: { bg: pageBG } });   // keep the page colour (e.g. neon) behind the program
         }
       }
       markNow();
@@ -4051,7 +4052,7 @@ window.TG_SITE_DEFAULTS = { rev: 17, saved: '2026-11-26', store: {
 
   applyFonts();
   (() => {   // family list (XHR, same origin)
-    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=33", true); x.responseType = 'json';
+    const x = new XMLHttpRequest(); x.open("GET", "fonts.json?v=34", true); x.responseType = 'json';
     x.onload = () => { if (Array.isArray(x.response)) { FONT_LIST = SYSTEM_FONTS.concat(x.response); applyFonts(); } };
     x.send();
   })();
