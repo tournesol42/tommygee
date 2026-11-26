@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v43-frame-cache -->
+<!-- build: tommygee-v43-defaults-rev23 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -394,7 +394,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
+window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
     "tommygee.assemblage.cfg.v1": {
       "bg": "#00BFFF",
       "textColor": "#1b1b1b",
@@ -458,18 +458,18 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
       "mode": "barcode",
       "barAxis": "v",
       "bcVals": [
-        0.2948257476774492,
-        0.36132311449424553,
-        1,
+        0.07424907869449984,
+        0.068,
+        0.543,
         0,
         0.9,
         0.15,
         0,
         0,
-        0.49034904065397555
+        0.5
       ],
-      "bcGapVar": 0,
-      "bcDir": 0,
+      "bcGapVar": 0.25,
+      "bcDir": 0.5,
       "bcSlit": 0,
       "bcGuard": 0,
       "bcHeight": 1,
@@ -570,9 +570,9 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
     },
     "tommygee.main.cfg.v1": {
       "bg": "#00BFFF",
-      "brightness": 0.431,
+      "brightness": 0.023,
       "modAmount": 1,
-      "modRelease": 1
+      "modRelease": 1.07
     },
     "tommygee.nav.v1": {
       "style": "number",
@@ -580,14 +580,14 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
     },
     "tommygee.page.v1": {
       "pageBG": "#00BFFF",
-      "pageFontColor": "#0A0A0A",
+      "pageFontColor": "#F3F315",
       "programBGFollows": true,
-      "activeProgramId": "main",
+      "activeProgramId": "assemblage",
       "cinema": {
         "on": true,
         "bg": "#000000",
         "fg": "#E6E6E6",
-        "fade": 1.5
+        "fade": 1
       }
     },
     "tommygee.presets.v1": [
@@ -3316,9 +3316,9 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
       "main": {
         "cfg": {
           "bg": "#00BFFF",
-          "brightness": 0.431,
+          "brightness": 0.023,
           "modAmount": 1,
-          "modRelease": 1
+          "modRelease": 1.07
         }
       },
       "assemblage": {
@@ -3385,18 +3385,18 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
           "mode": "barcode",
           "barAxis": "v",
           "bcVals": [
-            0.2948257476774492,
-            0.36132311449424553,
-            1,
+            0.07424907869449984,
+            0.068,
+            0.543,
             0,
             0.9,
             0.15,
             0,
             0,
-            0.49034904065397555
+            0.5
           ],
-          "bcGapVar": 0,
-          "bcDir": 0,
+          "bcGapVar": 0.25,
+          "bcDir": 0.5,
           "bcSlit": 0,
           "bcGuard": 0,
           "bcHeight": 1,
@@ -3406,7 +3406,7 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
         "faders": [
           {
             "key": "pieces",
-            "v": 0.2948257476774492,
+            "v": 0.07424907869449984,
             "pos": {
               "16:9": {
                 "x": 199.6,
@@ -3424,7 +3424,7 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
           },
           {
             "key": "spread",
-            "v": 0.36132311449424553,
+            "v": 0.068,
             "pos": {
               "16:9": {
                 "x": 356.8765376126915,
@@ -3442,7 +3442,7 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
           },
           {
             "key": "displace",
-            "v": 1,
+            "v": 0.543,
             "pos": {
               "16:9": {
                 "x": 561.4,
@@ -3550,7 +3550,7 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
           },
           {
             "key": "bright",
-            "v": 0.49034904065397555,
+            "v": 0.5,
             "pos": {
               "16:9": {
                 "x": 1610,
@@ -3679,15 +3679,15 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
             0.45978403755714176
           ],
           "barcode": [
-            0.2948257476774492,
-            0.36132311449424553,
-            1,
+            0.07424907869449984,
+            0.068,
+            0.543,
             0,
             0.9,
             0.15,
             0,
             0,
-            0.49034904065397555
+            0.5
           ]
         },
         "modePos": {
@@ -3874,7 +3874,7 @@ window.TG_SITE_DEFAULTS = { rev: 22, saved: '2026-11-26', store: {
     ],
     "tommygee.transport.v1": {
       "tg-btn-stop": "#B5B8B1",
-      "tg-btn-play": "#0A0A0A",
+      "tg-btn-play": "#1F51FF",
       "tg-btn-prev": "#b5b8b1",
       "tg-btn-next": "#b5b8b1"
     }
