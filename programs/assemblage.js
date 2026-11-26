@@ -1,4 +1,4 @@
-// build: tommygee-v41-barcode-height
+// build: tommygee-v42-barcode-match-main
 window.TG_PROGRAMS = window.TG_PROGRAMS || {};
 window.TG_PROGRAMS.assemblage = {
   name: 'Assemblage',
@@ -459,21 +459,32 @@ window.TG_PROGRAMS.assemblage = {
 
     // ---- motion ----
     // ---- BARCODE: the image cut into slim bars ----
-    // the band the bars fill. bcHeight 0 = narrow band, 1 = the whole image height (or width in 9:16)
-    function barcodeBox() {
-      const fr=collageFrame(),F=FORMATS[format];
-      let [IW,IH]=img?srcDims():[16,9];
-      if (IW<=1||IH<=1){IW=16;IH=9;}   // video without dimensions yet → 16:9
-      const k=clamp(CFG.bcHeight||0,0,1);
-      if (fr.axis==='v') {
-        const full=Math.min(F.W-80,fr.L*IW/IH),w=400+(Math.max(400,full)-400)*k;
-        return {x:fr.c-w/2,y:fr.u0,w,h:fr.L};
-      }
-      const n=(format==='1:1'?240:260)*2;
-      const full=Math.min(F.H-80,fr.L*IH/IW),h=n+(Math.max(n,full)-n)*k;
-      const cy=fr.c+(F.H/2-40-fr.c)*k*0.6;
-      return {x:fr.u0,y:cy-h/2,w:fr.L,h};
+    // the band the bars fill. bcHeight 0 = narrow band; 1 = exactly where the Main engine shows the picture
+    // (source contain-fitted to the program area), so both engines show the image at the same size.
+    function narrowBox() {
+      const fr=collageFrame();
+      if (fr.axis==='v') return {x:fr.c-200,y:fr.u0,w:400,h:fr.L};
+      const half=format==='1:1'?240:260;
+      return {x:fr.u0,y:fr.c-half,w:fr.L,h:half*2};
     }
+    function mainRectArt() {
+      const F=FORMATS[format];
+      let [IW,IH]=img?srcDims():[16,9];
+      if (IW<=1||IH<=1){IW=16;IH=9;}   // no dimensions yet → 16:9
+      const vw=container.clientWidth,vh=container.clientHeight;
+      if (vw<2||vh<2) { const w=F.W-80,h=w*IH/IW; return {x:40,y:(F.H-h)/2,w,h}; }
+      const s=Math.min((vw-48)/F.W,(vh-48)/F.H),ox=(vw-F.W*s)/2,oy=(vh-F.H*s)/2;   // same view as render()
+      const c=Math.min(vw/IW,vh/IH),w=IW*c,h=IH*c;                                   // same fit as Main
+      return {x:((vw-w)/2-ox)/s,y:((vh-h)/2-oy)/s,w:w/s,h:h/s};
+    }
+    function barcodeBox() {
+      const nb=narrowBox(),k=clamp(CFG.bcHeight||0,0,1);
+      if (k<=0) return nb;
+      const mb=mainRectArt(),L=(a,b)=>a+(b-a)*k;
+      return {x:L(nb.x,mb.x),y:L(nb.y,mb.y),w:L(nb.w,mb.w),h:L(nb.h,mb.h)};
+    }
+    let bcSig='';
+    function barcodeSig() { const d=img?srcDims():[0,0]; return container.clientWidth+'x'+container.clientHeight+'|'+d[0]+'x'+d[1]+'|'+format; }
     function generateBarcode() {
       const [IW,IH]=srcDims();
       const p=P();
@@ -866,6 +877,7 @@ window.TG_PROGRAMS.assemblage = {
     let raf=null, lastT=performance.now();
     function loop(now) {
       const dt=Math.min(0.05,Math.max(0,(now-lastT)/1000)); lastT=now;
+      if (isBC()&&CFG.bcHeight>0){const sg=barcodeSig();if(sg!==bcSig){bcSig=sg;needsRegen=true;}}
       if (needsRegen){generate();dirty=true;}
       if (motionActive()){advanceMotion(dt);dirty=true;}
       if (img instanceof HTMLVideoElement) dirty=true;
