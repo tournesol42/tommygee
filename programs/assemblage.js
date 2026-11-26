@@ -1,4 +1,4 @@
-// build: tommygee-v13-dark-labels
+// build: tommygee-v40-barcode
 window.TG_PROGRAMS = window.TG_PROGRAMS || {};
 window.TG_PROGRAMS.assemblage = {
   name: 'Assemblage',
@@ -32,8 +32,12 @@ window.TG_PROGRAMS.assemblage = {
       washShow: true, washColor: '#b8e2f5', washAlpha: 0.29, washVar: 0.55,
       washAmount: 0.2, washSpread: 0.67, washBands: 4, washSkew: 0.93,
       followMotion: true, motionLen: 1.35,
+      // BARCODE mode (from the standalone assemblage.html, 2026-11-26)
+      mode: 'collage', barAxis: 'v', bcVals: null,
+      bcGapVar: 0.25, bcDir: 0.5, bcSlit: 0, bcGuard: 0,
+      modeLen: 0.55,
     };
-    const REGEN_KEYS = new Set(['seed','washAmount','washSpread','washBands','washSkew','rayDensity','rayLength','curveCount','notesCount','pieceW','pieceH','stackChance','multiplyChance']);
+    const REGEN_KEYS = new Set(['seed','bcGapVar','bcDir','bcSlit','bcGuard','barAxis','washAmount','washSpread','washBands','washSkew','rayDensity','rayLength','curveCount','notesCount','pieceW','pieceH','stackChance','multiplyChance']);
 
     const FORMATS = {
       '16:9': { W: 1920, H: 1080, axis: 'h' },
@@ -77,6 +81,42 @@ window.TG_PROGRAMS.assemblage = {
       rings: [{ v: 0.30, a0: -90 }, { v: 0.55, a0: -35 }, { v: 0.70, a0: 160 }],
     };
 
+    // ---- MODE: COLLAGE / BARCODE (stepped fader); each mode keeps its own fader values ----
+    const MODES = ['collage','barcode'];
+    const MODE_LABELS = { collage: 'COLLAGE', barcode: 'BARCODE' };
+    const BC_DEFS = [
+      { lo:'FEW',    hi:'MANY',    v:0.00 },
+      { lo:'TIGHT',  hi:'WIDE',    v:0.068, h2:'bcGapVar' },
+      { lo:'EQUAL',  hi:'EXP',     v:0.543, h2:'bcDir' },
+      { lo:'FULL',   hi:'NEAR',    v:0.00, h2:'bcSlit' },
+      { lo:'GHOST',  hi:'SOLID',   v:0.90 },
+      { lo:'COLOUR', hi:'MONO',    v:0.15 },
+      { lo:'EVEN',   hi:'STEPPED', v:0.00, h2:'bcGuard' },
+      { lo:'HIDDEN', hi:'REVEAL',  v:0.00 },
+      { lo:'BLACK',  hi:'WHITE',   v:0.50 },
+    ];
+    let mode = 'collage';
+    const modeVals = { collage: FADER_DEFS.map(d=>d.v), barcode: BC_DEFS.map(d=>d.v) };
+    const modeCtl = { isMode: true, pos: {} };
+    const isBC = () => mode==='barcode';
+    function stackVert() { return isBC() ? CFG.barAxis==='h' : FORMATS[format].axis==='v'; }
+    const fLo = f => isBC() ? BC_DEFS[f.i].lo : f.lo;
+    const fHi = f => isBC() ? BC_DEFS[f.i].hi : f.hi;
+    function hasH2(f) { return isBC() ? !!BC_DEFS[f.i].h2 : !!f.h2; }
+    function h2Get(f) { return isBC() ? clamp(CFG[BC_DEFS[f.i].h2],0,1) : h2Pos(f.h2,CFG[f.h2.key]); }
+    function h2Set(f,v) {
+      if (isBC()) CFG[BC_DEFS[f.i].h2]=Math.round(v*1000)/1000;
+      else CFG[f.h2.key]=Math.round(h2Value(f.h2,v)*100)/100;
+    }
+    function setMode(m) {
+      if (m===mode||!MODES.includes(m)) return;
+      modeVals[mode]=faders.map(f=>f.v);
+      mode=m;
+      if (modeVals[m]) faders.forEach((f,i)=>{f.v=modeVals[m][i];});
+      CFG.mode=m; CFG.bcVals=modeVals.barcode; saveCFG();
+      needsRegen=true; dirty=true;
+    }
+
     function defaultFaderLayout() {
       faders.forEach((f, i) => {
         f.pos['16:9'] = { x: LAYOUT_169[i][0], y: LAYOUT_169[i][1] };
@@ -89,6 +129,9 @@ window.TG_PROGRAMS.assemblage = {
       seedCtl.pos['16:9'] = { x: 1740, y: 220 };
       seedCtl.pos['9:16'] = { x: 220, y: 1700 };
       seedCtl.pos['1:1']  = { x: 220, y: 1220 };
+      modeCtl.pos['16:9'] = { x: 1862.2, y: 770.9 };
+      modeCtl.pos['9:16'] = { x: 877, y: 260 };
+      modeCtl.pos['1:1']  = { x: 1267, y: 1262 };
     }
     defaultFaderLayout();
 
@@ -112,6 +155,8 @@ window.TG_PROGRAMS.assemblage = {
       localStorage.setItem(STORE_KEY, JSON.stringify(CFG));
     } catch (e) {}
     function saveCFG() { try { localStorage.setItem(STORE_KEY, JSON.stringify(CFG)); } catch (e) {} }
+    if (Array.isArray(CFG.bcVals)&&CFG.bcVals.length===faders.length) modeVals.barcode=CFG.bcVals.slice();
+    if (CFG.mode==='barcode') { mode='barcode'; faders.forEach((f,i)=>{f.v=modeVals.barcode[i];}); } else CFG.mode='collage';
 
     // ---- helpers ----
     function rgba(hex, a) {
@@ -268,7 +313,7 @@ window.TG_PROGRAMS.assemblage = {
       if (frame[format]) return frame[format];
       let b=areaBox();
       if (showControls) {
-        faders.forEach(f=>{b=unionBox(b,faderGeom(f).box);}); b=unionBox(b,motionGeom().box); b=unionBox(b,seedGeom().box);
+        faders.forEach(f=>{b=unionBox(b,faderGeom(f).box);}); b=unionBox(b,motionGeom().box); b=unionBox(b,modeGeom().box); b=unionBox(b,seedGeom().box);
       }
       if (!b) return null;
       const p=CFG.framePad;
@@ -280,6 +325,7 @@ window.TG_PROGRAMS.assemblage = {
       needsRegen=false;
       pieces=[]; contours=[]; guides=[]; washes=[];
       if (!img) return;
+      if (isBC()) { generateBarcode(); return; }
       const [IW,IH]=srcDims();
       const p=P();
       const seed=Math.round(CFG.seed);
@@ -412,6 +458,65 @@ window.TG_PROGRAMS.assemblage = {
     }
 
     // ---- motion ----
+    // ---- BARCODE: the image cut into slim bars ----
+    function barcodeBox() {
+      const fr=collageFrame();
+      if (fr.axis==='v') return {x:fr.c-200,y:fr.u0,w:400,h:fr.L};
+      const half=format==='1:1'?240:260;
+      return {x:fr.u0,y:fr.c-half,w:fr.L,h:half*2};
+    }
+    function generateBarcode() {
+      const [IW,IH]=srcDims();
+      const p=P();
+      const seed=Math.round(CFG.seed);
+      const rnd=mulberry32(seed*6151+29);
+      const box=barcodeBox();
+      const sv=CFG.barAxis==='h';
+      const Lu=sv?box.h:box.w, Lc=sv?box.w:box.h;
+      const N=Math.round(8+Math.pow(p.pieces,1.5)*292);
+      const kR=Math.min(1,p.displace*2),kE=Math.max(0,p.displace*2-1);
+      const a=1-2*CFG.bcDir;
+      const ws=[];
+      for (let i=0;i<N;i++){
+        const t=N>1?i/(N-1):0.5;
+        const g=a*t+(1-Math.abs(a))*(1-Math.abs(2*t-1));
+        const r=rnd()*2-1;
+        ws.push(Math.exp(kR*(1-kE)*1.5*r+kE*4*g));
+      }
+      const mean=ws.reduce((s2,w)=>s2+w,0)/N;
+      const gapR=Math.pow(p.spread,1.3)*2.2;
+      const gs=[];
+      for (let i=0;i<N-1;i++) gs.push(gapR*mean*Math.exp(CFG.bcGapVar*2.2*(rnd()*2-1)));
+      const total=ws.reduce((s2,w)=>s2+w,0)+gs.reduce((s2,g)=>s2+g,0);
+      const k=Lu/total;
+      const guardIdx=new Set();
+      if (CFG.bcGuard>0.01&&N>=6) [0,Math.floor(N/2)-1,N-2].forEach(j=>{guardIdx.add(j);guardIdx.add(j+1);});
+      const guardExt=CFG.bcGuard*0.22*Lc;
+      srcMap={k:Math.min(IW/box.w,IH/box.h)/(1+p.zoom*2.5),regCx:box.x+box.w/2,regCy:box.y+box.h/2};
+      const mr=mulberry32(seed*977+3);
+      const phase=rnd()*TAU;
+      let u=sv?box.y:box.x;
+      for (let i=0;i<N;i++){
+        const wu=Math.max(0.35,ws[i]*k);
+        const step=Math.floor(rnd()*4)/3;
+        let lc=Lc*(1-p.lines*0.6*step);
+        if (guardIdx.has(i)) lc+=guardExt;
+        const c0=sv?box.x:box.y;
+        const x=sv?c0:u,y=sv?u:c0;
+        const w=sv?lc:wu,h=sv?wu:lc;
+        const sl=CFG.bcSlit*(0.6*Math.sin(i*0.35+phase)+0.4*(rnd()*2-1));
+        const sdx=sv?sl*IW*0.12:sl*IW*0.18;
+        const sdy=sv?sl*IH*0.18:sl*IH*0.12;
+        const alpha=Math.min(1,(0.25+p.opacity*0.75)*(0.85+rnd()*0.15));
+        const mono=clamp(p.mono+(rnd()-0.5)*0.3,0,1);
+        const m={o1:mr()*1000,o2:mr()*1000,o3:mr()*1000,o4:mr()*1000,o5:mr()*1000,
+          fq:0.06+mr()*0.22,au:0.4+mr()*0.9,av:mr(),slide:mr()<0.3,snapRoll:mr(),ghostRoll:mr(),intv:0.6+mr()*0.8};
+        pieces.push({idx:i,x,y,w,h,sdx,sdy,alpha,mono,blend:'source-over',m,rays:[],notes:[]});
+        u+=wu+(i<N-1?gs[i]*k:0);
+      }
+      updateMotionRects();
+    }
+
     let mt=0, mSpeedSm=1;
     function motionActive() {
       const M=MV();
@@ -428,10 +533,11 @@ window.TG_PROGRAMS.assemblage = {
     function motionRect(pc,T) {
       const M=MV(),m=pc.m;
       if (!m||(M.travel<=0&&M.snap<=0&&M.breathe<=0&&M.chaos<=0)) return {x:pc.x,y:pc.y,w:pc.w,h:pc.h};
-      const vert=FORMATS[format].axis==='v';
+      const vert=stackVert();
       let t=T;
       if (M.chaos>0&&hash01(pc.idx*31+7,Math.floor(T*1.5))<M.chaos*0.35) t=Math.floor(T*7)/7;
-      const A=M.travel*230,Ac=M.travel*70;
+      const amp=isBC()?Math.min(1,M.speed*4):1;
+      const A=M.travel*230*(isBC()?0.5:1),Ac=M.travel*70*(isBC()?0.2:1);
       let du=m.slide?A*m.au*tri(t*m.fq*0.6+m.o1*0.001):A*m.au*noise1(t,m.o1,m.fq);
       let dv=Ac*m.av*noise1(t,m.o2,m.fq*1.3);
       if (m.snapRoll<M.snap) {
@@ -446,8 +552,10 @@ window.TG_PROGRAMS.assemblage = {
       }
       const b=M.breathe*0.6;
       const sa=Math.max(0.25,1+b*noise1(t,m.o2+50,m.fq*0.8)),sc=Math.max(0.25,1+b*noise1(t,m.o3+90,m.fq*0.9));
+      du*=amp; dv*=amp;
+      const sa2=1+(sa-1)*amp,sc2=1+(sc-1)*amp;
       const dx=vert?dv:du,dy=vert?du:dv;
-      const w=pc.w*(vert?sc:sa),h=pc.h*(vert?sa:sc);
+      const w=pc.w*(vert?sc2:sa2),h=pc.h*(vert?sa2:sc2);
       const cx=pc.x+pc.w/2+dx,cy=pc.y+pc.h/2+dy;
       return {x:cx-w/2,y:cy-h/2,w,h};
     }
@@ -476,7 +584,8 @@ window.TG_PROGRAMS.assemblage = {
     }
     function faderAnchorPiece(i) {
       if (!pieces.length) return null;
-      const sorted=pieces.slice().sort((a,b)=>FORMATS[format].axis==='h'?(a.x-b.x):(a.y-b.y));
+      const sv=stackVert();
+      const sorted=pieces.slice().sort((a,b)=>sv?(a.y-b.y):(a.x-b.x));
       return sorted[Math.min(sorted.length-1,Math.floor((i+0.5)/faders.length*sorted.length))];
     }
     function seedGeom() {
@@ -631,15 +740,59 @@ window.TG_PROGRAMS.assemblage = {
         g.lineTo(G.x1,G.y1); g.stroke();
         f.dots.forEach(d=>{const q=G.pt(d.t);dotWithHalo(g,q.x,q.y,d.halo,CFG.minDot,S);});
         const h=G.pt(f.v); dotWithHalo(g,h.x,h.y,f.halo*CFG.haloMult,CFG.handleDot,S);
-        if (f.h2){const q2=G.pt(h2Pos(f.h2,CFG[f.h2.key]));dotWithHalo(g,q2.x,q2.y,8.4,CFG.handleDot*0.8,S);}
+        if (hasH2(f)){const q2=G.pt(h2Get(f));dotWithHalo(g,q2.x,q2.y,8.4,CFG.handleDot*0.8,S);}
+        const hi=fHi(f),lo=fLo(f);
         g.fillStyle=textCol; g.font=`${CFG.labelSize*S}px ${FONT_SANS}`;
-        if (G.vertical){g.textAlign='left';g.textBaseline='middle';g.fillText(f.hi,G.x0+16*S,G.y0+4*S);g.fillText(f.lo,G.x0+16*S,G.y1-4*S);}
-        else{g.textBaseline='bottom';g.textAlign='left';g.fillText(f.lo,G.x0,G.y0-16*S);g.textAlign='right';g.fillText(f.hi,G.x1,G.y0-16*S);}
+        if (G.vertical){g.textAlign='left';g.textBaseline='middle';g.fillText(hi,G.x0+16*S,G.y0+4*S);g.fillText(lo,G.x0+16*S,G.y1-4*S);}
+        else{g.textBaseline='bottom';g.textAlign='left';g.fillText(lo,G.x0,G.y0-16*S);g.textAlign='right';g.fillText(hi,G.x1,G.y0-16*S);}
         g.restore();
       });
       drawMotionFader(g,lineCol,textCol);
+      drawModeFader(g,lineCol,textCol);
       drawSeedControl(g,lineCol,textCol);
     }
+    function modeGeom() {
+      const S=faderScale[format],c=faderPivot[format],b=modeCtl.pos[format];
+      const m={x:c.x+(b.x-c.x)*S,y:c.y+(b.y-c.y)*S};
+      const mr=CFG.markerR*S;
+      if (FORMATS[format].axis==='h') {
+        const L=CFG.trackLenV*CFG.modeLen*S,x=m.x,y0=m.y+mr+18*S,y1=y0+L;
+        return {S,mr,vertical:true,mx:m.x,my:m.y,x0:x,y0,x1:x,y1,pt:t=>({x,y:y0+t*L}),val:(px,py)=>(py-y0)/L,box:{x:m.x-30*S,y:m.y-mr,w:110*S,h:(y1+26*S)-(m.y-mr)}};
+      }
+      const L=CFG.trackLenH*CFG.modeLen*S,y=m.y,x0=m.x+mr+18*S,x1=x0+L;
+      return {S,mr,vertical:false,mx:m.x,my:m.y,x0,y0:y,x1,y1:y,pt:t=>({x:x0+t*L,y}),val:(px)=>(px-x0)/L,box:{x:m.x-mr,y:m.y-34*S,w:(x1+30*S)-(m.x-mr),h:62*S}};
+    }
+    function drawModeFader(g,lineCol,textCol) {
+      const G=modeGeom(),S=G.S,mr=G.mr;
+      g.save();
+      g.strokeStyle=lineCol; g.lineWidth=CFG.trackWidth;
+      g.beginPath();g.arc(G.mx,G.my,mr,0,Math.PI*2);g.stroke();
+      g.fillStyle=textCol;
+      [[-6,1.2],[-3.6,0.7],[-1.6,2],[1.6,0.7],[3.4,1.4],[5.8,0.7]].forEach(([dx,w])=>g.fillRect(G.mx+(dx-w/2)*S,G.my-5.5*S,w*S,11*S));
+      g.beginPath();
+      if (G.vertical) g.moveTo(G.mx,G.my+mr); else g.moveTo(G.mx+mr,G.my);
+      g.lineTo(G.x1,G.y1); g.stroke();
+      [0,1].forEach(t=>{const q=G.pt(t),d=7*S;g.beginPath();if(G.vertical){g.moveTo(q.x-d,q.y);g.lineTo(q.x+d,q.y);}else{g.moveTo(q.x,q.y-d);g.lineTo(q.x,q.y+d);}g.stroke();});
+      const h=G.pt(MODES.indexOf(mode));
+      dotWithHalo(g,h.x,h.y,17*CFG.haloMult,CFG.handleDot,S);
+      g.font=`${CFG.labelSize*S}px ${FONT_SANS}`;
+      MODES.forEach((m,i)=>{
+        const q=G.pt(i);
+        g.fillStyle=m===mode?textCol:rgba(CFG.textColor,CFG.textAlpha*0.45);
+        if (G.vertical){g.textAlign='left';g.textBaseline='middle';g.fillText(MODE_LABELS[m],q.x+16*S,q.y);}
+        else{g.textBaseline='bottom';g.textAlign=i?'right':'left';g.fillText(MODE_LABELS[m],q.x,q.y-16*S);}
+      });
+      g.restore();
+    }
+    function hitMode(p) {
+      if (!showControls) return false;
+      const G=modeGeom(),tol=20*G.S;
+      const along=G.vertical?(p.y>=G.y0-tol&&p.y<=G.y1+tol):(p.x>=G.x0-tol&&p.x<=G.x1+tol);
+      const perp=G.vertical?Math.abs(p.x-G.x0):Math.abs(p.y-G.y0);
+      return along&&perp<=tol;
+    }
+    function setModeAt(p) { setMode(MODES[modeGeom().val(p.x,p.y)<0.5?0:1]); }
+    function toggleBars() { CFG.barAxis=CFG.barAxis==='h'?'v':'h'; saveCFG(); syncInputs(); needsRegen=true; }
     function drawSeedControl(g,lineCol,textCol) {
       const G=seedGeom(),S=G.S;
       g.save();
@@ -661,7 +814,7 @@ window.TG_PROGRAMS.assemblage = {
     function drawMotionFader(g,lineCol,textCol) {
       const G=motionGeom(),S=G.S,mr=G.mr;
       g.save();
-      if (CFG.showLeaders&&pieces.length){const mid=pieces.slice().sort((a,b)=>FORMATS[format].axis==='h'?(a.x-b.x):(a.y-b.y))[Math.floor(pieces.length/2)];drawLeader(g,G,mid,lineCol);}
+      if (CFG.showLeaders&&pieces.length){const sv=stackVert();const mid=pieces.slice().sort((a,b)=>sv?(a.y-b.y):(a.x-b.x))[Math.floor(pieces.length/2)];drawLeader(g,G,mid,lineCol);}
       g.strokeStyle=lineCol; g.lineWidth=CFG.trackWidth;
       g.beginPath();g.arc(G.mx,G.my,mr,0,Math.PI*2);g.stroke();
       g.fillStyle=textCol; g.font=`${CFG.numeralSize*S}px ${FONT_SANS}`;
@@ -735,7 +888,7 @@ window.TG_PROGRAMS.assemblage = {
         const along=G.vertical?(p.y>=G.y0-tol&&p.y<=G.y1+tol):(p.x>=G.x0-tol&&p.x<=G.x1+tol);
         const perp=G.vertical?Math.abs(p.x-G.x0):Math.abs(p.y-G.y0);
         if (along&&perp<=tol) {
-          if (f.h2){const v=clamp(G.val(p.x,p.y),0,1);if(Math.abs(h2Pos(f.h2,CFG[f.h2.key])-v)<Math.abs(f.v-v))return{f,second:true};}
+          if (hasH2(f)){const v=clamp(G.val(p.x,p.y),0,1);if(Math.abs(h2Get(f)-v)<Math.abs(f.v-v))return{f,second:true};}
           return {f,second:false};
         }
       }
@@ -756,6 +909,7 @@ window.TG_PROGRAMS.assemblage = {
       if (!showControls) return null;
       for (const f of faders) if (inBox(p,faderGeom(f).box)) return f;
       if (inBox(p,motionGeom().box)) return motion;
+      if (inBox(p,modeGeom().box)) return modeCtl;
       if (Math.hypot(p.x-seedGeom().mx,p.y-seedGeom().my)<=seedGeom().R) return seedCtl;
       return null;
     }
@@ -780,7 +934,7 @@ window.TG_PROGRAMS.assemblage = {
     }
     function setFader(f,p,second) {
       const v=clamp(faderGeom(f).val(p.x,p.y),0,1);
-      if (second&&f.h2){CFG[f.h2.key]=Math.round(h2Value(f.h2,v)*100)/100;saveCFG();syncInputs();}
+      if (second&&hasH2(f)){h2Set(f,v);saveCFG();syncInputs();}
       else f.v=v;
       needsRegen=true;
     }
@@ -816,6 +970,7 @@ window.TG_PROGRAMS.assemblage = {
         if (hitArea(p)){const G=group[format];drag={type:'moveArea',sx:p.x,sy:p.y,ox:G.x,oy:G.y};}
         return;
       }
+      if (hitMode(p)){drag={type:'mode'};setModeAt(p);return;}
       const hs=hitSeed(p);
       if (hs==='centre'){pressSeed();return;}
       if (hs!==null){drag={type:'ring',i:hs};setRing(hs,p);return;}
@@ -834,11 +989,12 @@ window.TG_PROGRAMS.assemblage = {
         else if(fh==='ne'||fh==='sw')cur='nesw-resize';
         else if(fh==='edge')cur='move';
         else if(e.shiftKey&&(hitFaderBox(p)||hitArea(p)))cur='move';
-        else if(hitSeed(p)!==null||hitMotionKnob(p)!==null||hitFaderHandle(p))cur='pointer';
+        else if(hitMode(p)||hitSeed(p)!==null||hitMotionKnob(p)!==null||hitFaderHandle(p))cur='pointer';
         canvas.style.cursor=cur; return;
       }
       const dx=p.x-drag.sx,dy=p.y-drag.sy;
       if(drag.type==='fader')setFader(drag.f,p,drag.second);
+      else if(drag.type==='mode')setModeAt(p);
       else if(drag.type==='knob')setKnob(drag.i,p);
       else if(drag.type==='ring')setRing(drag.i,p);
       else if(drag.type==='moveFader'){drag.f.pos[format]={x:drag.ox+dx/drag.S,y:drag.oy+dy/drag.S};}
@@ -855,7 +1011,10 @@ window.TG_PROGRAMS.assemblage = {
       }
       dirty=true;
     };
-    const onPU=()=>{drag=null;};
+    const onPU=()=>{
+      if (drag&&drag.type==='fader'&&isBC()){modeVals.barcode=faders.map(f=>f.v);CFG.bcVals=modeVals.barcode;saveCFG();}
+      drag=null;
+    };
     const onWheel=e=>{
       if(!e.shiftKey)return; e.preventDefault();
       const d=e.deltaY||e.deltaX;
@@ -983,6 +1142,7 @@ window.TG_PROGRAMS.assemblage = {
       ['Lines & details',[['rayWidth','Ray width','range',0.1,3,0.05],['rayAlpha','Ray opacity','range',0,1,0.01],['rayDot','Ray end dot ×','range',0,3,0.05],['rayDensity','Ray density ×','range',0,3,0.05],['rayLength','Ray length ×','range',0.2,3,0.05],['curveCount','Curves/guides ×','range',0,3,0.05],['curveWidth','Curve width','range',0.1,3,0.05],['curveAlpha','Curve opacity','range',0,1,0.01],['guideAlpha','Guide opacity','range',0,1,0.01],['showNotes','Notes','check'],['notesSize','Notes size','range',6,30,0.5],['notesCount','Notes count ×','range',0,4,0.05]]],
       ['Blue areas',[['washShow','Show','check'],['washColor','Base colour','color'],['washAlpha','Opacity','range',0,1,0.01],['washVar','Shade variation','range',0,2,0.01],['washAmount','Amount','range',0,1,0.01],['washSpread','Size','range',0.2,3,0.01],['washBands','Slivers ×','range',0,4,0.05],['washSkew','Shards ×','range',0,2,0.01]]],
       ['Motion',[['followMotion','Lines follow pieces','check'],['motionLen','Motion track ×','range',0.6,2,0.01]]],
+      ['Barcode',[['barAxis','Bars (v / h)','select',['v','h']],['modeLen','Mode fader length ×','range',0.3,1.5,0.01]]],
       ['Pieces (shape)',[['seed','Seed','range',0,998,1],['seedSize','Seed control size','range',60,400,1],['pieceW','Width × (fader II)','range',0.3,3,0.01],['pieceH','Height × (fader III)','range',0.3,3,0.01],['stackChance','Stacked blocks','range',0,1,0.01],['multiplyChance','Multiply blend','range',0,1,0.01]]],
     ];
     const inputs={};
@@ -1084,6 +1244,9 @@ window.TG_PROGRAMS.assemblage = {
         group: Object.fromEntries(FMT_KEYS.map(fm=>[fm,{...group[fm]}])),
         faderScale: {...faderScale},
         frame: Object.fromEntries(FMT_KEYS.map(fm=>[fm, frame[fm]?{...frame[fm]}:null])),
+        mode,
+        modeVals: { collage: (mode==='collage'?faders.map(f=>f.v):modeVals.collage).slice(), barcode: (mode==='barcode'?faders.map(f=>f.v):modeVals.barcode).slice() },
+        modePos: Object.fromEntries(FMT_KEYS.map(fm=>[fm,{...modeCtl.pos[fm]}])),
       };
     }
     function setParams(obj) {
@@ -1096,6 +1259,13 @@ window.TG_PROGRAMS.assemblage = {
       if (obj.group) FMT_KEYS.forEach(fm=>{if(obj.group[fm])Object.assign(group[fm],obj.group[fm]);});
       if (obj.faderScale) Object.assign(faderScale,obj.faderScale);
       if (obj.frame) FMT_KEYS.forEach(fm=>{frame[fm]=obj.frame[fm]||null;});
+      // mode: params without a mode (older presets / site defaults) are collage; a cfg-only update keeps the current mode
+      const tm=obj.mode||(obj.cfg&&obj.cfg.mode)||(obj.faders?'collage':mode);
+      mode=MODES.includes(tm)?tm:'collage'; CFG.mode=mode;
+      if (obj.modeVals){MODES.forEach(m=>{if(Array.isArray(obj.modeVals[m])&&obj.modeVals[m].length===faders.length)modeVals[m]=obj.modeVals[m].slice();});}
+      else if (Array.isArray(CFG.bcVals)&&CFG.bcVals.length===faders.length&&mode!=='barcode') modeVals.barcode=CFG.bcVals.slice();
+      modeVals[mode]=faders.map(f=>f.v); CFG.bcVals=modeVals.barcode.slice(); saveCFG();
+      if (obj.modePos) FMT_KEYS.forEach(fm=>{if(obj.modePos[fm])modeCtl.pos[fm]={...obj.modePos[fm]};});
       syncInputs(); needsRegen=true; dirty=true;
     }
     function onKey(e) {
@@ -1108,13 +1278,16 @@ window.TG_PROGRAMS.assemblage = {
       else if (k==='c'){toggleConsole();}
       else if (k==='l'){
         group[format]={x:0,y:0,s:1};faderScale[format]=DEFAULT_FADER_SCALE[format];frame[format]=null;
-        const keep=faders.map(f=>({...f.pos})),keepM={...motion.pos},keepS={...seedCtl.pos};
+        const keep=faders.map(f=>({...f.pos})),keepM={...motion.pos},keepS={...seedCtl.pos},keepMd={...modeCtl.pos};
         defaultFaderLayout();
+        const dmd=modeCtl.pos[format];modeCtl.pos=keepMd;modeCtl.pos[format]=dmd;
         faders.forEach((f,i)=>{const d=f.pos[format];f.pos=keep[i];f.pos[format]=d;});
         const dm=motion.pos[format];motion.pos=keepM;motion.pos[format]=dm;
         const ds=seedCtl.pos[format];seedCtl.pos=keepS;seedCtl.pos[format]=ds;
         needsRegen=true;
       }
+      else if (k==='m'){setMode(isBC()?'collage':'barcode');}
+      else if (k==='b'){toggleBars();}
       else if (k==='e'){exportPNG();}
       else if (k==='p'){exportPositions();}
     }
