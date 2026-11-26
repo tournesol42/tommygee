@@ -1,4 +1,4 @@
-// build: tommygee-v42-barcode-match-main
+// build: tommygee-v43-frame-cache
 window.TG_PROGRAMS = window.TG_PROGRAMS || {};
 window.TG_PROGRAMS.assemblage = {
   name: 'Assemblage',
@@ -629,6 +629,41 @@ window.TG_PROGRAMS.assemblage = {
       sctx.fillRect(0,0,cw,ch);
       sctx.globalCompositeOperation='source-over';
     }
+    // ---- processed frame cache (perf, v43) ----
+    // The source (often a 4K video) is drawn ONCE per frame into a cache canvas at the size it is shown,
+    // with mono + brightness applied once; every piece/bar then just copies its part from that canvas.
+    // Before, each of up to 300 bars sampled the 4K video and ran its own composite passes → frame drops.
+    // Per-piece mono variation is kept as 3 levels (mono −0.1 / mono / mono +0.1).
+    const fcache=[0,1,2].map(()=>{const c=document.createElement('canvas');return {c,g:c.getContext('2d'),key:'',sc:1};});
+    let frameNo=0;
+    function monoLevels(){const m=P().mono;return [clamp(m-0.1,0,1),m,clamp(m+0.1,0,1)];}
+    function procFrame(level) {
+      const [iw,ih]=srcDims(),G=group[format];
+      const sc=Math.min(1,Math.max(0.02,pxScale*G.s/srcMap.k),4096/Math.max(iw,ih));
+      const cw=Math.max(1,Math.round(iw*sc)),ch=Math.max(1,Math.round(ih*sc));
+      const mono=monoLevels()[level],b=P().bright;
+      const key=(img instanceof HTMLVideoElement?'v'+frameNo:'i')+'|'+cw+'x'+ch+'|'+mono.toFixed(3)+'|'+b.toFixed(3)+'|'+(img.currentSrc||img.src||'');
+      const fc=fcache[level];
+      if (fc.key!==key) {
+        const c=fc.c,g=fc.g;
+        if (c.width!==cw||c.height!==ch){c.width=cw;c.height=ch;}
+        g.setTransform(1,0,0,1,0,0); g.globalAlpha=1; g.globalCompositeOperation='source-over';
+        g.clearRect(0,0,cw,ch);
+        g.drawImage(img,0,0,cw,ch);
+        if (mono>0.01){g.globalCompositeOperation='saturation';g.fillStyle=`rgba(128,128,128,${mono})`;g.fillRect(0,0,cw,ch);}
+        if (Math.abs(b-0.5)>=0.002){g.globalCompositeOperation='source-atop';g.fillStyle=b<0.5?`rgba(0,0,0,${(0.5-b)*2})`:`rgba(255,255,255,${(b-0.5)*2})`;g.fillRect(0,0,cw,ch);}
+        g.globalCompositeOperation='source-over';
+        fc.key=key; fc.sc=cw/iw;
+      }
+      return fc;
+    }
+    function monoLevelOf(m){const L=monoLevels();let bi=1,bd=Infinity;L.forEach((v,i)=>{const d=Math.abs(v-m);if(d<bd){bd=d;bi=i;}});return bi;}
+    function blitSrc(g,fc,sx,sy,sw,sh,dx,dy,dw,dh) {
+      const s=fc.sc,W=fc.c.width,H=fc.c.height;
+      let x=sx*s,y=sy*s,w=sw*s,h=sh*s;
+      x=clamp(x,0,W-1);y=clamp(y,0,H-1);w=Math.max(0.5,Math.min(w,W-x));h=Math.max(0.5,Math.min(h,H-y));
+      g.drawImage(fc.c,x,y,w,h,dx,dy,dw,dh);
+    }
     function drawPiece(g,pc,rb,alphaMul) {
       if (!img) return;
       const [iw,ih]=srcDims(),r=toGroup(rb);
@@ -637,15 +672,9 @@ window.TG_PROGRAMS.assemblage = {
       const scx=iw/2+(rb.x+rb.w/2-srcMap.regCx)*srcMap.k+pc.sdx;
       const scy=ih/2+(rb.y+rb.h/2-srcMap.regCy)*srcMap.k+pc.sdy;
       const sx=clamp(scx-sw/2,0,iw-sw),sy=clamp(scy-sh/2,0,ih-sh);
-      const cw=Math.max(1,Math.ceil(r.w*pxScale)),ch=Math.max(1,Math.ceil(r.h*pxScale));
-      if (scratch.width<cw||scratch.height<ch){scratch.width=Math.max(scratch.width,cw);scratch.height=Math.max(scratch.height,ch);}
-      sctx.setTransform(1,0,0,1,0,0); sctx.globalAlpha=1; sctx.globalCompositeOperation='source-over';
-      sctx.clearRect(0,0,cw,ch);
-      sctx.drawImage(img,sx,sy,sw,sh,0,0,cw,ch);
-      if (pc.mono>0.01){sctx.globalCompositeOperation='saturation';sctx.fillStyle=`rgba(128,128,128,${pc.mono})`;sctx.fillRect(0,0,cw,ch);}
-      applyBrightness(cw,ch);
+      const fc=procFrame(monoLevelOf(pc.mono));
       g.save(); g.globalAlpha=pc.alpha*alphaMul; g.globalCompositeOperation=pc.blend;
-      g.drawImage(scratch,0,0,cw,ch,r.x,r.y,r.w,r.h);
+      blitSrc(g,fc,sx,sy,sw,sh,r.x,r.y,r.w,r.h);
       g.restore();
     }
     function drawReveal(g,alpha) {
@@ -656,16 +685,9 @@ window.TG_PROGRAMS.assemblage = {
       if (x1<=x0||y1<=y0) return;
       const sx=(x0-full.x)/full.w*iw,sy=(y0-full.y)/full.h*ih;
       const sw=(x1-x0)/full.w*iw,sh=(y1-y0)/full.h*ih;
-      const cw=Math.max(1,Math.ceil((x1-x0)*pxScale)),ch=Math.max(1,Math.ceil((y1-y0)*pxScale));
-      if (scratch.width<cw||scratch.height<ch){scratch.width=Math.max(scratch.width,cw);scratch.height=Math.max(scratch.height,ch);}
-      sctx.setTransform(1,0,0,1,0,0); sctx.globalAlpha=1; sctx.globalCompositeOperation='source-over';
-      sctx.clearRect(0,0,cw,ch);
-      sctx.drawImage(img,sx,sy,sw,sh,0,0,cw,ch);
-      const mono=P().mono;
-      if (mono>0.01){sctx.globalCompositeOperation='saturation';sctx.fillStyle=`rgba(128,128,128,${mono})`;sctx.fillRect(0,0,cw,ch);}
-      applyBrightness(cw,ch);
+      const fc=procFrame(1);
       g.save(); g.globalAlpha=alpha;
-      g.drawImage(scratch,0,0,cw,ch,x0,y0,x1-x0,y1-y0);
+      blitSrc(g,fc,sx,sy,sw,sh,x0,y0,x1-x0,y1-y0);
       g.restore();
     }
     function drawArt(g,opts) {
@@ -860,6 +882,7 @@ window.TG_PROGRAMS.assemblage = {
 
     // ---- render ----
     function render() {
+      frameNo++;
       const F=FORMATS[format];
       const vw=canvas.width/dpr,vh=canvas.height/dpr;
       const margin=24;
