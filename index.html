@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v45-subtitle -->
+<!-- build: tommygee-v46-phone-layout -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -151,7 +151,7 @@
   .tg-shift-handle { position: absolute; width: 8px; height: 8px; background: rgba(255,255,255,0.75); border: 1px solid rgba(0,0,0,0.4); pointer-events: all; }
 
   @media (max-width: 720px) {
-    header { top: auto; bottom: 0; padding: 14px 18px 20px; background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); justify-content: center; }
+    header { top: auto; bottom: 0; padding: 0; background: none; backdrop-filter: none; justify-content: flex-end; }
     nav { gap: 14px; }
     nav a { font-size: 9px; letter-spacing: 0.16em; }
     .overlay-inner { margin: 28px 20px 20vh 20px; }
@@ -400,9 +400,9 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
+window.TG_SITE_DEFAULTS = { rev: 26, saved: '2026-11-27', store: {
     "tommygee.assemblage.cfg.v1": {
-      "bg": "#F54021",
+      "bg": "#FF1A1A",
       "textColor": "#1b1b1b",
       "textAlpha": 0.9,
       "notesColor": "#1b1b1b",
@@ -542,10 +542,10 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
         "height": 0.03912833567415731
       },
       ".hero-title": {
-        "left": 0.018510584677419353,
-        "top": 0.12468179424157304,
-        "width": 0.5628780241935484,
-        "height": 0.08443425210674158
+        "left": 0.016204637096774194,
+        "top": 0.12776509831460675,
+        "width": 0.562789818548387,
+        "height": 0.08442327949438203
       },
       "tg-program-container": {
         "left": 0,
@@ -572,6 +572,12 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
         "top": 0.7513935217696629,
         "width": 0.18234627016129032,
         "height": 0.027596120084269662
+      },
+      ".tg-subtitle": {
+        "left": 0.016066028225806453,
+        "top": 0.11027475421348315,
+        "width": 0.1151461693548387,
+        "height": 0.010950667134831461
       }
     },
     "tommygee.main.cfg.v1": {
@@ -585,7 +591,7 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
       "color": "#9DA1AA"
     },
     "tommygee.page.v1": {
-      "pageBG": "#F54021",
+      "pageBG": "#FF1A1A",
       "pageFontColor": "#0A0A0A",
       "programBGFollows": true,
       "activeProgramId": "assemblage",
@@ -3330,7 +3336,7 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
       },
       "assemblage": {
         "cfg": {
-          "bg": "#F54021",
+          "bg": "#FF1A1A",
           "textColor": "#1b1b1b",
           "textAlpha": 0.9,
           "notesColor": "#1b1b1b",
@@ -4455,7 +4461,70 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
     if (!data['.tg-subtitle']) placeSubtitleDefault();
     if (data !== layoutData) { if (data['tg-parts']) layoutData['tg-parts'] = data['tg-parts']; else delete layoutData['tg-parts']; }
     applyParts(data['tg-parts']);
+    if (isMobileLayout()) applyMobileLayout();
   }
+
+  // ---- phone layout (v46): automatic, built around the main picture; the saved (desktop) layout is not used ----
+  // title + subtitle just above the picture (title as wide as the screen allows), menu right under the picture,
+  // counter left under the picture, square play button under the menu.
+  function isMobileLayout() { return window.matchMedia('(max-width: 720px)').matches; }
+  function mainPictureRect() {
+    const pc = document.getElementById('tg-program-container'); if (!pc) return null;
+    const c = pc.getBoundingClientRect();
+    const v = window.TGDeck && TGDeck.visual;
+    let iw = 16, ih = 9;
+    if (v && v.videoWidth) { iw = v.videoWidth; ih = v.videoHeight; } else if (v && v.naturalWidth) { iw = v.naturalWidth; ih = v.naturalHeight; }
+    const k = Math.min(c.width / iw, c.height / ih), w = iw * k, h = ih * k;
+    return { left: c.left + (c.width - w) / 2, top: c.top + (c.height - h) / 2, width: w, height: h, bottom: c.top + (c.height + h) / 2 };
+  }
+  function applyMobileLayout() {
+    const r = mainPictureRect(); if (!r) return;
+    const vw = window.innerWidth, M = 14, sh = window.TG_SHIFT || 0;
+    const px = v => Math.round(v) + 'px';
+    const fix = (el, o) => { el.style.position = 'fixed'; el.style.transform = 'none'; el.style.bottom = 'auto'; Object.keys(o).forEach(k => el.style[k] = o[k]); };
+    // title: as big as fits the screen width
+    const t = document.querySelector('.hero-title');
+    if (t) {
+      fix(t, { width: '', height: '', right: 'auto', left: px(M) });
+      t.style.fontSize = '100px';
+      const fs = Math.min(200, 100 * (vw - 2 * M) / Math.max(1, t.scrollWidth));
+      t.style.fontSize = fs + 'px';
+      const th = t.getBoundingClientRect().height;
+      t.style.top = px(r.top - sh - th - 10);
+      const s2 = document.querySelector('.tg-subtitle');
+      if (s2) {
+        fix(s2, { width: '', height: '', right: 'auto', fontSize: '', left: px(M + fs * 0.03) });
+        s2.style.top = px(r.top - sh - th - 10 - s2.getBoundingClientRect().height - 6);
+      }
+    }
+    // menu: right, just under the picture
+    const hd = document.querySelector('header');
+    let below = r.bottom - sh + 12;
+    if (hd) {
+      fix(hd, { left: 'auto', right: px(M), width: 'auto', height: 'auto', top: px(below) });
+      below += hd.getBoundingClientRect().height + 12;
+    }
+    // counter: left, just under the picture (only shows while playing)
+    const ct = document.getElementById('tg-counter');
+    if (ct) { const cw = Math.min(vw * 0.42, 190); fix(ct, { left: px(M), right: 'auto', width: px(cw), height: px(cw * 0.17), top: px(r.bottom - sh + 12) }); }
+    // play button: square, right, under the menu
+    const tr = document.getElementById('tg-transport'), pb = document.getElementById('tg-btn-play');
+    if (tr && pb) {
+      const S = 64;
+      fix(tr, { left: px(vw - M - S), right: 'auto', width: px(S), height: px(S), top: px(below) });
+      Object.assign(pb.style, { position: 'absolute', left: '0', top: '0', width: '100%', height: '100%', aspectRatio: 'auto', flex: 'none' });
+    }
+  }
+  // re-place when the picture's shape or the window changes (new track, video metadata, rotate)
+  (function () {
+    let sig = '';
+    setInterval(() => {
+      if (!isMobileLayout()) { sig = ''; return; }
+      const v = window.TGDeck && TGDeck.visual;
+      const s3 = innerWidth + 'x' + innerHeight + '|' + (v ? (v.videoWidth || v.naturalWidth || 0) + 'x' + (v.videoHeight || v.naturalHeight || 0) : '-');
+      if (s3 !== sig) { sig = s3; applyMobileLayout(); }
+    }, 400);
+  })();
 
   // ---- player parts: Shift+Alt moves / resizes each part (stop, play, prev, next, title bar) ----
   const PART_IDS = [ 'tg-btn-play'];
