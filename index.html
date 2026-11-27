@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v44-defaults-rev25 -->
+<!-- build: tommygee-v45-subtitle -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -15,7 +15,8 @@
   body { background: transparent; color: var(--tg-font, #000); }
   body { font-family: Jost, "Helvetica Neue", sans-serif; min-height: 100vh; }
 
-  header, .hero-title { user-select: none; -webkit-user-select: none; }
+  header, .hero-title, .tg-subtitle { user-select: none; -webkit-user-select: none; }
+  .tg-subtitle { font-family: Jost, "Helvetica Neue", sans-serif; font-size: 13px; letter-spacing: 0.22em; font-weight: 500; text-transform: uppercase; line-height: 1.2; color: var(--tg-font, #000); position: fixed; z-index: 10; pointer-events: auto; white-space: nowrap; left: 2vw; top: 2vh; }
   header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 20px 52px; display: flex; align-items: center; justify-content: flex-end; }
   nav { display: flex; gap: 28px; align-items: center; }
   nav a { font-family: Jost, "Helvetica Neue", sans-serif; font-size: 11px; letter-spacing: 0.22em; font-weight: 500; text-transform: uppercase; color: var(--tg-font, #000); text-decoration: none; }
@@ -50,7 +51,7 @@
   #tg-console-panel { position: fixed; bottom: 0; left: 0; right: 0; max-height: 45vh; z-index: 101; background: rgba(10,10,10,0.9); border-top: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; font-family: Jost, "Helvetica Neue", sans-serif; font-weight: 300; color: #ccc; overflow: hidden; }
   #tg-console-panel.open { display: flex; }
   /* while the console is open the page can be scrolled up behind it (wheel / trackpad) */
-  header, .hero-title, #tg-transport, #tg-program-container { translate: 0 var(--tg-shift, 0px); }
+  header, .hero-title, .tg-subtitle, #tg-transport, #tg-program-container { translate: 0 var(--tg-shift, 0px); }
   #tg-program-container { translate: 0 calc(var(--tg-shift, 0px) + var(--tg-nudge, 0px)); }
   html, body { overscroll-behavior: none; }
   /* v35: the counter replaces the skip buttons and the title bar */
@@ -334,6 +335,7 @@
   </header>
 
   <main class="hero">
+    <div class="tg-subtitle" draggable="false">music composer</div>
     <h1 class="hero-title" draggable="false">Tommy Gee</h1>
   </main>
 
@@ -4397,6 +4399,7 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
   const MOVABLES = [
     { selector: 'header', isProgContainer: false },
     { selector: '.hero-title', isProgContainer: false, isTitle: true },
+    { selector: '.tg-subtitle', isProgContainer: false, isTitle: true, lineH: 1.2 },
     { id: 'tg-transport' },
     { id: 'tg-counter' },
     { id: 'tg-program-container', isProgContainer: true },
@@ -4427,6 +4430,14 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
     const w = el.scrollWidth;
     if (w > maxW + 1) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * maxW / w) + 'px';
   }
+  // "music composer": until moved, sits just above the title, left-aligned with it
+  function placeSubtitleDefault() {
+    const sub = document.querySelector('.tg-subtitle'), t = document.querySelector('.hero-title'); if (!sub || !t) return;
+    const r = t.getBoundingClientRect(), sh = window.TG_SHIFT || 0;
+    sub.style.position = 'fixed'; sub.style.transform = 'none'; sub.style.fontSize = ''; sub.style.width = ''; sub.style.height = '';
+    sub.style.left = Math.round(r.left + r.height * 0.04) + 'px';
+    sub.style.top = Math.max(4, Math.round(r.top - sh - sub.getBoundingClientRect().height - 6)) + 'px';
+  }
   function applyLayout(data) {
     if (!data) return;
     MOVABLES.forEach(m => {
@@ -4439,8 +4450,9 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
       el.style.width = (r.width * vw) + 'px'; el.style.height = (r.height * vh) + 'px';
       if (m.isProgContainer) { el.style.left = '0px'; el.style.width = vw + 'px'; }   // program area always full window width
       el.style.right = 'auto'; el.style.bottom = 'auto';
-      if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / 0.88) + 'px'; fitTitle(r.width * vw); }
+      if (m.isTitle) { el.style.transform = 'none'; el.style.width = ''; el.style.height = ''; el.style.fontSize = (r.height * vh / (m.lineH || 0.88)) + 'px'; if (m.selector === '.hero-title') fitTitle(r.width * vw); }
     });
+    if (!data['.tg-subtitle']) placeSubtitleDefault();
     if (data !== layoutData) { if (data['tg-parts']) layoutData['tg-parts'] = data['tg-parts']; else delete layoutData['tg-parts']; }
     applyParts(data['tg-parts']);
   }
@@ -4565,10 +4577,11 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
       const corner = e.target.dataset.corner, targetKey = e.target.dataset.target;
       const el = document.getElementById(targetKey) || document.querySelector(targetKey);
       if (!el) return;
-      const isT = targetKey === '.hero-title';
+      const mm = MOVABLES.find(x => (x.id || x.selector) === targetKey) || {};
+      const isT = !!mm.isTitle;
       const r = freezeBox(el, isT);
       lastShiftDrag = performance.now();
-      moveDrag = { type:'resize', el, corner, isTitle: isT, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top - (window.TG_SHIFT || 0), ow:r.width, oh:r.height };
+      moveDrag = { type:'resize', el, corner, isTitle: isT, lineH: mm.lineH || 0.88, sx:e.clientX, sy:e.clientY, ox:r.left, oy:r.top - (window.TG_SHIFT || 0), ow:r.width, oh:r.height };
       startDrag(e); return;
     }
     // hit order: header and title by closest(), program container by outer-band check
@@ -4606,11 +4619,11 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
       let l = moveDrag.ox, t = moveDrag.oy, w = moveDrag.ow, h = moveDrag.oh;
       if (c.includes('l')) { l += dx; w -= dx; } else { w += dx; }
       if (c.includes('t')) { t += dy; h -= dy; } else { h += dy; }
-      w = Math.max(40, w); h = Math.max(40, h);
+      w = Math.max(40, w); h = Math.max(moveDrag.lineH && moveDrag.lineH > 1 ? 8 : 40, h);
       moveDrag.el.style.left = l + 'px'; moveDrag.el.style.top = t + 'px';
       moveDrag.el.style.width = w + 'px'; moveDrag.el.style.height = h + 'px';
       moveDrag.el.style.position = 'fixed';
-      if (moveDrag.isTitle) { moveDrag.el.style.transform = 'none'; moveDrag.el.style.height = ''; moveDrag.el.style.width = ''; moveDrag.el.style.fontSize = (h / 0.88) + 'px'; }
+      if (moveDrag.isTitle) { moveDrag.el.style.transform = 'none'; moveDrag.el.style.height = ''; moveDrag.el.style.width = ''; moveDrag.el.style.fontSize = (h / (moveDrag.lineH || 0.88)) + 'px'; }
     }
   });
   document.addEventListener('pointerup', (e) => { if (moveDrag) { saveLayout(); moveDrag = null; if (!e.shiftKey) setShiftMode(false); } });
@@ -4657,7 +4670,7 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
       }
       // title + menu fade out while playing (cinema.hideText), back on Stop
       const hide = cinema.hideText !== false ? amt : 0;
-      document.querySelectorAll('header, .hero-title').forEach(el => {
+      document.querySelectorAll('header, .hero-title, .tg-subtitle').forEach(el => {
         el.style.opacity = hide > 0 ? String(1 - hide) : '';
         el.style.pointerEvents = hide > 0.5 ? 'none' : '';
       });
@@ -4754,7 +4767,7 @@ window.TG_SITE_DEFAULTS = { rev: 25, saved: '2026-11-27', store: {
   const FONTS_KEY = 'tommygee.fonts.v1';
   const FONT_TARGETS = [
     { key: 'title', label: 'Title', sel: () => [document.querySelector('.hero-title')], def: { family: 'Jost', weight: 700 } },
-    { key: 'menu',  label: 'Menu',  sel: () => [...document.querySelectorAll('nav a')],  def: { family: 'Jost', weight: 500 } },
+    { key: 'menu',  label: 'Menu',  sel: () => [...document.querySelectorAll('nav a, .tg-subtitle')],  def: { family: 'Jost', weight: 500 } },
   ];
   // system fonts (installed on the visitor's machine, nothing downloaded; Helvetica Neue is on every Mac/iPhone, others fall back to Arial)
   const SYSTEM_FONTS = [['Helvetica Neue','sy',[300,400,500,700],0],['Helvetica','sy',[400,700],0],['Arial','sy',[400,700],0]];
