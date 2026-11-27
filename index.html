@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- build: tommygee-v44-hide-title-on-play -->
+<!-- build: tommygee-v44-defaults-rev24 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tommy Gee</title>
@@ -398,7 +398,7 @@
 <script>
 /* Site defaults — Tommy's saved settings. Every visitor starts from these.
    Bump rev when publishing new defaults: it replaces older stored settings once. */
-window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
+window.TG_SITE_DEFAULTS = { rev: 24, saved: '2026-11-27', store: {
     "tommygee.assemblage.cfg.v1": {
       "bg": "#00BFFF",
       "textColor": "#1b1b1b",
@@ -462,7 +462,7 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
       "mode": "barcode",
       "barAxis": "v",
       "bcVals": [
-        0.07424907869449984,
+        0,
         0.068,
         0.543,
         0,
@@ -584,14 +584,15 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
     },
     "tommygee.page.v1": {
       "pageBG": "#00BFFF",
-      "pageFontColor": "#F3F315",
+      "pageFontColor": "#0A0A0A",
       "programBGFollows": true,
       "activeProgramId": "assemblage",
       "cinema": {
         "on": true,
         "bg": "#000000",
         "fg": "#E6E6E6",
-        "fade": 1
+        "fade": 1,
+        "hideText": true
       }
     },
     "tommygee.presets.v1": [
@@ -3389,7 +3390,7 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
           "mode": "barcode",
           "barAxis": "v",
           "bcVals": [
-            0.07424907869449984,
+            0,
             0.068,
             0.543,
             0,
@@ -3410,7 +3411,7 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
         "faders": [
           {
             "key": "pieces",
-            "v": 0.07424907869449984,
+            "v": 0,
             "pos": {
               "16:9": {
                 "x": 199.6,
@@ -3683,7 +3684,7 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
             0.45978403755714176
           ],
           "barcode": [
-            0.07424907869449984,
+            0,
             0.068,
             0.543,
             0,
@@ -3727,8 +3728,7 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
       "slots": [
         {
           "steps": [
-            1,
-            5,
+            0,
             6,
             2,
             7,
@@ -3742,7 +3742,9 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
           "gap": 0.3
         },
         {
-          "steps": [],
+          "steps": [
+            3
+          ],
           "mode": "fwd",
           "secs": 8,
           "recall": "program",
@@ -3878,7 +3880,7 @@ window.TG_SITE_DEFAULTS = { rev: 23, saved: '2026-11-26', store: {
     ],
     "tommygee.transport.v1": {
       "tg-btn-stop": "#B5B8B1",
-      "tg-btn-play": "#1F51FF",
+      "tg-btn-play": "#0A0A0A",
       "tg-btn-prev": "#b5b8b1",
       "tg-btn-next": "#b5b8b1"
     }
